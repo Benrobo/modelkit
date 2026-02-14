@@ -48,6 +48,7 @@
     "node-cache": "^5.1.2"
   },
   "devDependencies": {
+    "@openrouter/ai-sdk-provider": "^2.2.3",
     "@types/node": "^22.13.13",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"

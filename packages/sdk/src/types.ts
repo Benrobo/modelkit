@@ -1,11 +1,5 @@
-/**
- * Core type definitions for ModelKit.
- */
-
 export interface FeatureConfig {
-  /** Optional display name (e.g. "Content generation") */
   name?: string;
-  /** Optional short description or subtitle */
   title?: string;
   modelId: string;
   temperature?: number;
@@ -31,7 +25,6 @@ export interface RedisStorageConfig {
 
 export interface MemoryStorageConfig {
   type: "memory";
-  /** TTL in seconds; 0 = no expiry. Optional. */
   stdTTL?: number;
 }
 
@@ -42,7 +35,6 @@ export interface ModelKitConfig {
   features: Record<string, FeatureConfig>;
 }
 
-/** Definition for creating a new feature (id + FeatureConfig) */
 export type CreateFeatureDefinition = FeatureConfig & { id: string };
 
 export interface ModelKit {
@@ -57,6 +49,5 @@ export interface ModelKit {
     Array<{ featureId: string; override: ModelOverride }>
   >;
   listFeatures(): Promise<Array<FeatureConfig & { id: string }>>;
-  /** Optional: create a new feature (e.g. in dev/mock). Not all backends support this. */
   createFeature?(definition: CreateFeatureDefinition): Promise<void>;
 }

@@ -19,7 +19,6 @@ interface CachedConfig {
 }
 
 export interface CreateModelKitOptions {
-  /** In-memory cache TTL in ms. Default 60000. */
   cacheTTL?: number;
 }
 

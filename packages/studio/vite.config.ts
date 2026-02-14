@@ -23,6 +23,7 @@ export default defineConfig({
     },
   },
   build: {
+    minify: false,
     lib: {
       entry: resolve(__dirname, "src/index.tsx"),
       formats: ["es"],
@@ -38,6 +39,5 @@ export default defineConfig({
       },
     },
     sourcemap: true,
-    minify: true,
   },
 });
