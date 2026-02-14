@@ -4,6 +4,8 @@ Type-safe AI model configuration with zero-downtime runtime overrides.
 
 Change models and parameters on the fly without redeploying your app.
 
+![ModelKit Studio](screenshots/prev-1.png)
+
 ## Features
 
 - Type-safe with 340+ OpenRouter models

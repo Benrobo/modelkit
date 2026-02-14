@@ -2,6 +2,12 @@
 
 React UI for managing ModelKit overrides.
 
+## Preview
+
+![ModelKit Studio](../../screenshots/prev-1.png)
+
+Feature list and override editor with multiple themes (dark, forest, purple, and more).
+
 ## Installation
 
 ```bash
