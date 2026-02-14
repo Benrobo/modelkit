@@ -4,7 +4,7 @@ Type-safe AI model configuration with zero-downtime runtime overrides.
 
 Change models and parameters on the fly without redeploying your app.
 
-![ModelKit Studio](screenshots/prev-1.png)
+![ModelKit Studio](screenshots/prev-3.png)
 
 ## Features
 
@@ -16,10 +16,10 @@ Change models and parameters on the fly without redeploying your app.
 
 ## Packages
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| [@benrobo/modelkit](./packages/sdk) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit.svg)](https://www.npmjs.com/package/@benrobo/modelkit) | Core SDK for model configuration management |
-| [@benrobo/modelkit-studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit-studio.svg)](https://www.npmjs.com/package/@benrobo/modelkit-studio) | React UI for visual model management |
+| Package                                       | Version                                                                                                                     | Description                                 |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [@benrobo/modelkit](./packages/sdk)           | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit.svg)](https://www.npmjs.com/package/@benrobo/modelkit)               | Core SDK for model configuration management |
+| [@benrobo/modelkit-studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit-studio.svg)](https://www.npmjs.com/package/@benrobo/modelkit-studio) | React UI for visual model management        |
 
 ### Why Studio?
 
@@ -43,16 +43,23 @@ npm install @benrobo/modelkit
 
 ```typescript
 import { Hono } from "hono";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+import {
+  createModelKit,
+  createRedisAdapter,
+  createModelKitRouter,
+} from "@benrobo/modelkit";
 
 const adapter = createRedisAdapter({
-  url: process.env.REDIS_URL || "redis://localhost:6379"
+  url: process.env.REDIS_URL || "redis://localhost:6379",
 });
 
 const modelKit = createModelKit(adapter);
 
 // Use in your app
-const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+const modelId = await modelKit.getModel(
+  "chatbot",
+  "anthropic/claude-3.5-sonnet"
+);
 
 // Expose REST API
 const app = new Hono();
@@ -71,10 +78,7 @@ npx modelkit-generate --api-url http://localhost:3000/api/modelkit
 This creates `src/modelkit.generated.ts` with:
 
 ```typescript
-export type FeatureId =
-  | "chatbot"
-  | "content.generate"
-  | "swot.analysis";
+export type FeatureId = "chatbot" | "content.generate" | "swot.analysis";
 
 // ... plus dynamic usage examples with your actual features
 ```
@@ -104,7 +108,7 @@ npm install @benrobo/modelkit-studio
 import { ModelKitStudio } from "@benrobo/modelkit-studio";
 import "@benrobo/modelkit-studio/styles";
 
-<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />;
 ```
 
 ## Use Cases
@@ -137,7 +141,7 @@ await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
 await modelKit.setOverride("feature-id", {
   modelId: "anthropic/claude-opus-4",
   temperature: 0.9,
-  maxTokens: 4096
+  maxTokens: 4096,
 });
 
 await modelKit.getConfig("feature-id");
@@ -161,10 +165,18 @@ import type { StorageAdapter } from "@benrobo/modelkit";
 
 function createMyAdapter(): StorageAdapter {
   return {
-    async get(featureId) { /* ... */ },
-    async set(featureId, override) { /* ... */ },
-    async delete(featureId) { /* ... */ },
-    async list() { /* ... */ }
+    async get(featureId) {
+      /* ... */
+    },
+    async set(featureId, override) {
+      /* ... */
+    },
+    async delete(featureId) {
+      /* ... */
+    },
+    async list() {
+      /* ... */
+    },
   };
 }
 

@@ -4,7 +4,7 @@ React UI for managing ModelKit overrides.
 
 ## Preview
 
-![ModelKit Studio](../../screenshots/prev-1.png)
+![ModelKit Studio](../../screenshots/prev-3.png)
 
 Feature list and override editor with multiple themes (dark, forest, purple, and more).
 
@@ -103,7 +103,10 @@ import {
 **Important:** To get TypeScript autocomplete for custom themes, define the theme object separately with an explicit type annotation:
 
 ```tsx
-import { ModelKitStudio, type StudioThemeOverride } from "@benrobo/modelkit-studio";
+import {
+  ModelKitStudio,
+  type StudioThemeOverride,
+} from "@benrobo/modelkit-studio";
 
 // Define custom theme
 const customTheme: StudioThemeOverride = {
