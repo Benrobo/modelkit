@@ -9,3 +9,6 @@ export type {
   OpenRouterModelPricing,
   OpenRouterModelsResponse,
 } from "./openrouter.api";
+
+export { createModelKitApi } from "./modelkit.api";
+export type { ModelKitApi, OverrideItem } from "./modelkit.api";

@@ -53,43 +53,16 @@
 }
 
 .mk-glow-primary {
-  box-shadow: 0 0 20px var(--mk-color-primary-glow), 0 0 40px rgba(0, 245, 255, 0.2);
-}
-
-/* Tactical corner brackets */
-.modelkit-studio .mk-panel::before,
-.modelkit-studio .mk-panel::after {
-  content: "";
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border: 1px solid var(--mk-color-primary);
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.modelkit-studio .mk-panel::before {
-  top: 0;
-  left: 0;
-  border-right: none;
-  border-bottom: none;
-}
-
-.modelkit-studio .mk-panel::after {
-  bottom: 0;
-  right: 0;
-  border-left: none;
-  border-top: none;
-}
-
-.modelkit-studio .mk-panel {
-  position: relative;
+  box-shadow: 0 0 20px var(--mk-color-primary-glow),
+    0 0 40px rgba(0, 245, 255, 0.2);
 }
 
 /* Subtle grid pattern */
 .modelkit-studio {
-  background-image:
-    linear-gradient(rgba(0, 245, 255, 0.015) 1px, transparent 1px),
+  background-image: linear-gradient(
+      rgba(0, 245, 255, 0.015) 1px,
+      transparent 1px
+    ),
     linear-gradient(90deg, rgba(0, 245, 255, 0.015) 1px, transparent 1px);
   background-size: 50px 50px;
 }

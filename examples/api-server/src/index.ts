@@ -1,8 +1,12 @@
 import { Hono } from "hono";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "modelkit";
+import {
+  createModelKit,
+  createRedisAdapter,
+  createModelKitRouter,
+} from "modelkit";
 
 const adapter = createRedisAdapter({
-  url: process.env.REDIS_URL || "redis://localhost:6379",
+  url: process.env.REDIS_URL || "redis://192.168.215.2:6379",
 });
 
 const modelKit = createModelKit(adapter);

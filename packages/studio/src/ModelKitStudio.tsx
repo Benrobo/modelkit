@@ -1,11 +1,13 @@
 import type { ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import { cn } from "./utils/cn";
 import { ModelKitApiProvider } from "./hooks/useModelKitApi";
 import { useNavigation } from "./hooks/useNavigation";
 import { Navigation } from "./components/Navigation";
 import { FeatureList } from "./components/FeatureList";
 import { FeatureDetail } from "./components/FeatureDetail";
+import { TacticalPanel } from "./components/TacticalPanel";
 import { resolveTheme, themeToCssVars } from "./themes/themeUtils";
 import type { StudioThemeOverride } from "./themes";
 
@@ -71,6 +73,18 @@ function ModelKitStudioInner({
       style={themeVars}
       data-theme={typeof theme === "string" ? theme : "custom"}
     >
+      <Toaster
+        theme="dark"
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "var(--mk-color-surface)",
+            color: "var(--mk-color-text)",
+            border: "1px solid var(--mk-color-border)",
+            fontFamily: "JetBrains Mono, monospace",
+          },
+        }}
+      />
       <Navigation
         showBack={false}
         className={classNames.header}
@@ -79,14 +93,12 @@ function ModelKitStudioInner({
 
       <main className="flex-1 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
         {/* Sidebar: Feature List */}
-        <aside className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col border border-mk-border bg-mk-surface overflow-hidden relative mk-panel">
-          <div className="relative z-10 flex flex-col h-full">
-            <FeatureList
-              onSelectFeature={goToDetail}
-              className={cn("p-4", classNames.featureList)}
-            />
-          </div>
-        </aside>
+        <TacticalPanel className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col border border-mk-border bg-mk-surface overflow-hidden">
+          <FeatureList
+            onSelectFeature={goToDetail}
+            className={cn("p-4", classNames.featureList)}
+          />
+        </TacticalPanel>
 
         {/* Main Content: Feature Detail */}
         <section className="flex-1 min-w-0 relative">

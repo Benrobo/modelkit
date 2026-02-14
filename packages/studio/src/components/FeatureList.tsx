@@ -14,6 +14,8 @@ export function FeatureList({
   className,
 }: FeatureListProps): ReactElement {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [newFeatureId, setNewFeatureId] = useState("");
   const { selectedFeatureId } = useNavigation();
   const { overrides, loading, error } = useOverrides();
 
@@ -38,9 +40,17 @@ export function FeatureList({
     );
   }
 
+  const handleCreateNew = () => {
+    if (newFeatureId.trim()) {
+      onSelectFeature(newFeatureId.trim());
+      setNewFeatureId("");
+      setShowNewForm(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col h-full", className)}>
-      <div className="mb-4 flex-shrink-0">
+      <div className="mb-4 flex-shrink-0 space-y-2">
         <div className="relative">
           <input
             type="text"
@@ -54,6 +64,7 @@ export function FeatureList({
           />
           {searchQuery && (
             <button
+              type="button"
               onClick={() => setSearchQuery("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-mk-text-muted hover:text-mk-primary transition-colors"
             >
@@ -61,6 +72,48 @@ export function FeatureList({
             </button>
           )}
         </div>
+
+        {showNewForm ? (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Feature ID..."
+              value={newFeatureId}
+              onChange={(e) => setNewFeatureId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCreateNew();
+                if (e.key === "Escape") setShowNewForm(false);
+              }}
+              className={cn(
+                "flex-1 bg-mk-surface border border-mk-primary px-3 py-2 text-sm text-mk-text",
+                "focus:outline-none placeholder:text-mk-text-muted",
+              )}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              className="px-3 py-2 bg-mk-primary text-mk-background uppercase text-xs tracking-wide hover:bg-mk-primary/80 transition-colors"
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowNewForm(false)}
+              className="px-3 py-2 border border-mk-border text-mk-text-secondary hover:text-mk-text hover:border-mk-primary transition-colors"
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowNewForm(true)}
+            className="w-full px-4 py-2.5 border border-mk-border hover:border-mk-primary text-mk-text-secondary hover:text-mk-primary transition-colors text-sm uppercase tracking-wide"
+          >
+            + New Override
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-0">

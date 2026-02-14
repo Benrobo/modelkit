@@ -1,11 +1,9 @@
 import type { ModelOverride } from "modelkit";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { TacticalToast } from "../components/TacticalToast";
 import { useModelKitApi } from "./useModelKitApi";
-
-export interface OverrideItem {
-  featureId: string;
-  override: ModelOverride;
-}
+import type { OverrideItem } from "../client-api";
 
 const OVERRIDES_QUERY_KEY = ["modelkit", "overrides"] as const;
 
@@ -40,22 +38,47 @@ export function useOverrides(): {
       featureId: string;
       override: ModelOverride;
     }) => api.setOverride(featureId, override),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: OVERRIDES_QUERY_KEY });
+      toast.custom(() => (
+        <TacticalToast
+          type="success"
+          message={`Override for "${variables.featureId}" updated successfully`}
+        />
+      ));
+    },
+    onError: (error, variables) => {
+      toast.custom(() => (
+        <TacticalToast
+          type="error"
+          message={`Failed to update override for "${variables.featureId}": ${error.message}`}
+        />
+      ));
     },
   });
 
   const clearOverrideMutation = useMutation({
     mutationFn: (featureId: string) => api.clearOverride(featureId),
-    onSuccess: () => {
+    onSuccess: (_data, featureId) => {
       queryClient.invalidateQueries({ queryKey: OVERRIDES_QUERY_KEY });
+      toast.custom(() => (
+        <TacticalToast
+          type="success"
+          message={`Override for "${featureId}" cleared successfully`}
+        />
+      ));
+    },
+    onError: (error, featureId) => {
+      toast.custom(() => (
+        <TacticalToast
+          type="error"
+          message={`Failed to clear override for "${featureId}": ${error.message}`}
+        />
+      ));
     },
   });
 
-  const setOverride = async (
-    featureId: string,
-    override: ModelOverride
-  ) => {
+  const setOverride = async (featureId: string, override: ModelOverride) => {
     await setOverrideMutation.mutateAsync({ featureId, override });
   };
 

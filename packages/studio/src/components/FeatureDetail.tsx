@@ -3,6 +3,8 @@ import { cn } from "../utils/cn";
 import { useOverrides } from "../hooks/useOverrides";
 import { ModelSelector } from "./ModelSelector";
 import { ParameterEditor } from "./ParameterEditor";
+import { TacticalPanel } from "./TacticalPanel";
+import { OpenRouterModelId } from "modelkit";
 
 export interface FeatureDetailProps {
   featureId: string;
@@ -38,29 +40,27 @@ export function FeatureDetail({
 
   if (overridesLoading) {
     return (
-      <div className="p-mk-xl text-mk-text-muted font-mk-mono text-sm animate-pulse">
+      <div className="p-mk-xl text-mk-text-muted text-sm animate-pulse">
         Loading...
       </div>
     );
   }
 
-  if (!override) {
-    return (
-      <div className="p-mk-xl text-mk-text-muted font-mk-mono text-sm">
-        No override found for "{featureId}"
-      </div>
-    );
-  }
-
-  const isModified =
-    modelId !== override.modelId ||
-    temperature !== (override.temperature ?? 0.7) ||
-    maxTokens !== (override.maxTokens ?? 4096);
+  const isNewOverride = !override;
+  const isModified = isNewOverride
+    ? modelId !== ""
+    : modelId !== override.modelId ||
+      temperature !== (override.temperature ?? 0.7) ||
+      maxTokens !== (override.maxTokens ?? 4096);
 
   const handleCommit = async () => {
     setIsUpdating(true);
     try {
-      await setOverride(featureId, { modelId, temperature, maxTokens });
+      await setOverride(featureId, {
+        modelId: modelId as OpenRouterModelId,
+        temperature,
+        maxTokens,
+      });
     } finally {
       setIsUpdating(false);
     }
@@ -76,31 +76,40 @@ export function FeatureDetail({
   };
 
   return (
-    <div
+    <TacticalPanel
       className={cn(
-        "mk-panel bg-mk-surface/50 border border-mk-border h-full flex flex-col overflow-hidden",
-        className,
+        "bg-mk-surface/50 border border-mk-border h-full flex flex-col overflow-hidden",
+        className
       )}
     >
       <div className="p-mk-xl border-b border-mk-border/50 flex items-center justify-between gap-mk-lg flex-shrink-0">
         <div className="space-y-1.5 flex-1 min-w-0">
           <div className="flex items-center gap-3">
-            <h2 className="font-mk-mono text-xl text-mk-text font-bold uppercase tracking-tight truncate">
+            <h2 className="text-xl text-mk-text font-bold uppercase tracking-tight truncate">
               {featureId}
             </h2>
-            <div className="px-2 py-0.5 bg-mk-primary text-mk-background text-[10px] font-mk-mono font-bold uppercase tracking-widest shadow-[0_0_10px_rgba(var(--mk-primary-rgb),0.3)] shrink-0">
-              ACTIVE OVERRIDE
-            </div>
+            {!isNewOverride && (
+              <div className="px-2 py-0.5 bg-mk-primary text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
+                ACTIVE OVERRIDE
+              </div>
+            )}
+            {isNewOverride && (
+              <div className="px-2 py-0.5 bg-mk-text-muted text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
+                NEW
+              </div>
+            )}
           </div>
         </div>
 
-        <button
-          onClick={handleReset}
-          disabled={isUpdating}
-          className="text-mk-color-error/70 hover:text-mk-color-error text-xs font-mk-mono font-bold uppercase tracking-widest transition-colors px-4 py-2.5 border border-mk-color-error/20 hover:bg-mk-color-error/5 shrink-0"
-        >
-          Clear Override
-        </button>
+        {!isNewOverride && (
+          <button
+            onClick={handleReset}
+            disabled={isUpdating}
+            className="text-mk-color-error/70 hover:text-mk-color-error text-xs font-bold uppercase tracking-widest transition-colors px-4 py-2.5 border border-mk-color-error/20 hover:bg-mk-color-error/5 shrink-0"
+          >
+            Clear Override
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-mk-xl space-y-mk-xl custom-scrollbar min-h-0">
@@ -125,24 +134,34 @@ export function FeatureDetail({
           <div className="pt-mk-xl flex flex-col sm:flex-row gap-mk-md border-t border-mk-border/10 flex-shrink-0">
             <button
               onClick={handleCommit}
-              disabled={!isModified || isUpdating}
+              disabled={!isModified || isUpdating || !modelId}
               className={cn(
-                "flex-1 border border-mk-primary bg-mk-primary text-mk-background px-8 py-4 text-sm font-mk-mono font-bold uppercase tracking-widest transition-all",
-                "hover:bg-transparent hover:text-mk-primary disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(var(--mk-primary-rgb),0.2)]",
+                "flex-1 border border-mk-primary bg-mk-primary text-mk-background px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all",
+                "hover:bg-transparent hover:text-mk-primary disabled:opacity-30 disabled:cursor-not-allowed"
               )}
             >
-              {isUpdating ? "Updating..." : "Update Override"}
+              {isUpdating
+                ? "Updating..."
+                : isNewOverride
+                ? "Create Override"
+                : "Update Override"}
             </button>
             <button
               onClick={() => {
-                setModelId(override.modelId);
-                setTemperature(override.temperature ?? 0.7);
-                setMaxTokens(override.maxTokens ?? 4096);
+                if (override) {
+                  setModelId(override.modelId);
+                  setTemperature(override.temperature ?? 0.7);
+                  setMaxTokens(override.maxTokens ?? 4096);
+                } else {
+                  setModelId("");
+                  setTemperature(0.7);
+                  setMaxTokens(4096);
+                }
               }}
               disabled={!isModified || isUpdating}
               className={cn(
-                "flex-1 border border-mk-border text-mk-text-muted px-8 py-4 text-sm font-mk-mono font-bold uppercase tracking-widest transition-all",
-                "hover:text-mk-text hover:bg-mk-surface-hover disabled:opacity-30",
+                "flex-1 border border-mk-border text-mk-text-muted px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all",
+                "hover:text-mk-text hover:bg-mk-surface-hover disabled:opacity-30"
               )}
             >
               Discard Changes
@@ -150,6 +169,6 @@ export function FeatureDetail({
           </div>
         </section>
       </div>
-    </div>
+    </TacticalPanel>
   );
 }

@@ -1,4 +1,3 @@
-export { ModelKitProvider, useModelKit } from "./useModelKit";
 export { useFeatures, type FeatureWithId } from "./useFeatures";
 export { useOverrides, type OverrideItem } from "./useOverrides";
 export { useNavigation, type StudioView } from "./useNavigation";
