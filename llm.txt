@@ -1,0 +1,538 @@
+# ModelKit
+
+Type-safe AI model configuration with zero-downtime runtime overrides.
+
+> Change models and parameters on the fly without redeploying your app.
+
+## Packages
+
+- **@benrobo/modelkit** - Core SDK for model configuration management
+- **@benrobo/modelkit-studio** - React UI for visual model management
+
+## Installation
+
+```bash
+# Core SDK
+npm install @benrobo/modelkit
+
+# For Redis support, also install:
+npm install ioredis
+
+# React UI (optional)
+npm install @benrobo/modelkit-studio
+npm install react react-dom @tanstack/react-query
+
+# Studio UI styles (required for UI)
+# Import in your app: import "@benrobo/modelkit-studio/styles";
+```
+
+## Quick Start
+
+### Backend (Node.js/Bun)
+
+```typescript
+import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+import { Hono } from "hono";
+
+// Setup storage adapter
+const adapter = createRedisAdapter({
+  url: process.env.REDIS_URL || "redis://localhost:6379"
+});
+
+// Create ModelKit instance
+const modelKit = createModelKit(adapter);
+
+// Use in your app
+const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+
+// Expose REST API (Hono)
+const app = new Hono();
+app.route("/api/modelkit", createModelKitRouter(modelKit));
+
+// Or use Express
+import express from "express";
+import { createModelKitExpressRouter } from "@benrobo/modelkit";
+const app = express();
+app.use("/api/modelkit", createModelKitExpressRouter(modelKit));
+```
+
+### React UI
+
+**IMPORTANT**: The Studio UI requires a backend API endpoint. Set up the backend first (see above).
+
+```tsx
+import { ModelKitStudio } from "@benrobo/modelkit-studio";
+import "@benrobo/modelkit-studio/styles";
+
+function App() {
+  return (
+    <ModelKitStudio
+      apiUrl="http://localhost:3000/api/modelkit"
+      theme="dark"
+    />
+  );
+}
+```
+
+**What you need:**
+1. A backend server running with ModelKit REST API (see Backend Setup above)
+2. The `apiUrl` must point to your backend's ModelKit router endpoint
+3. CORS must be configured if frontend and backend are on different origins
+
+## Features
+
+- **Type-safe** - 340+ OpenRouter models with TypeScript support
+- **Zero-downtime** - Change configurations without redeploying
+- **Redis-backed** - Persistent storage with in-memory caching (60s TTL)
+- **REST API** - Built-in routers for Hono and Express
+- **React UI** - Visual management interface with 10 themes
+- **Runtime overrides** - Switch models, adjust temperature, max tokens on the fly
+
+## Core API
+
+### ModelKit Instance
+
+```typescript
+// Get model (checks cache → Redis → fallback)
+await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
+
+// Set override
+await modelKit.setOverride("feature-id", {
+  modelId: "anthropic/claude-opus-4",
+  temperature: 0.9,
+  maxTokens: 4096,
+  topP: 1.0,
+  topK: 0
+});
+
+// Get configuration
+await modelKit.getConfig("feature-id");
+
+// List all overrides
+await modelKit.listOverrides();
+
+// Clear override
+await modelKit.clearOverride("feature-id");
+```
+
+### Storage Adapters
+
+**Redis Adapter** (recommended for production):
+```typescript
+import { createRedisAdapter } from "@benrobo/modelkit";
+
+const adapter = createRedisAdapter({
+  url: "redis://localhost:6379",
+  prefix: "modelkit:" // optional, defaults to "modelkit:"
+});
+```
+
+**In-Memory Adapter** (for development/testing):
+```typescript
+import { createInMemoryAdapter } from "@benrobo/modelkit";
+
+const adapter = createInMemoryAdapter();
+```
+
+**Custom Adapter**:
+```typescript
+import type { StorageAdapter } from "@benrobo/modelkit";
+
+function createMyAdapter(): StorageAdapter {
+  return {
+    async get(featureId: string) {
+      // Return override or null
+    },
+    async set(featureId: string, override: ModelOverride) {
+      // Store override
+    },
+    async delete(featureId: string) {
+      // Remove override
+    },
+    async list() {
+      // Return all overrides as Record<string, ModelOverride>
+    }
+  };
+}
+```
+
+## REST API Endpoints
+
+Both `createModelKitRouter()` (Hono) and `createModelKitExpressRouter()` (Express) expose:
+
+- `GET /overrides` - List all overrides
+- `GET /overrides/:featureId` - Get specific override
+- `POST /overrides/:featureId` - Set override (body: `{ modelId, temperature?, maxTokens?, topP?, topK? }`)
+- `DELETE /overrides/:featureId` - Clear override
+
+### CORS Configuration (Hono only)
+
+```typescript
+app.route("/api/modelkit", createModelKitRouter(modelKit, {
+  cors: true, // Enable CORS
+  // Or customize:
+  cors: {
+    origin: "https://yourdomain.com",
+    credentials: true
+  }
+}));
+```
+
+## Studio UI Themes
+
+ModelKit Studio includes 10 preset themes:
+
+- `dark` (default) - Tactical dark with cyan accents
+- `light` - Clean light theme
+- `choco` - Warm chocolate/coffee theme
+- `ocean` - Deep blue ocean
+- `sunset` - Orange sunset
+- `forest` - Green forest
+- `purple` - Purple violet
+- `crimson` - Red crimson
+- `cyan` - Bright cyan
+- `amber` - Golden amber
+
+### Theme Usage
+
+```tsx
+// Use preset theme
+<ModelKitStudio apiUrl={apiUrl} theme="choco" />
+
+// Custom theme with TypeScript autocomplete
+import { type StudioThemeOverride } from "@benrobo/modelkit-studio";
+
+const customTheme: StudioThemeOverride = {
+  colors: {
+    primary: "#ff00ff",
+    background: "#000000",
+    surface: "#1a1a1a",
+    text: "#ffffff",
+  },
+  borderRadius: {
+    sm: "4px",
+    md: "8px",
+    lg: "12px",
+  }
+};
+
+<ModelKitStudio apiUrl={apiUrl} theme={customTheme} />
+```
+
+See [THEMING.md](./packages/studio/THEMING.md) for full theming documentation.
+
+## Use Cases
+
+- **A/B Testing** - Test different models without redeploying
+- **Cost Optimization** - Switch to cheaper models during high traffic
+- **Emergency Fallback** - Quick rollback during model outages
+- **Production Tuning** - Adjust temperature and token limits in real-time
+- **Environment-specific** - Different models per dev/staging/prod
+- **Non-engineer Control** - Product managers can manage model selection via UI
+
+## How It Works
+
+```
+getModel(featureId, fallbackModel)
+  ↓
+1. Check in-memory cache (60s TTL)
+  ↓
+2. Check Redis override
+  ↓
+3. Return fallbackModel if no override exists
+```
+
+The fallback model ensures your app always works, even if Redis is down.
+
+## Configuration Options
+
+```typescript
+const modelKit = createModelKit(adapter, {
+  cacheTTL: 60000,  // Cache duration in ms (default: 60000 = 1 minute)
+  debug: false      // Enable debug logging (default: false)
+});
+```
+
+## Debug Logging
+
+Enable detailed logging for troubleshooting:
+
+```typescript
+const modelKit = createModelKit(adapter, { debug: true });
+
+// Logs output:
+// [ModelKit] getModel: feature-id
+// [ModelKit] Cache miss for: feature-id
+// [ModelKit] Redis returned: { modelId: "...", temperature: 0.9 }
+// [ModelKit] setOverride: feature-id -> { modelId: "..." }
+```
+
+## TypeScript Support
+
+Full TypeScript support with type-safe model IDs:
+
+```typescript
+import type {
+  ModelOverride,
+  StorageAdapter,
+  StudioTheme,
+  StudioThemeOverride,
+  ThemeMode
+} from "@benrobo/modelkit";
+```
+
+### Type Definitions
+
+```typescript
+interface ModelOverride {
+  modelId: string;
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+  topK?: number;
+}
+
+interface StorageAdapter {
+  get(featureId: string): Promise<ModelOverride | null>;
+  set(featureId: string, override: ModelOverride): Promise<void>;
+  delete(featureId: string): Promise<void>;
+  list(): Promise<Record<string, ModelOverride>>;
+}
+
+interface ModelKitOptions {
+  cacheTTL?: number;  // Cache TTL in milliseconds (default: 60000)
+  debug?: boolean;    // Enable debug logging (default: false)
+}
+```
+
+## Available Models
+
+340+ models from OpenRouter including:
+- Anthropic Claude (Opus 4.6, Sonnet 4.5, Haiku 4.5)
+- OpenAI GPT-4, GPT-3.5
+- Google Gemini
+- Meta Llama
+- Mistral
+- And many more...
+
+See full list: https://openrouter.ai/models
+
+## Complete Setup Example
+
+Here's a complete working example with both backend and frontend:
+
+### Backend Server (server.ts)
+
+```typescript
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+
+const app = new Hono();
+
+// Enable CORS for frontend
+app.use("/*", cors());
+
+// Setup ModelKit with Redis
+const adapter = createRedisAdapter({
+  url: process.env.REDIS_URL || "redis://localhost:6379"
+});
+
+const modelKit = createModelKit(adapter, {
+  cacheTTL: 60000, // 1 minute cache
+  debug: true      // Enable debug logs
+});
+
+// Mount ModelKit API
+app.route("/api/modelkit", createModelKitRouter(modelKit, { cors: true }));
+
+// Example: Use ModelKit in your app logic
+app.post("/chat", async (c) => {
+  const { message, feature } = await c.req.json();
+
+  // Get the model for this feature (with fallback)
+  const config = await modelKit.getConfig(feature || "default");
+  const modelId = config?.modelId || "anthropic/claude-3.5-sonnet";
+
+  // Use modelId with your AI provider...
+  // const response = await openrouter.chat(modelId, message);
+
+  return c.json({ modelId, message: "Response from " + modelId });
+});
+
+export default {
+  port: 3000,
+  fetch: app.fetch,
+};
+```
+
+### Frontend App (App.tsx)
+
+```tsx
+import { ModelKitStudio } from "@benrobo/modelkit-studio";
+import "@benrobo/modelkit-studio/styles";
+
+export default function App() {
+  return (
+    <div className="min-h-screen">
+      <ModelKitStudio
+        apiUrl="http://localhost:3000/api/modelkit"
+        theme="dark"
+      />
+    </div>
+  );
+}
+```
+
+### Environment Setup
+
+1. **Start Redis** (required for backend):
+   ```bash
+   # Using Docker
+   docker run -d -p 6379:6379 redis:latest
+
+   # Or install locally
+   brew install redis  # macOS
+   redis-server
+   ```
+
+2. **Set environment variables**:
+   ```bash
+   export REDIS_URL="redis://localhost:6379"
+   ```
+
+3. **Run backend**:
+   ```bash
+   bun run server.ts
+   # Server running at http://localhost:3000
+   ```
+
+4. **Run frontend** (separate terminal):
+   ```bash
+   npm run dev
+   # Frontend at http://localhost:5173
+   ```
+
+Now open the frontend and use the Studio UI to configure models!
+
+## Requirements
+
+- Node.js >= 18.0.0
+- Redis server (for production) or in-memory adapter (for development)
+- React 18+ or 19+ (for Studio UI only)
+
+## Peer Dependencies
+
+The SDK has optional peer dependencies:
+- `ioredis` - Required only if using Redis adapter
+- `express` - Required only if using Express router
+- `hono` - Required only if using Hono router
+
+The Studio UI requires:
+- `react` >= 18.0.0 || 19.0.0
+- `react-dom` >= 18.0.0 || 19.0.0
+- `@tanstack/react-query` (bundled as dependency)
+
+## Troubleshooting
+
+### Studio UI shows "Failed to load overrides"
+
+**Cause**: Backend API is not running or URL is incorrect
+
+**Fix**:
+1. Ensure backend server is running
+2. Check `apiUrl` prop points to correct endpoint
+3. Verify CORS is enabled on backend
+4. Check browser console for network errors
+
+### "Connection refused" error
+
+**Cause**: Redis server is not running
+
+**Fix**:
+```bash
+# Start Redis
+docker run -d -p 6379:6379 redis:latest
+# Or
+redis-server
+```
+
+### Models not persisting
+
+**Cause**: Using in-memory adapter instead of Redis
+
+**Fix**: Use `createRedisAdapter()` instead of `createInMemoryAdapter()`
+
+### TypeScript errors with custom theme
+
+**Cause**: Theme object defined inline without type annotation
+
+**Fix**:
+```typescript
+// ❌ Wrong - no autocomplete
+<ModelKitStudio theme={{ colors: { primary: "#fff" } }} />
+
+// ✅ Correct - with type annotation
+const customTheme: StudioThemeOverride = {
+  colors: { primary: "#fff" }
+};
+<ModelKitStudio theme={customTheme} />
+```
+
+### Studio UI styles not loading
+
+**Cause**: Forgot to import styles
+
+**Fix**:
+```typescript
+import "@benrobo/modelkit-studio/styles"; // Add this!
+```
+
+### CORS errors in browser
+
+**Cause**: Backend and frontend on different origins without CORS
+
+**Fix (Hono)**:
+```typescript
+import { cors } from "hono/cors";
+app.use("/*", cors());
+```
+
+**Fix (Express)**:
+```typescript
+import cors from "cors";
+app.use(cors());
+```
+
+## FAQ
+
+**Q: Can I use ModelKit without Redis?**
+A: Yes! Use `createInMemoryAdapter()` for development/testing, but data won't persist across server restarts.
+
+**Q: How do I deploy the Studio UI?**
+A: Build it as a static site and serve it anywhere. It's just a React app that talks to your backend API.
+
+**Q: Can I use my own storage (PostgreSQL, MongoDB, etc)?**
+A: Yes! Implement the `StorageAdapter` interface with your own database logic.
+
+**Q: Does ModelKit work with Vercel/Netlify serverless?**
+A: Yes, but you'll need a hosted Redis instance (Upstash, Redis Cloud, etc) since serverless functions are stateless.
+
+**Q: Can I use ModelKit with OpenAI directly?**
+A: ModelKit manages **configuration**, not API calls. Use it to get the model ID, then pass that to your AI provider (OpenAI, OpenRouter, etc).
+
+**Q: How do I add authentication to the Studio UI?**
+A: Wrap the API routes with your auth middleware. The Studio UI will send credentials if configured.
+
+## Repository
+
+GitHub: https://github.com/benrobo/modelkit
+NPM:
+- https://www.npmjs.com/package/@benrobo/modelkit
+- https://www.npmjs.com/package/@benrobo/modelkit-studio
+
+Demo: https://benrobo.github.io/modelkit/
+
+## License
+
+MIT

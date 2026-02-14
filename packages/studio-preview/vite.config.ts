@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  base: process.env.GITHUB_PAGES ? "/modelkit/" : "/",
   plugins: [react(), tailwindcss()],
   server: {
     port: 3480,
