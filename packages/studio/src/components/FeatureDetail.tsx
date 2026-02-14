@@ -5,6 +5,8 @@ import { ModelSelector } from "./ModelSelector";
 import { ParameterEditor } from "./ParameterEditor";
 import { TacticalPanel } from "./TacticalPanel";
 import { OpenRouterModelId } from "@benrobo/modelkit";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export interface FeatureDetailProps {
   featureId: string;
@@ -204,6 +206,149 @@ export function FeatureDetail({
             >
               Discard Changes
             </button>
+          </div>
+        </section>
+
+        {/* Usage Examples Section */}
+        <section className="space-y-mk-md animate-in fade-in slide-in-from-top-6 duration-700 delay-150">
+          <div className="flex items-center gap-2 mb-mk-md">
+            <div className="w-1.5 h-1.5 bg-mk-text-secondary/50 shadow-[0_0_8px_rgba(var(--mk-text-secondary-rgb),0.3)]" />
+            <h3 className="text-sm font-mk-mono font-bold text-mk-text-secondary uppercase tracking-widest">
+              SDK Usage Examples
+            </h3>
+          </div>
+
+          <div className="pl-mk-md border-l-2 border-mk-border/10 space-y-mk-lg">
+            {/* Get Model */}
+            <div className="space-y-2">
+              <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+                Get Model
+              </p>
+              <SyntaxHighlighter
+                language="typescript"
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  fontSize: "0.75rem",
+                  background: "rgba(var(--mk-background-rgb), 0.8)",
+                  border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
+                  padding: "var(--mk-spacing-md)",
+                }}
+                codeTagProps={{
+                  style: {
+                    fontFamily: "var(--font-mono)",
+                  }
+                }}
+              >
+{`const modelId = await modelKit.getModel(
+  "${editingFeatureId}",
+  "anthropic/claude-3.5-sonnet" // fallback
+);
+// Returns: "${modelId || 'fallback-model'}"${override ? ' (override)' : ' (fallback)'}`}
+              </SyntaxHighlighter>
+            </div>
+
+            {/* Set Override */}
+            <div className="space-y-2">
+              <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+                Set Override
+              </p>
+              <SyntaxHighlighter
+                language="typescript"
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  fontSize: "0.75rem",
+                  background: "rgba(var(--mk-background-rgb), 0.8)",
+                  border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
+                  padding: "var(--mk-spacing-md)",
+                }}
+                codeTagProps={{
+                  style: {
+                    fontFamily: "var(--font-mono)",
+                  }
+                }}
+              >
+{`await modelKit.setOverride("${editingFeatureId}", {
+  modelId: "${modelId || 'anthropic/claude-3.5-sonnet'}",
+  temperature: ${temperature},
+  maxTokens: ${maxTokens},
+  topP: ${topP},
+  topK: ${topK}
+});`}
+              </SyntaxHighlighter>
+            </div>
+
+            {/* Get Config */}
+            <div className="space-y-2">
+              <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+                Get Configuration
+              </p>
+              <SyntaxHighlighter
+                language="typescript"
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  fontSize: "0.75rem",
+                  background: "rgba(var(--mk-background-rgb), 0.8)",
+                  border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
+                  padding: "var(--mk-spacing-md)",
+                }}
+                codeTagProps={{
+                  style: {
+                    fontFamily: "var(--font-mono)",
+                  }
+                }}
+              >
+{`const config = await modelKit.getConfig("${editingFeatureId}");
+// Returns: ${override ? `{
+//   modelId: "${modelId}",
+//   temperature: ${temperature},
+//   maxTokens: ${maxTokens},
+//   topP: ${topP},
+//   topK: ${topK},
+//   updatedAt: ${override.updatedAt || Date.now()}
+// }` : 'null (no override)'}`}
+              </SyntaxHighlighter>
+            </div>
+
+            {/* Clear Override */}
+            {override && (
+              <div className="space-y-2">
+                <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+                  Clear Override
+                </p>
+                <SyntaxHighlighter
+                  language="typescript"
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    fontSize: "0.75rem",
+                    background: "rgba(var(--mk-background-rgb), 0.8)",
+                    border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
+                    padding: "var(--mk-spacing-md)",
+                  }}
+                  codeTagProps={{
+                    style: {
+                      fontFamily: "var(--font-mono)",
+                    }
+                  }}
+                >
+{`await modelKit.clearOverride("${editingFeatureId}");
+// Reverts to fallback model`}
+                </SyntaxHighlighter>
+              </div>
+            )}
+
+            {/* Type Safety Hint */}
+            <div className="mt-mk-lg p-mk-md bg-mk-surface/30 border border-mk-border/20">
+              <p className="text-xs text-mk-text-muted leading-relaxed">
+                <span className="font-bold text-mk-primary">💡 Tip:</span> Generate TypeScript types for autocomplete:{" "}
+                <code className="px-2 py-0.5 bg-mk-background/80 border border-mk-border/30 text-mk-text text-xs font-mono">
+                  npx modelkit-generate --api-url &lt;url&gt;
+                </code>
+              </p>
+            </div>
           </div>
         </section>
       </div>

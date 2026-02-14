@@ -28,16 +28,16 @@ const DEFAULT_PREFIX = "modelkit:overrides:";
  * @param options - Redis connection options
  * @returns StorageAdapter instance
  */
-export function createRedisAdapter(options: RedisAdapterOptions): StorageAdapter {
+export function createRedisAdapter<TFeatureId extends string = string>(options: RedisAdapterOptions): StorageAdapter<TFeatureId> {
   const { url, prefix = DEFAULT_PREFIX } = options;
   const redis = new (IORedis as unknown as new (url: string) => RedisClient)(url);
 
-  function key(featureId: string): string {
+  function key(featureId: TFeatureId): string {
     return `${prefix}${featureId}`;
   }
 
   return {
-    async get(featureId: string): Promise<ModelOverride | null> {
+    async get(featureId: TFeatureId): Promise<ModelOverride | null> {
       const k = key(featureId);
       const data = await redis.get(k);
       if (data == null) return null;
@@ -52,7 +52,7 @@ export function createRedisAdapter(options: RedisAdapterOptions): StorageAdapter
       }
     },
 
-    async set(featureId: string, override: ModelOverride): Promise<void> {
+    async set(featureId: TFeatureId, override: ModelOverride): Promise<void> {
       const k = key(featureId);
       const data: ModelOverride = {
         ...override,
@@ -61,26 +61,26 @@ export function createRedisAdapter(options: RedisAdapterOptions): StorageAdapter
       await redis.set(k, JSON.stringify(data));
     },
 
-    async delete(featureId: string): Promise<void> {
+    async delete(featureId: TFeatureId): Promise<void> {
       await redis.del(key(featureId));
     },
 
-    async list(): Promise<Array<{ featureId: string; override: ModelOverride }>> {
+    async list(): Promise<Array<{ featureId: TFeatureId; override: ModelOverride }>> {
       const pattern = `${prefix}*`;
       const keys = await redis.keys(pattern);
       if (!keys.length) return [];
 
       const overrides = await Promise.all(
         keys.map(async (k: string) => {
-          const featureId = k.replace(prefix, "");
+          const featureId = k.replace(prefix, "") as TFeatureId;
           const override = await this.get(featureId);
           return { featureId, override };
         })
       );
 
       return overrides.filter(
-        (o: { featureId: string; override: ModelOverride | null }): o is {
-          featureId: string;
+        (o: { featureId: TFeatureId; override: ModelOverride | null }): o is {
+          featureId: TFeatureId;
           override: ModelOverride;
         } => o.override != null
       );

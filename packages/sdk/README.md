@@ -27,6 +27,63 @@ await modelKit.setOverride("chatbot", {
 });
 ```
 
+## Type Generation
+
+Generate TypeScript types from your ModelKit API for compile-time type safety:
+
+```bash
+# Start your backend with ModelKit REST API, then generate types
+npx modelkit-generate --api-url http://localhost:3000/api/modelkit
+
+# Custom output path
+npx modelkit-generate --api-url http://localhost:3000/api/modelkit --output src/types/modelkit.ts
+```
+
+This fetches all features from your running ModelKit API and generates a TypeScript file:
+
+```typescript
+// src/modelkit.generated.ts (auto-generated)
+export type FeatureId =
+  | "chatbot"
+  | "content.generate"
+  | "swot.analysis";
+
+// ... plus dynamic usage examples with your actual feature IDs and models
+```
+
+**Use the generated types:**
+
+```typescript
+import type { FeatureId } from "./modelkit.generated";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+
+const adapter = createRedisAdapter<FeatureId>({ url: "..." });
+const modelKit = createModelKit<FeatureId>(adapter);
+
+// ✅ TypeScript autocomplete works!
+await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+
+// ❌ Compile-time error for invalid feature IDs
+await modelKit.getModel("invalid", "gpt-4");
+// Error: Argument of type '"invalid"' is not assignable to parameter of type 'FeatureId'
+```
+
+**Workflow (similar to Prisma):**
+
+Add to your `package.json` scripts:
+
+```json
+{
+  "scripts": {
+    "generate": "modelkit-generate --api-url http://localhost:3000/api/modelkit",
+    "build": "npm run generate && tsc",
+    "dev": "npm run generate && next dev"
+  }
+}
+```
+
+Then run `npm run generate` after adding new features to regenerate types.
+
 ## REST API
 
 ModelKit provides ready-to-use routers for Hono and Express to expose your configuration as a REST API.

@@ -12,7 +12,7 @@ export interface MemoryStorageOptions {
   stdTTL?: number;
 }
 
-export class MemoryStorage implements StorageAdapter {
+export class MemoryStorage<TFeatureId extends string = string> implements StorageAdapter<TFeatureId> {
   private cache: NodeCache;
 
   constructor(options: MemoryStorageOptions = {}) {
@@ -22,34 +22,34 @@ export class MemoryStorage implements StorageAdapter {
     });
   }
 
-  private key(featureId: string): string {
+  private key(featureId: TFeatureId): string {
     return `${KEY_PREFIX}${featureId}`;
   }
 
-  async get(featureId: string): Promise<ModelOverride | null> {
+  async get(featureId: TFeatureId): Promise<ModelOverride | null> {
     const value = this.cache.get<ModelOverride>(this.key(featureId));
     return value ?? null;
   }
 
-  async set(featureId: string, override: ModelOverride): Promise<void> {
+  async set(featureId: TFeatureId, override: ModelOverride): Promise<void> {
     this.cache.set(this.key(featureId), {
       ...override,
       updatedAt: Date.now(),
     });
   }
 
-  async delete(featureId: string): Promise<void> {
+  async delete(featureId: TFeatureId): Promise<void> {
     this.cache.del(this.key(featureId));
   }
 
-  async list(): Promise<Array<{ featureId: string; override: ModelOverride }>> {
+  async list(): Promise<Array<{ featureId: TFeatureId; override: ModelOverride }>> {
     const keys = this.cache.keys().filter((k) => k.startsWith(KEY_PREFIX));
-    const result: Array<{ featureId: string; override: ModelOverride }> = [];
+    const result: Array<{ featureId: TFeatureId; override: ModelOverride }> = [];
     for (const key of keys) {
       const override = this.cache.get<ModelOverride>(key);
       if (override != null) {
         result.push({
-          featureId: key.slice(KEY_PREFIX.length),
+          featureId: key.slice(KEY_PREFIX.length) as TFeatureId,
           override,
         });
       }

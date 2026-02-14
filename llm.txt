@@ -269,7 +269,7 @@ const modelKit = createModelKit(adapter, { debug: true });
 
 ## TypeScript Support
 
-Full TypeScript support with type-safe model IDs:
+Full TypeScript support with type-safe model IDs and feature IDs:
 
 ```typescript
 import type {
@@ -280,6 +280,79 @@ import type {
   ThemeMode
 } from "@benrobo/modelkit";
 ```
+
+### Type-Safe Feature IDs
+
+ModelKit supports generic type parameters for compile-time safety of feature IDs. Use the included type generator to auto-generate types from your running ModelKit API:
+
+#### Auto-Generate Types (Recommended)
+
+```bash
+# Generate types from your ModelKit API
+npx modelkit-generate --api-url http://localhost:3000/api/modelkit
+
+# Custom output path
+npx modelkit-generate --api-url http://localhost:3000/api/modelkit --output src/types/modelkit.ts
+```
+
+This fetches all features from your ModelKit REST API and generates a TypeScript file with:
+- Type-safe `FeatureId` union type
+- Dynamic usage examples based on your actual features
+- Autocomplete support in your IDE
+
+**Generated file example:**
+
+```typescript
+// src/modelkit.generated.ts (auto-generated)
+export type FeatureId =
+  | "chat.title"
+  | "content.generate"
+  | "swot.analysis";
+
+// ... plus usage examples with your actual feature IDs and models
+```
+
+**Usage:**
+
+```typescript
+import type { FeatureId } from "./modelkit.generated";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+
+const adapter = createRedisAdapter<FeatureId>({ url: "..." });
+const modelKit = createModelKit<FeatureId>(adapter);
+
+// ✅ TypeScript autocomplete works!
+await modelKit.getModel("chat.title", fallback);
+
+// ❌ Compile-time error for invalid feature IDs
+await modelKit.getModel("invalid.feature", fallback);
+// Error: Argument of type '"invalid.feature"' is not assignable...
+```
+
+**Workflow (similar to Prisma):**
+
+1. **After adding features** to your config, restart your backend
+2. **Run the generator**: `npx modelkit-generate --api-url <url>`
+3. **Commit the generated file** to git so team members see type changes in PRs
+
+Add to package.json scripts:
+
+```json
+{
+  "scripts": {
+    "generate": "modelkit-generate --api-url http://localhost:3000/api/modelkit",
+    "build": "npm run generate && tsc",
+    "dev": "npm run generate && next dev"
+  }
+}
+```
+
+**Benefits:**
+- Full IDE autocomplete for feature IDs
+- Compile-time validation prevents typos
+- Type-safe across your entire codebase
+- Works with all ModelKit methods (getModel, getConfig, setOverride, etc.)
+- Dynamic usage examples with your actual models
 
 ### Type Definitions
 
@@ -292,11 +365,19 @@ interface ModelOverride {
   topK?: number;
 }
 
-interface StorageAdapter {
-  get(featureId: string): Promise<ModelOverride | null>;
-  set(featureId: string, override: ModelOverride): Promise<void>;
-  delete(featureId: string): Promise<void>;
-  list(): Promise<Record<string, ModelOverride>>;
+interface StorageAdapter<TFeatureId extends string = string> {
+  get(featureId: TFeatureId): Promise<ModelOverride | null>;
+  set(featureId: TFeatureId, override: ModelOverride): Promise<void>;
+  delete(featureId: TFeatureId): Promise<void>;
+  list(): Promise<Array<{ featureId: TFeatureId; override: ModelOverride }>>;
+}
+
+interface ModelKit<TFeatureId extends string = string> {
+  getModel(featureId: TFeatureId, fallbackModel: ModelId): Promise<ModelId>;
+  getConfig(featureId: TFeatureId): Promise<ModelOverride | null>;
+  setOverride(featureId: TFeatureId, override: ModelOverride): Promise<void>;
+  clearOverride(featureId: TFeatureId): Promise<void>;
+  listOverrides(): Promise<Array<{ featureId: TFeatureId; override: ModelOverride }>>;
 }
 
 interface ModelKitOptions {

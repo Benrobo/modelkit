@@ -1,7 +1,7 @@
 {
   "name": "@benrobo/modelkit",
   "pricing": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publishConfig": {
     "access": "public"
   },
@@ -36,13 +36,16 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "bin": {
+    "modelkit-generate": "./dist/generate.js"
+  },
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "build": "tsup src/index.ts --format esm --dts && bun build scripts/generate.ts --outdir dist --target node",
     "dev": "tsup src/index.ts --format esm --dts --watch",
     "type-check": "tsc --noEmit",
     "generate:models": "bun scripts/generate-models.ts",

@@ -57,6 +57,41 @@ const app = new Hono();
 app.route("/api/modelkit", createModelKitRouter(modelKit));
 ```
 
+### Type Safety
+
+Generate TypeScript types from your ModelKit API:
+
+```bash
+# Start your backend first, then generate types
+npx modelkit-generate --api-url http://localhost:3000/api/modelkit
+```
+
+This creates `src/modelkit.generated.ts` with:
+
+```typescript
+export type FeatureId =
+  | "chatbot"
+  | "content.generate"
+  | "swot.analysis";
+
+// ... plus dynamic usage examples with your actual features
+```
+
+**Use the generated types:**
+
+```typescript
+import type { FeatureId } from "./modelkit.generated";
+
+const adapter = createRedisAdapter<FeatureId>({ url: "..." });
+const modelKit = createModelKit<FeatureId>(adapter);
+
+// ✅ TypeScript autocomplete works!
+await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+
+// ❌ Compile-time error for invalid feature IDs
+await modelKit.getModel("invalid", "gpt-4");
+```
+
 ### React UI
 
 ```bash

@@ -32,17 +32,17 @@ function createLogger(enabled: boolean) {
   };
 }
 
-export function createModelKit(
-  adapter: StorageAdapter,
+export function createModelKit<TFeatureId extends string = string>(
+  adapter: StorageAdapter<TFeatureId>,
   options: CreateModelKitOptions = {}
-): ModelKit {
+): ModelKit<TFeatureId> {
   const { cacheTTL = DEFAULT_CACHE_TTL_MS, debug = false } = options;
   const logger = createLogger(debug);
 
   const cache = new MemoryStorage({ stdTTL: Math.floor(cacheTTL / 1000) });
 
   async function getModel(
-    featureId: string,
+    featureId: TFeatureId,
     fallbackModel: ModelId
   ): Promise<ModelId> {
     const cached = await cache.get(featureId);
@@ -77,7 +77,7 @@ export function createModelKit(
     return fallbackModel;
   }
 
-  async function getConfig(featureId: string): Promise<ModelOverride | null> {
+  async function getConfig(featureId: TFeatureId): Promise<ModelOverride | null> {
     try {
       return await adapter.get(featureId);
     } catch {
@@ -86,7 +86,7 @@ export function createModelKit(
   }
 
   async function setOverride(
-    featureId: string,
+    featureId: TFeatureId,
     override: ModelOverride
   ): Promise<void> {
     logger.info(`[${featureId}] Setting override:`, {
@@ -98,7 +98,7 @@ export function createModelKit(
     await adapter.set(featureId, override);
   }
 
-  async function clearOverride(featureId: string): Promise<void> {
+  async function clearOverride(featureId: TFeatureId): Promise<void> {
     logger.info(`[${featureId}] Clearing override`);
     await cache.delete(featureId);
     await adapter.delete(featureId);
