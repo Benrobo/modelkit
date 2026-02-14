@@ -3,6 +3,7 @@ import { cn } from "../utils/cn";
 import { useOverrides } from "../hooks/useOverrides";
 import { useNavigation } from "../hooks/useNavigation";
 import { FeatureCard } from "./FeatureCard";
+import { CreateOverrideModal } from "./CreateOverrideModal";
 
 export interface FeatureListProps {
   onSelectFeature: (featureId: string) => void;
@@ -14,10 +15,9 @@ export function FeatureList({
   className,
 }: FeatureListProps): ReactElement {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showNewForm, setShowNewForm] = useState(false);
-  const [newFeatureId, setNewFeatureId] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const { selectedFeatureId } = useNavigation();
-  const { overrides, loading, error } = useOverrides();
+  const { overrides, loading, error, refetch } = useOverrides();
 
   const filteredOverrides = overrides.filter((o) => {
     const search = searchQuery.toLowerCase();
@@ -40,81 +40,49 @@ export function FeatureList({
     );
   }
 
-  const handleCreateNew = () => {
-    if (newFeatureId.trim()) {
-      onSelectFeature(newFeatureId.trim());
-      setNewFeatureId("");
-      setShowNewForm(false);
-    }
-  };
-
   return (
-    <div className={cn("flex flex-col h-full", className)}>
-      <div className="mb-4 flex-shrink-0 space-y-2">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search overrides..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={cn(
-              "w-full bg-mk-surface border border-mk-border px-4 py-2.5 text-sm text-mk-text",
-              "focus:outline-none focus:border-mk-primary transition-colors placeholder:text-mk-text-muted",
-            )}
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-mk-text-muted hover:text-mk-primary transition-colors"
-            >
-              ×
-            </button>
-          )}
-        </div>
+    <>
+      {showCreateModal && (
+        <CreateOverrideModal
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            refetch();
+          }}
+        />
+      )}
 
-        {showNewForm ? (
-          <div className="flex gap-2">
+      <div className={cn("flex flex-col h-full", className)}>
+        <div className="mb-4 flex-shrink-0 space-y-2">
+          <div className="relative">
             <input
               type="text"
-              placeholder="Feature ID..."
-              value={newFeatureId}
-              onChange={(e) => setNewFeatureId(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleCreateNew();
-                if (e.key === "Escape") setShowNewForm(false);
-              }}
+              placeholder="Search overrides..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
-                "flex-1 bg-mk-surface border border-mk-primary px-3 py-2 text-sm text-mk-text",
-                "focus:outline-none placeholder:text-mk-text-muted",
+                "w-full bg-mk-surface border border-mk-border px-4 py-2.5 text-sm text-mk-text",
+                "focus:outline-none focus:border-mk-primary transition-colors placeholder:text-mk-text-muted",
               )}
-              autoFocus
             />
-            <button
-              type="button"
-              onClick={handleCreateNew}
-              className="px-3 py-2 bg-mk-primary text-mk-background uppercase text-xs tracking-wide hover:bg-mk-primary/80 transition-colors"
-            >
-              Add
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowNewForm(false)}
-              className="px-3 py-2 border border-mk-border text-mk-text-secondary hover:text-mk-text hover:border-mk-primary transition-colors"
-            >
-              ×
-            </button>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-mk-text-muted hover:text-mk-primary transition-colors"
+              >
+                ×
+              </button>
+            )}
           </div>
-        ) : (
+
           <button
             type="button"
-            onClick={() => setShowNewForm(true)}
+            onClick={() => setShowCreateModal(true)}
             className="w-full px-4 py-2.5 border border-mk-border hover:border-mk-primary text-mk-text-secondary hover:text-mk-primary transition-colors text-sm uppercase tracking-wide"
           >
             + New Override
           </button>
-        )}
-      </div>
+        </div>
 
       <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-0">
         {filteredOverrides.length === 0 ? (
@@ -134,5 +102,6 @@ export function FeatureList({
         )}
       </div>
     </div>
+    </>
   );
 }

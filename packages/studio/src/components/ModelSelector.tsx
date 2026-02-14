@@ -208,10 +208,10 @@ export function ModelSelector({
                             setOpen(false);
                           }}
                           className={cn(
-                            "w-full px-3 py-2 text-left text-sm font-mk-mono transition-colors",
+                            "w-full px-3 py-2 text-left text-sm font-mk-mono transition-colors cursor-pointer",
                             isSelected
                               ? "bg-mk-primary/10 text-mk-primary"
-                              : "text-mk-text hover:bg-mk-surface hover:border-mk-border",
+                              : "text-mk-text hover:bg-mk-surface-hover hover:text-mk-primary",
                           )}
                         >
                           {label}

@@ -4,3 +4,6 @@ export { FeatureDetail } from "./FeatureDetail";
 export { ModelSelector } from "./ModelSelector";
 export { ParameterEditor } from "./ParameterEditor";
 export { Navigation } from "./Navigation";
+export { CreateOverrideModal } from "./CreateOverrideModal";
+export { TacticalPanel } from "./TacticalPanel";
+export { TacticalToast } from "./TacticalToast";

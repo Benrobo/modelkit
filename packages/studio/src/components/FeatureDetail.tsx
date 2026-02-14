@@ -25,10 +25,15 @@ export function FeatureDetail({
 
   const override = overrides.find((o) => o.featureId === featureId)?.override;
 
+  const [editingFeatureId, setEditingFeatureId] = useState(featureId);
   const [modelId, setModelId] = useState(override?.modelId ?? "");
   const [temperature, setTemperature] = useState(override?.temperature ?? 0.7);
   const [maxTokens, setMaxTokens] = useState(override?.maxTokens ?? 4096);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    setEditingFeatureId(featureId);
+  }, [featureId]);
 
   useEffect(() => {
     if (override) {
@@ -48,15 +53,22 @@ export function FeatureDetail({
 
   const isNewOverride = !override;
   const isModified = isNewOverride
-    ? modelId !== ""
-    : modelId !== override.modelId ||
+    ? modelId !== "" || editingFeatureId !== featureId
+    : editingFeatureId !== featureId ||
+      modelId !== override.modelId ||
       temperature !== (override.temperature ?? 0.7) ||
       maxTokens !== (override.maxTokens ?? 4096);
 
   const handleCommit = async () => {
+    if (!editingFeatureId.trim() || !modelId) return;
+
     setIsUpdating(true);
     try {
-      await setOverride(featureId, {
+      // If feature ID changed, clear the old one first
+      if (!isNewOverride && editingFeatureId !== featureId) {
+        await clearOverride(featureId);
+      }
+      await setOverride(editingFeatureId.trim(), {
         modelId: modelId as OpenRouterModelId,
         temperature,
         maxTokens,
@@ -82,19 +94,25 @@ export function FeatureDetail({
         className
       )}
     >
-      <div className="p-mk-xl border-b border-mk-border/50 flex items-center justify-between gap-mk-lg flex-shrink-0">
-        <div className="space-y-1.5 flex-1 min-w-0">
+      <div className="p-mk-xl border-b border-mk-border/50 flex items-start justify-between gap-mk-lg flex-shrink-0">
+        <div className="flex-1 min-w-0">
+          <label className="block text-[10px] font-bold text-mk-text-secondary uppercase tracking-widest mb-1.5">
+            Feature ID
+          </label>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl text-mk-text font-bold uppercase tracking-tight truncate">
-              {featureId}
-            </h2>
+            <input
+              type="text"
+              value={editingFeatureId}
+              onChange={(e) => setEditingFeatureId(e.target.value)}
+              className="flex-1 px-3 py-2 bg-mk-surface border border-mk-border text-mk-text text-base font-bold uppercase focus:border-mk-border-accent focus:outline-none"
+            />
             {!isNewOverride && (
-              <div className="px-2 py-0.5 bg-mk-primary text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
+              <div className="px-3 py-1.5 bg-mk-primary text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
                 ACTIVE OVERRIDE
               </div>
             )}
             {isNewOverride && (
-              <div className="px-2 py-0.5 bg-mk-text-muted text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
+              <div className="px-3 py-1.5 bg-mk-text-muted text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
                 NEW
               </div>
             )}
@@ -105,7 +123,7 @@ export function FeatureDetail({
           <button
             onClick={handleReset}
             disabled={isUpdating}
-            className="text-mk-color-error/70 hover:text-mk-color-error text-xs font-bold uppercase tracking-widest transition-colors px-4 py-2.5 border border-mk-color-error/20 hover:bg-mk-color-error/5 shrink-0"
+            className="text-mk-color-error/70 hover:text-mk-color-error text-xs font-bold uppercase tracking-widest transition-colors px-4 py-2.5 border border-mk-color-error/20 hover:bg-mk-color-error/5 shrink-0 self-end"
           >
             Clear Override
           </button>

@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NuqsAdapter } from "nuqs/adapters/react";
 import { Toaster } from "sonner";
 import { cn } from "./utils/cn";
 import { ModelKitApiProvider } from "./hooks/useModelKitApi";
@@ -141,12 +142,14 @@ export function ModelKitStudio({
   return (
     <QueryClientProvider client={client}>
       <ModelKitApiProvider apiUrl={apiUrl}>
-        <ModelKitStudioInner
-          theme={theme}
-          themeBase={themeBase}
-          className={className}
-          classNames={classNames}
-        />
+        <NuqsAdapter>
+          <ModelKitStudioInner
+            theme={theme}
+            themeBase={themeBase}
+            className={className}
+            classNames={classNames}
+          />
+        </NuqsAdapter>
       </ModelKitApiProvider>
     </QueryClientProvider>
   );

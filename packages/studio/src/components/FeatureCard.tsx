@@ -22,7 +22,7 @@ export function FeatureCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "w-full text-left p-4 border transition-all relative group",
+        "w-full text-left p-4 border transition-all relative group cursor-pointer",
         isActive
           ? "border-mk-primary bg-mk-primary/10"
           : "border-mk-border bg-mk-surface hover:bg-mk-surface-hover hover:border-mk-primary/50",
