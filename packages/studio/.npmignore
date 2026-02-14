@@ -1,0 +1,76 @@
+# Source files
+src/
+*.ts
+*.tsx
+!*.d.ts
+
+# Tests
+*.test.ts
+*.test.tsx
+*.test.js
+*.spec.ts
+*.spec.tsx
+*.spec.js
+__tests__/
+test/
+tests/
+
+# Development
+tsconfig.json
+tsconfig.*.json
+.eslintrc*
+.prettierrc*
+.editorconfig
+tailwind.config.*
+postcss.config.*
+
+# Build tools
+vite.config.ts
+vite.config.js
+tsup.config.ts
+rollup.config.js
+
+# Documentation (keep README.md)
+docs/
+examples/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+bun.lockb
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Vite
+.vite/
+
+# Misc
+*.log
+.turbo/
+.cache/
+coverage/
+.nyc_output/

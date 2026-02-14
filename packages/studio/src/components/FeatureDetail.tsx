@@ -1,127 +1,178 @@
-import { useState, useEffect, useCallback, type ReactElement } from "react";
-import type { ModelKit } from "modelkit";
+import { useState, useEffect, type ReactElement } from "react";
 import { cn } from "../utils/cn";
-import { useModelKit } from "../hooks/useModelKit";
 import { useFeatures } from "../hooks/useFeatures";
 import { useOverrides } from "../hooks/useOverrides";
+import { useAvailableModels } from "../hooks/useAvailableModels";
+import { useModelKit } from "../hooks/useModelKit";
 import { OverrideIndicator } from "./OverrideIndicator";
 import { ModelSelector } from "./ModelSelector";
 import { ParameterEditor } from "./ParameterEditor";
 
 export interface FeatureDetailProps {
   featureId: string;
-  onBack: () => void;
+  onBack?: () => void;
   className?: string;
 }
 
 export function FeatureDetail({
   featureId,
-  onBack: _onBack,
+  onBack,
   className,
 }: FeatureDetailProps): ReactElement {
   const modelKit = useModelKit();
-  const { features } = useFeatures();
+  const { features, loading: featuresLoading } = useFeatures();
   const {
+    overrides,
     setOverride,
     clearOverride,
-    isSettingOverride,
-    isClearingOverride,
+    loading: overridesLoading,
   } = useOverrides();
-  const defaultConfig = features.find((f) => f.id === featureId);
-  const [config, setConfig] = useState<Awaited<ReturnType<ModelKit["getConfig"]>> | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [formModelId, setFormModelId] = useState("");
-  const [formTemperature, setFormTemperature] = useState(0.7);
-  const [formMaxTokens, setFormMaxTokens] = useState(4096);
-  const saving = isSettingOverride || isClearingOverride;
+  const { allModels } = useAvailableModels();
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const c = await modelKit.getConfig(featureId);
-      setConfig(c);
-      setFormModelId(c.modelId);
-      setFormTemperature(c.temperature ?? 0.7);
-      setFormMaxTokens(c.maxTokens ?? 4096);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
-    } finally {
-      setLoading(false);
-    }
-  }, [modelKit, featureId]);
+  const config = features.find((f) => f.id === featureId);
+  const override = overrides.find((o) => o.featureId === featureId)?.override;
+
+  const [modelId, setModelId] = useState("");
+  const [temperature, setTemperature] = useState(0.7);
+  const [maxTokens, setMaxTokens] = useState(4096);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (config) {
+      setModelId(override?.modelId ?? config.modelId);
+      setTemperature(override?.temperature ?? config.temperature ?? 0.7);
+      setMaxTokens(override?.maxTokens ?? config.maxTokens ?? 4096);
+    }
+  }, [config, override, featureId]);
 
-  const handleSave = async () => {
-    await setOverride(featureId, {
-      modelId: formModelId,
-      temperature: formTemperature,
-      maxTokens: formMaxTokens,
-    });
-  };
-
-  const handleClear = async () => {
-    await clearOverride(featureId);
-    await load();
-  };
-
-  if (loading || !config) {
+  if (featuresLoading || overridesLoading) {
     return (
-      <div className={cn("text-mk-text-secondary text-sm py-mk-lg", className)}>
-        {loading ? "Loading…" : error?.message ?? "Not found"}
+      <div className="p-mk-xl text-mk-text-muted font-mk-mono text-sm animate-pulse">
+        Initializing Interface...
       </div>
     );
   }
 
-  const displayName = (defaultConfig?.name ?? config?.name) || featureId;
-  const displayTitle = defaultConfig?.title ?? config?.title;
+  if (!config) {
+    return (
+      <div className="p-mk-xl text-mk-color-error font-mk-mono text-sm border border-mk-color-error/20 bg-mk-color-error/5">
+        Registry Entry "{featureId}" not found.
+      </div>
+    );
+  }
+
+  const isModified =
+    modelId !== (override?.modelId ?? config.modelId) ||
+    temperature !== (override?.temperature ?? config.temperature) ||
+    maxTokens !== (override?.maxTokens ?? config.maxTokens);
+
+  const handleCommit = async () => {
+    setIsUpdating(true);
+    try {
+      await setOverride(featureId, { modelId, temperature, maxTokens });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleReset = async () => {
+    setIsUpdating(true);
+    try {
+      await clearOverride(featureId);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    <div className={cn("space-y-mk-lg", className)}>
-      <div className="mk-panel relative border border-mk-border p-mk-lg space-y-mk-lg">
-      <div className="font-mk-mono text-mk-text font-medium">
-        ┌─ {displayName} ─
-      </div>
-      {displayTitle != null && displayTitle !== "" && (
-        <p className="text-mk-text-secondary text-sm font-mk-mono">{displayTitle}</p>
+    <div
+      className={cn(
+        "mk-panel bg-mk-surface/50 border border-mk-border h-full flex flex-col overflow-hidden",
+        className,
       )}
-      <OverrideIndicator
-        defaultModelId={defaultConfig?.modelId ?? config.modelId}
-        overrideModelId={
-          config.modelId !== (defaultConfig?.modelId ?? config.modelId)
-            ? config.modelId
-            : null
-        }
-      />
-      <ModelSelector value={formModelId} onChange={setFormModelId} />
-      <ParameterEditor
-        temperature={formTemperature}
-        maxTokens={formMaxTokens}
-        onTemperatureChange={setFormTemperature}
-        onMaxTokensChange={setFormMaxTokens}
-      />
-      <div className="flex gap-mk-sm">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="rounded-mk-md bg-mk-primary text-mk-background px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Save Override"}
-        </button>
-        <button
-          type="button"
-          onClick={handleClear}
-          disabled={saving}
-          className="rounded-mk-md border border-mk-border text-mk-text px-4 py-2 text-sm font-medium hover:bg-mk-surface disabled:opacity-50"
-        >
-          Clear
-        </button>
+    >
+      <div className="p-mk-xl border-b border-mk-border/50 flex items-center justify-between gap-mk-lg flex-shrink-0">
+        <div className="space-y-1.5 flex-1 min-w-0">
+          <div className="flex items-center gap-3">
+            <h2 className="font-mk-mono text-xl text-mk-text font-bold uppercase tracking-tight truncate">
+              {config.name ?? featureId}
+            </h2>
+            {override != null && (
+              <div className="px-2 py-0.5 bg-mk-primary text-mk-background text-[10px] font-mk-mono font-bold uppercase tracking-widest shadow-[0_0_10px_rgba(var(--mk-primary-rgb),0.3)] shrink-0">
+                ACTIVE OVERRIDE
+              </div>
+            )}
+          </div>
+          {config.title != null && config.title !== "" && (
+            <p className="text-mk-text-muted text-sm font-mk-mono uppercase tracking-[0.15em] opacity-60 truncate">
+              {config.title}
+            </p>
+          )}
+        </div>
+
+        {override != null && (
+          <button
+            onClick={handleReset}
+            disabled={isUpdating}
+            className="text-mk-color-error/70 hover:text-mk-color-error text-xs font-mk-mono font-bold uppercase tracking-widest transition-colors px-4 py-2.5 border border-mk-color-error/20 hover:bg-mk-color-error/5 shrink-0"
+          >
+            Clear Override
+          </button>
+        )}
       </div>
+
+      <div className="flex-1 overflow-y-auto p-mk-xl space-y-mk-xl custom-scrollbar min-h-0">
+        <section className="animate-in fade-in slide-in-from-top-2 duration-300">
+          <OverrideIndicator
+            defaultModelId={config.modelId}
+            overrideModelId={override?.modelId}
+          />
+        </section>
+
+        <section className="space-y-mk-xl border-t border-mk-border/30 pt-mk-xl animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-2 mb-mk-md">
+            <div className="w-1.5 h-1.5 bg-mk-primary shadow-[0_0_8px_rgba(var(--mk-primary-rgb),0.5)]" />
+            <h3 className="text-sm font-mk-mono font-bold text-mk-text uppercase tracking-widest">
+              Runtime Parameters
+            </h3>
+          </div>
+
+          <div className="space-y-mk-xl pl-mk-md border-l-2 border-mk-border/20">
+            <ModelSelector value={modelId} onChange={setModelId} />
+            <ParameterEditor
+              temperature={temperature}
+              maxTokens={maxTokens}
+              onTemperatureChange={setTemperature}
+              onMaxTokensChange={setMaxTokens}
+            />
+          </div>
+
+          <div className="pt-mk-xl flex flex-col sm:flex-row gap-mk-md border-t border-mk-border/10 flex-shrink-0">
+            <button
+              onClick={handleCommit}
+              disabled={!isModified || isUpdating}
+              className={cn(
+                "flex-1 border border-mk-primary bg-mk-primary text-mk-background px-8 py-4 text-sm font-mk-mono font-bold uppercase tracking-widest transition-all",
+                "hover:bg-transparent hover:text-mk-primary disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(var(--mk-primary-rgb),0.2)]",
+              )}
+            >
+              {isUpdating ? "Storing Registry Override..." : "Commit Override"}
+            </button>
+              onClick={() => {
+                setModelId(override?.modelId ?? config.modelId);
+                setTemperature(override?.temperature ?? config.temperature ?? 0.7);
+                setMaxTokens(override?.maxTokens ?? config.maxTokens ?? 4096);
+              }}
+              disabled={!isModified || isUpdating}
+              className={cn(
+                "flex-1 border border-mk-border text-mk-text-muted px-8 py-4 text-sm font-mk-mono font-bold uppercase tracking-widest transition-all",
+                "hover:text-mk-text hover:bg-mk-surface-hover disabled:opacity-30",
+              )}
+            >
+              Discard Changes
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   );

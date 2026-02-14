@@ -58,43 +58,63 @@ function ModelKitStudioInner({
   className,
   classNames = {},
 }: Omit<ModelKitStudioProps, "modelKit">): ReactElement {
-  const { view, selectedFeatureId, goToList, goToDetail } = useNavigation();
+  const { selectedFeatureId, goToList, goToDetail } = useNavigation();
   const resolvedTheme = resolveTheme(theme, themeBase);
   const themeVars = themeToCssVars(resolvedTheme);
 
   return (
     <div
       className={cn(
-        "modelkit-studio min-h-screen bg-mk-background text-mk-text selection:bg-mk-primary/30",
+        "modelkit-studio min-h-screen bg-mk-background text-mk-text selection:bg-mk-primary/30 flex flex-col",
         className,
       )}
       style={themeVars}
       data-theme={typeof theme === "string" ? theme : "custom"}
     >
       <Navigation
-        showBack={view === "detail"}
-        onBack={view === "detail" ? goToList : undefined}
+        showBack={false}
         className={classNames.header}
+        title="ModelKit Studio"
       />
-      <main
-        className={cn(
-          "max-w-5xl mx-auto px-mk-lg pb-mk-xl space-y-mk-xl transition-all duration-300 relative z-10",
-          classNames.container,
-        )}
-      >
-        {view === "list" && (
-          <FeatureList
-            onSelectFeature={goToDetail}
-            className={classNames.featureList}
-          />
-        )}
-        {view === "detail" && selectedFeatureId && (
-          <FeatureDetail
-            featureId={selectedFeatureId}
-            onBack={goToList}
-            className={classNames.featureCard}
-          />
-        )}
+
+      <main className="flex-1 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
+        {/* Sidebar: Feature List */}
+        <aside className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col border border-mk-border bg-mk-surface overflow-hidden relative">
+          <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            {/* Keeping the L-shape borders on the sidebar container */}
+            <div className="mk-panel inset-0" />
+          </div>
+          <div className="relative z-10 flex flex-col h-full">
+            <FeatureList
+              onSelectFeature={goToDetail}
+              className={cn("p-4", classNames.featureList)}
+            />
+          </div>
+        </aside>
+
+        {/* Main Content: Feature Detail */}
+        <section className="flex-1 min-w-0 relative">
+          {selectedFeatureId ? (
+            <div
+              key={selectedFeatureId}
+              className="animate-in fade-in slide-in-from-right-4 duration-500"
+            >
+              <FeatureDetail
+                featureId={selectedFeatureId}
+                onBack={goToList}
+                className={classNames.featureCard}
+              />
+            </div>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-mk-text-muted border border-mk-border border-dashed p-mk-xl">
+              <div className="font-mk-mono text-sm uppercase tracking-widest text-center">
+                Select a configuration from the registry
+                <br />
+                to begin editing
+              </div>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

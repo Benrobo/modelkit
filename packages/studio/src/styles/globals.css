@@ -66,13 +66,7 @@
   width: 14px;
   height: 14px;
   border: 1px solid var(--mk-color-primary);
-  opacity: 0.6;
-  transition: all 0.2s ease;
-}
-.modelkit-studio .feature-card:hover::before,
-.modelkit-studio .feature-card:hover::after {
-  opacity: 1;
-  filter: drop-shadow(0 0 4px var(--mk-color-primary));
+  opacity: 0.8;
 }
 
 .modelkit-studio .feature-card::before,
@@ -88,19 +82,4 @@
   right: -1px;
   border-left: none;
   border-top: none;
-}
-
-/* Subtle pattern for that enterprise high-tech feel */
-.modelkit-studio::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: radial-gradient(
-    circle at 2px 2px,
-    rgba(255, 255, 255, 0.02) 1px,
-    transparent 0
-  );
-  background-size: 32px 32px;
-  pointer-events: none;
-  z-index: 0;
 }

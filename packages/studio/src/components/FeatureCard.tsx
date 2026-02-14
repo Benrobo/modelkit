@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
 import { cn } from "../utils/cn";
-import { OverrideIndicator } from "./OverrideIndicator";
 import type { FeatureConfig } from "modelkit";
 import type { ModelOverride } from "modelkit";
 
@@ -10,6 +9,7 @@ export interface FeatureCardProps {
   override?: ModelOverride | null;
   onSelect: () => void;
   className?: string;
+  isActive?: boolean;
 }
 
 export function FeatureCard({
@@ -18,54 +18,61 @@ export function FeatureCard({
   override,
   onSelect,
   className,
+  isActive,
 }: FeatureCardProps): ReactElement {
   const hasOverride = override != null;
 
   return (
-    <article
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={onSelect}
-      onKeyDown={(e) => e.key === "Enter" && onSelect()}
       className={cn(
-        "feature-card group relative border border-mk-border p-mk-lg transition-all duration-200",
-        "bg-mk-surface hover:bg-mk-surface-hover hover:border-mk-primary/30 cursor-pointer overflow-hidden",
+        "w-full text-left p-4 border transition-all relative overflow-hidden group",
+        isActive
+          ? "border-mk-primary bg-mk-primary/5 ring-1 ring-mk-primary/20"
+          : "border-mk-border bg-mk-surface hover:bg-mk-surface-hover hover:border-mk-primary/30",
         "focus:outline-none focus:ring-1 focus:ring-mk-primary",
         className,
       )}
     >
-      <div className="flex flex-col gap-mk-sm relative z-10">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <h3 className="font-mk-mono text-sm font-bold text-mk-text uppercase tracking-tight group-hover:text-mk-primary transition-colors">
+      <div className="flex flex-col gap-1.5 relative z-10 font-mk-mono">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3
+              className={cn(
+                "text-sm font-bold uppercase tracking-tight truncate transition-colors",
+                isActive
+                  ? "text-mk-primary"
+                  : "text-mk-text group-hover:text-mk-primary",
+              )}
+            >
               {config.name ?? featureId}
             </h3>
             {config.title != null && config.title !== "" && (
-              <p className="text-mk-text-secondary text-[10px] font-mk-mono uppercase tracking-widest leading-relaxed max-w-[80%]">
+              <p className="text-mk-text-muted text-[11px] uppercase tracking-widest truncate">
                 {config.title}
               </p>
             )}
           </div>
           {hasOverride && (
-            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-mk-primary/10 border border-mk-primary/20">
-              <div className="w-1 h-1 bg-mk-primary animate-pulse" />
-              <span className="text-[9px] font-mk-mono text-mk-primary uppercase font-bold">
-                Active Override
-              </span>
+            <div className="shrink-0 flex items-center justify-center pt-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-mk-primary shadow-[0_0_8px_rgba(var(--mk-primary-rgb),0.5)]" />
             </div>
           )}
         </div>
 
-        <div className="mt-2 border-t border-mk-border/50 pt-2">
-          <OverrideIndicator
-            defaultModelId={config.modelId}
-            overrideModelId={override?.modelId}
-          />
+        <div className="mt-1 flex items-center gap-2 overflow-hidden text-[10px] uppercase tracking-tighter opacity-60">
+          <span className="truncate">{config.modelId.split("/").pop()}</span>
+          {hasOverride && override.modelId !== config.modelId && (
+            <>
+              <span className="text-mk-primary">→</span>
+              <span className="text-mk-primary font-bold truncate">
+                {override.modelId.split("/").pop()}
+              </span>
+            </>
+          )}
         </div>
       </div>
-
-      {/* Background flare effect on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-mk-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-    </article>
+    </button>
   );
 }

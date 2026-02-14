@@ -12,11 +12,7 @@ const rootEl = document.getElementById("root");
 if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
-    <div className="min-h-screen bg-gray-950 p-8">
-      <h1 className="text-3xl font-bold text-white mb-8">
-        ModelKit Studio Preview
-        {apiUrl ? " (API)" : " (mock)"}
-      </h1>
+    <div className="min-h-screen">
       <ModelKitStudio modelKit={modelKit} theme="dark" />
     </div>
   );

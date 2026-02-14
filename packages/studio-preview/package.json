@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@modelkit/studio": "workspace:*",
+    "esbuild": "^0.27.3",
     "modelkit": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

@@ -2,11 +2,7 @@ import { useState, useEffect, useMemo, type ReactElement } from "react";
 import { cn } from "../utils/cn";
 import { useAvailableModels } from "../hooks/useAvailableModels";
 import { getModelDisplayName } from "../utils/models";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 function SearchIcon({ className }: { className?: string }) {
   return (
@@ -79,11 +75,18 @@ export function ModelSelector({
       const models = (modelsByProvider[provider] ?? []).filter((m) => {
         const name = (m.name || getModelDisplayName(m.id)).toLowerCase();
         const id = m.id.toLowerCase();
-        return id.includes(query) || name.includes(query) || provider.toLowerCase().includes(query);
+        return (
+          id.includes(query) ||
+          name.includes(query) ||
+          provider.toLowerCase().includes(query)
+        );
       });
       if (models.length > 0) filteredByProvider[provider] = models;
     }
-    return { providers: Object.keys(filteredByProvider).sort(), modelsByProvider: filteredByProvider };
+    return {
+      providers: Object.keys(filteredByProvider).sort(),
+      modelsByProvider: filteredByProvider,
+    };
   }, [query, providers, modelsByProvider]);
 
   const currentModel = allModels.find((m) => m.id === value);
@@ -102,7 +105,7 @@ export function ModelSelector({
         </label>
         <div
           className={cn(
-            "w-full border border-mk-border bg-mk-surface px-3 py-2 text-mk-text-secondary text-sm font-mk-mono"
+            "w-full border border-mk-border bg-mk-surface px-3 py-2 text-mk-text-secondary text-sm font-mk-mono",
           )}
         >
           Loading models from OpenRouter…
@@ -125,21 +128,23 @@ export function ModelSelector({
   }
 
   return (
-    <div className={cn("space-y-1", className)}>
-      <label className="text-sm font-medium text-mk-text-secondary block">
-        Model
+    <div className={cn("space-y-1.5", className)}>
+      <label className="text-[10px] font-mk-mono font-bold text-mk-text-muted uppercase tracking-wider block">
+        Model Engine
       </label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
             className={cn(
-              "w-full flex items-center justify-between gap-2 border border-mk-border bg-mk-surface px-3 py-2 text-sm font-mk-mono text-mk-text",
-              "hover:border-mk-primary/50 focus:outline-none focus:ring-2 focus:ring-mk-primary focus:border-mk-primary transition-colors"
+              "w-full flex items-center justify-between gap-2 border border-mk-border bg-mk-background/50 px-3 py-2.5 text-xs font-mk-mono text-mk-text",
+              "hover:border-mk-primary/30 focus:outline-none focus:border-mk-primary/50 transition-all group",
             )}
           >
-            <span className="truncate text-left">{displayLabel}</span>
-            <ChevronDownIcon className="shrink-0 text-mk-text-secondary" />
+            <span className="truncate text-left group-hover:text-mk-primary transition-colors">
+              {displayLabel}
+            </span>
+            <ChevronDownIcon className="shrink-0 text-mk-text-muted group-hover:text-mk-primary transition-colors" />
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="max-h-80 flex flex-col p-0">
@@ -153,7 +158,7 @@ export function ModelSelector({
                 placeholder="Search models…"
                 className={cn(
                   "min-w-0 flex-1 bg-transparent text-sm font-mk-mono text-mk-text",
-                  "placeholder:text-mk-text-secondary focus:outline-none"
+                  "placeholder:text-mk-text-secondary focus:outline-none",
                 )}
                 aria-label="Search models"
               />
@@ -169,7 +174,7 @@ export function ModelSelector({
                 }}
                 className={cn(
                   "w-full px-3 py-2 text-left text-sm font-mk-mono border-b border-mk-border",
-                  "bg-mk-primary/10 text-mk-primary hover:bg-mk-primary/20"
+                  "bg-mk-primary/10 text-mk-primary hover:bg-mk-primary/20",
                 )}
               >
                 {getModelDisplayName(value)} (current)
@@ -206,7 +211,7 @@ export function ModelSelector({
                             "w-full px-3 py-2 text-left text-sm font-mk-mono transition-colors",
                             isSelected
                               ? "bg-mk-primary/10 text-mk-primary"
-                              : "text-mk-text hover:bg-mk-surface hover:border-mk-border"
+                              : "text-mk-text hover:bg-mk-surface hover:border-mk-border",
                           )}
                         >
                           {label}
