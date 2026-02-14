@@ -66,11 +66,8 @@ function ModelKitStudioInner({
   className,
   classNames = {},
 }: Omit<ModelKitStudioProps, "apiUrl">): ReactElement {
-  const { selectedFeatureId, goToList, goToDetail } = useNavigation();
-
   const isThemeMode = typeof initialTheme === "string";
-
-  // State for current theme (only when using ThemeMode presets)
+  const { selectedFeatureId, goToList, goToDetail } = useNavigation();
   const [currentTheme, setCurrentTheme] = useState<ThemeMode>(() => {
     if (!isThemeMode) return "dark";
     try {
@@ -82,7 +79,6 @@ function ModelKitStudioInner({
     return initialTheme;
   });
 
-  // Save theme to localStorage when it changes
   useEffect(() => {
     if (isThemeMode) {
       try {
