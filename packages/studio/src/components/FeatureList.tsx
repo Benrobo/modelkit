@@ -61,7 +61,7 @@ export function FeatureList({
               onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
                 "w-full bg-mk-surface border border-mk-border px-4 py-2.5 text-sm text-mk-text",
-                "focus:outline-none focus:border-mk-primary transition-colors placeholder:text-mk-text-muted",
+                "focus:outline-none focus:border-mk-primary transition-colors placeholder:text-mk-text-muted"
               )}
             />
             {searchQuery && (
@@ -78,30 +78,30 @@ export function FeatureList({
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="w-full px-4 py-2.5 border border-mk-border hover:border-mk-primary text-mk-text-secondary hover:text-mk-primary transition-colors text-sm uppercase tracking-wide"
+            className="w-full px-4 py-2.5 border border-mk-border bg-mk-primary hover:border-mk-primary text-white hover:text-mk-background transition-colors text-sm uppercase tracking-wide"
           >
             + New Override
           </button>
         </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-0">
-        {filteredOverrides.length === 0 ? (
-          <div className="text-mk-text-muted text-xs py-10 text-center uppercase tracking-wider border border-dashed border-mk-border">
-            {searchQuery ? "No matching overrides" : "No active overrides"}
-          </div>
-        ) : (
-          filteredOverrides.map((item) => (
-            <FeatureCard
-              key={item.featureId}
-              featureId={item.featureId}
-              override={item.override}
-              onSelect={() => onSelectFeature(item.featureId)}
-              isActive={selectedFeatureId === item.featureId}
-            />
-          ))
-        )}
+        <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-0">
+          {filteredOverrides.length === 0 ? (
+            <div className="text-mk-text-muted text-xs py-10 text-center uppercase tracking-wider border border-dashed border-mk-border">
+              {searchQuery ? "No matching overrides" : "No active overrides"}
+            </div>
+          ) : (
+            filteredOverrides.map((item) => (
+              <FeatureCard
+                key={item.featureId}
+                featureId={item.featureId}
+                override={item.override}
+                onSelect={() => onSelectFeature(item.featureId)}
+                isActive={selectedFeatureId === item.featureId}
+              />
+            ))
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 }

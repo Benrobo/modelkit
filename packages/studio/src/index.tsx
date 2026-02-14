@@ -13,4 +13,18 @@ export type {
   ThemeSpacing,
   ThemeInteractive,
 } from "./themes";
-export { resolveTheme, themeToCssVars, darkTheme, lightTheme, defaultTheme } from "./themes";
+export {
+  resolveTheme,
+  themeToCssVars,
+  darkTheme,
+  lightTheme,
+  defaultTheme,
+  chocoTheme,
+  oceanTheme,
+  sunsetTheme,
+  forestTheme,
+  purpleTheme,
+  crimsonTheme,
+  cyanTheme,
+  amberTheme,
+} from "./themes";

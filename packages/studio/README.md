@@ -14,10 +14,14 @@ Set up the backend API first:
 
 ```typescript
 import { Hono } from "hono";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "modelkit";
+import {
+  createModelKit,
+  createRedisAdapter,
+  createModelKitRouter,
+} from "modelkit";
 
 const adapter = createRedisAdapter({
-  url: process.env.REDIS_URL || "redis://localhost:6379"
+  url: process.env.REDIS_URL || "redis://localhost:6379",
 });
 
 const modelKit = createModelKit(adapter);
@@ -32,7 +36,7 @@ Then use the Studio UI:
 import { ModelKitStudio } from "@modelkit/studio";
 import "@modelkit/studio/styles";
 
-<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />;
 ```
 
 ## Props
@@ -50,39 +54,136 @@ interface ModelKitStudioProps {
 
 ## Themes
 
-Built-in themes:
+### Built-in Themes
+
+ModelKit Studio includes 10 preset themes. You can use them by importing and passing the theme object:
+
 ```tsx
-<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />
-<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="light" />
+import {
+  ModelKitStudio,
+  darkTheme,
+  lightTheme,
+  chocoTheme,
+  oceanTheme,
+  sunsetTheme,
+  forestTheme,
+  purpleTheme,
+  crimsonTheme,
+  cyanTheme,
+  amberTheme,
+} from "@modelkit/studio";
+
+// Use a preset theme
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme={chocoTheme} />
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme={oceanTheme} />
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme={darkTheme} />
 ```
 
-Custom theme:
+**Available preset themes:**
+
+- `darkTheme` - Tactical dark theme with cyan accents (default)
+- `lightTheme` - Clean light theme
+- `chocoTheme` - Warm chocolate/coffee theme with rounded corners
+- `oceanTheme` - Deep blue ocean theme
+- `sunsetTheme` - Orange and brown sunset theme
+- `forestTheme` - Green forest theme
+- `purpleTheme` - Purple/violet theme
+- `crimsonTheme` - Red/pink crimson theme
+- `cyanTheme` - Bright cyan/teal theme
+- `amberTheme` - Golden amber/yellow theme
+
+### Custom Theme with Type-Safe Autocomplete
+
+**Important:** To get TypeScript autocomplete for custom themes, define the theme object separately with an explicit type annotation:
+
 ```tsx
+import { ModelKitStudio, type StudioThemeOverride } from "@modelkit/studio";
+
+// Define custom theme
+const customTheme: StudioThemeOverride = {
+  colors: {
+    primary: "#ff00ff",
+    background: "#000000",
+    text: "#ffffff",
+  },
+  fonts: {
+    body: "Inter, sans-serif",
+    mono: "Fira Code, monospace",
+  },
+  spacing: {
+    md: "20px",
+  },
+  interactive: {
+    primaryHover: "rgba(255, 0, 255, 0.8)",
+  },
+};
+
 <ModelKitStudio
   apiUrl="http://localhost:3000/api/modelkit"
-  theme={{
-    colors: {
-      primary: "#ff00ff",
-      background: "#000000"
-    }
-  }}
-/>
+  theme={customTheme}
+/>;
 ```
+
+### Available Theme Properties
+
+```typescript
+interface StudioThemeOverride {
+  colors?: {
+    primary?: string;
+    secondary?: string;
+    background?: string;
+    surface?: string;
+    text?: string;
+    textSecondary?: string;
+    border?: string;
+    success?: string;
+    warning?: string;
+    error?: string;
+  };
+  fonts?: {
+    body?: string;
+    mono?: string;
+  };
+  borderRadius?: {
+    sm?: string;
+    md?: string;
+    lg?: string;
+  };
+  spacing?: {
+    xs?: string;
+    sm?: string;
+    md?: string;
+    lg?: string;
+    xl?: string;
+  };
+  interactive?: {
+    primaryHover?: string;
+    primaryMuted?: string;
+    surfaceHover?: string;
+    borderHover?: string;
+    textHover?: string;
+  };
+}
+```
+
+All properties are optional - only override what you need. Unspecified values will use the default theme.
 
 ## Styling
 
 Import the CSS:
+
 ```tsx
 import "@modelkit/studio/styles";
 ```
 
 Override classes:
+
 ```tsx
 <ModelKitStudio
   apiUrl="http://localhost:3000/api/modelkit"
   classNames={{
     container: "max-w-7xl",
-    buttonPrimary: "bg-green-500"
+    buttonPrimary: "bg-green-500",
   }}
 />
 ```

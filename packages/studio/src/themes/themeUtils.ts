@@ -3,6 +3,15 @@ import type { StudioTheme, StudioThemeOverride } from "./default";
 import { darkTheme } from "./dark";
 import { defaultTheme } from "./default";
 import { lightTheme } from "./light";
+import { chocoTheme } from "./choco";
+import { oceanTheme } from "./ocean";
+import { sunsetTheme } from "./sunset";
+import { forestTheme } from "./forest";
+import { purpleTheme } from "./purple";
+import { crimsonTheme } from "./crimson";
+import { cyanTheme } from "./cyan";
+import { amberTheme } from "./amber";
+import { ThemeMode } from "..";
 
 function deepMerge<T extends object>(base: T, override: DeepPartial<T>): T {
   const result = { ...base };
@@ -38,11 +47,19 @@ type DeepPartial<T> = {
  * Use this to get a full StudioTheme from "dark" | "light" or a partial override.
  */
 export function resolveTheme(
-  theme: "dark" | "light" | StudioThemeOverride,
-  basePreset: "dark" | "light" = "dark"
+  theme: ThemeMode | StudioThemeOverride,
+  basePreset: ThemeMode = "dark"
 ): StudioTheme {
   if (theme === "dark") return darkTheme;
   if (theme === "light") return lightTheme;
+  if (theme === "choco") return chocoTheme;
+  if (theme === "ocean") return oceanTheme;
+  if (theme === "sunset") return sunsetTheme;
+  if (theme === "forest") return forestTheme;
+  if (theme === "purple") return purpleTheme;
+  if (theme === "crimson") return crimsonTheme;
+  if (theme === "cyan") return cyanTheme;
+  if (theme === "amber") return amberTheme;
   const base = basePreset === "light" ? lightTheme : darkTheme;
   return deepMerge(base, theme) as StudioTheme;
 }

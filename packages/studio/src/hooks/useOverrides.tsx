@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { TacticalToast } from "../components/TacticalToast";
 import { useModelKitApi } from "./useModelKitApi";
 import type { OverrideItem } from "../client-api";
+import { useNavigation } from "./useNavigation";
 
 const OVERRIDES_QUERY_KEY = ["modelkit", "overrides"] as const;
 
@@ -17,6 +18,7 @@ export function useOverrides(): {
   isSettingOverride: boolean;
   isClearingOverride: boolean;
 } {
+  const { goToList } = useNavigation();
   const api = useModelKitApi();
   const queryClient = useQueryClient();
 
@@ -84,6 +86,7 @@ export function useOverrides(): {
 
   const clearOverride = async (featureId: string) => {
     await clearOverrideMutation.mutateAsync(featureId);
+    goToList();
   };
 
   return {

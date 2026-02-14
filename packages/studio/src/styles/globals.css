@@ -46,7 +46,7 @@
 
 /* Glassmorphism & Enterprise Effects */
 .mk-glass {
-  background: rgba(21, 27, 36, 0.8);
+  background: var(--mk-color-surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--mk-color-border);

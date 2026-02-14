@@ -1,5 +1,5 @@
 export { useFeatures, type FeatureWithId } from "./useFeatures";
-export { useOverrides, type OverrideItem } from "./useOverrides";
+export { useOverrides } from "./useOverrides";
 export { useNavigation, type StudioView } from "./useNavigation";
 export { useAvailableModels } from "./useAvailableModels";
 export type {
@@ -7,3 +7,4 @@ export type {
   OpenRouterModelPricing,
   OpenRouterModelsResponse,
 } from "./useAvailableModels";
+export type { OverrideItem } from "../client-api";

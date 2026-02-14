@@ -29,6 +29,8 @@ export function FeatureDetail({
   const [modelId, setModelId] = useState(override?.modelId ?? "");
   const [temperature, setTemperature] = useState(override?.temperature ?? 0.7);
   const [maxTokens, setMaxTokens] = useState(override?.maxTokens ?? 4096);
+  const [topP, setTopP] = useState(override?.topP ?? 1);
+  const [topK, setTopK] = useState(override?.topK ?? 0);
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -40,6 +42,8 @@ export function FeatureDetail({
       setModelId(override.modelId);
       setTemperature(override.temperature ?? 0.7);
       setMaxTokens(override.maxTokens ?? 4096);
+      setTopP(override.topP ?? 1);
+      setTopK(override.topK ?? 0);
     }
   }, [override]);
 
@@ -57,14 +61,15 @@ export function FeatureDetail({
     : editingFeatureId !== featureId ||
       modelId !== override.modelId ||
       temperature !== (override.temperature ?? 0.7) ||
-      maxTokens !== (override.maxTokens ?? 4096);
+      maxTokens !== (override.maxTokens ?? 4096) ||
+      topP !== (override.topP ?? 1) ||
+      topK !== (override.topK ?? 0);
 
   const handleCommit = async () => {
     if (!editingFeatureId.trim() || !modelId) return;
 
     setIsUpdating(true);
     try {
-      // If feature ID changed, clear the old one first
       if (!isNewOverride && editingFeatureId !== featureId) {
         await clearOverride(featureId);
       }
@@ -72,6 +77,8 @@ export function FeatureDetail({
         modelId: modelId as OpenRouterModelId,
         temperature,
         maxTokens,
+        topP,
+        topK,
       });
     } finally {
       setIsUpdating(false);
@@ -82,6 +89,11 @@ export function FeatureDetail({
     setIsUpdating(true);
     try {
       await clearOverride(featureId);
+      setModelId("");
+      setTemperature(0.7);
+      setMaxTokens(4096);
+      setTopP(1);
+      setTopK(0);
     } finally {
       setIsUpdating(false);
     }
@@ -144,8 +156,12 @@ export function FeatureDetail({
             <ParameterEditor
               temperature={temperature}
               maxTokens={maxTokens}
+              topP={topP}
+              topK={topK}
               onTemperatureChange={setTemperature}
               onMaxTokensChange={setMaxTokens}
+              onTopPChange={setTopP}
+              onTopKChange={setTopK}
             />
           </div>
 
@@ -170,10 +186,14 @@ export function FeatureDetail({
                   setModelId(override.modelId);
                   setTemperature(override.temperature ?? 0.7);
                   setMaxTokens(override.maxTokens ?? 4096);
+                  setTopP(override.topP ?? 1);
+                  setTopK(override.topK ?? 0);
                 } else {
                   setModelId("");
                   setTemperature(0.7);
                   setMaxTokens(4096);
+                  setTopP(1);
+                  setTopK(0);
                 }
               }}
               disabled={!isModified || isUpdating}

@@ -51,13 +51,19 @@ export interface StudioTheme extends ThemeConfig {
   interactive: ThemeInteractive;
 }
 
-/** Deep partial: every key optional at every level for type-safe overrides */
+/** User-facing theme override: pass only what you want to change */
+export type StudioThemeOverride = {
+  colors?: Partial<ThemeColors>;
+  fonts?: Partial<ThemeFonts>;
+  borderRadius?: Partial<ThemeBorderRadius>;
+  spacing?: Partial<ThemeSpacing>;
+  interactive?: Partial<ThemeInteractive>;
+};
+
+/** @deprecated Use StudioThemeOverride instead */
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
-
-/** User-facing theme override: pass only what you want to change */
-export type StudioThemeOverride = DeepPartial<StudioTheme>;
 
 export const defaultTheme: StudioTheme = {
   colors: {

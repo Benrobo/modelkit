@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import type { ModelOverride } from "modelkit";
+import type { OpenRouterModelId } from "modelkit";
 import { cn } from "../utils/cn";
 import { useOverrides } from "../hooks/useOverrides";
 import { ModelSelector } from "./ModelSelector";
@@ -20,6 +20,8 @@ export function CreateOverrideModal({
   const [modelId, setModelId] = useState("");
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(4096);
+  const [topP, setTopP] = useState(1);
+  const [topK, setTopK] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +30,13 @@ export function CreateOverrideModal({
 
     setIsCreating(true);
     try {
-      await setOverride(featureId.trim(), { modelId, temperature, maxTokens });
+      await setOverride(featureId.trim(), {
+        modelId: modelId as OpenRouterModelId,
+        temperature,
+        maxTokens,
+        topP,
+        topK,
+      });
       onSuccess();
       onClose();
     } finally {
@@ -39,7 +47,10 @@ export function CreateOverrideModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <TacticalPanel className="w-full max-w-2xl bg-mk-surface border border-mk-border">
-        <form onSubmit={handleSubmit} className="p-mk-xl space-y-mk-lg max-h-[85vh] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="p-mk-xl space-y-mk-lg max-h-[85vh] overflow-y-auto"
+        >
           <div className="flex items-center justify-between border-b border-mk-border pb-mk-md">
             <h2 className="text-xl font-bold text-mk-text uppercase tracking-tight">
               Create New Override
@@ -63,36 +74,24 @@ export function CreateOverrideModal({
                 value={featureId}
                 onChange={(e) => setFeatureId(e.target.value)}
                 placeholder="my-feature-id"
-                className="w-full px-3 py-2 bg-mk-surface border border-mk-border text-mk-text focus:border-mk-border-accent focus:outline-none"
+                className="w-full px-3 py-2 bg-mk-background/50 border border-mk-border text-mk-text focus:border-mk-primary/50 focus:outline-none"
                 autoFocus
                 required
               />
             </div>
 
-            <ModelSelector
-              value={modelId}
-              onChange={setModelId}
-              label="Model Engine"
-            />
+            <ModelSelector value={modelId} onChange={setModelId} />
 
-            <div className="grid grid-cols-2 gap-mk-md">
-              <ParameterEditor
-                label="Temperature"
-                value={temperature}
-                onChange={setTemperature}
-                min={0}
-                max={2}
-                step={0.1}
-              />
-              <ParameterEditor
-                label="Max Tokens"
-                value={maxTokens}
-                onChange={setMaxTokens}
-                min={1}
-                max={100000}
-                step={1}
-              />
-            </div>
+            <ParameterEditor
+              temperature={temperature}
+              maxTokens={maxTokens}
+              topP={topP}
+              topK={topK}
+              onTemperatureChange={setTemperature}
+              onMaxTokensChange={setMaxTokens}
+              onTopPChange={setTopP}
+              onTopKChange={setTopK}
+            />
           </div>
 
           <div className="flex gap-mk-md pt-mk-md border-t border-mk-border">
