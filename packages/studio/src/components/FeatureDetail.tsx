@@ -104,7 +104,7 @@ export function FeatureDetail({
   return (
     <TacticalPanel
       className={cn(
-        "bg-mk-surface/50 border border-mk-border h-full flex flex-col overflow-hidden",
+        "bg-mk-surface/50 border border-mk-border/40 h-full flex flex-col overflow-hidden",
         className
       )}
     >
@@ -118,13 +118,13 @@ export function FeatureDetail({
               type="text"
               value={editingFeatureId}
               onChange={(e) => setEditingFeatureId(e.target.value)}
-              className="flex-1 px-3 py-2 bg-mk-surface border border-mk-border text-mk-text text-base font-bold uppercase focus:border-mk-border-accent focus:outline-none"
+              className="flex-1 px-3 py-2 bg-mk-surface border border-mk-border text-mk-text text-base font-bold focus:border-mk-border-accent focus:outline-none"
             />
-            {!isNewOverride && (
+            {/* {!isNewOverride && (
               <div className="px-3 py-1.5 bg-mk-primary text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
                 ACTIVE OVERRIDE
               </div>
-            )}
+            )} */}
             {isNewOverride && (
               <div className="px-3 py-1.5 bg-mk-text-muted text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
                 NEW
@@ -237,14 +237,16 @@ export function FeatureDetail({
                 codeTagProps={{
                   style: {
                     fontFamily: "var(--font-mono)",
-                  }
+                  },
                 }}
               >
-{`const modelId = await modelKit.getModel(
+                {`const modelId = await modelKit.getModel(
   "${editingFeatureId}",
   "anthropic/claude-3.5-sonnet" // fallback
 );
-// Returns: "${modelId || 'fallback-model'}"${override ? ' (override)' : ' (fallback)'}`}
+// Returns: "${modelId || "fallback-model"}"${
+                  override ? " (override)" : " (fallback)"
+                }`}
               </SyntaxHighlighter>
             </div>
 
@@ -266,11 +268,11 @@ export function FeatureDetail({
                 codeTagProps={{
                   style: {
                     fontFamily: "var(--font-mono)",
-                  }
+                  },
                 }}
               >
-{`await modelKit.setOverride("${editingFeatureId}", {
-  modelId: "${modelId || 'anthropic/claude-3.5-sonnet'}",
+                {`await modelKit.setOverride("${editingFeatureId}", {
+  modelId: "${modelId || "anthropic/claude-3.5-sonnet"}",
   temperature: ${temperature},
   maxTokens: ${maxTokens},
   topP: ${topP},
@@ -297,18 +299,22 @@ export function FeatureDetail({
                 codeTagProps={{
                   style: {
                     fontFamily: "var(--font-mono)",
-                  }
+                  },
                 }}
               >
-{`const config = await modelKit.getConfig("${editingFeatureId}");
-// Returns: ${override ? `{
+                {`const config = await modelKit.getConfig("${editingFeatureId}");
+// Returns: ${
+                  override
+                    ? `{
 //   modelId: "${modelId}",
 //   temperature: ${temperature},
 //   maxTokens: ${maxTokens},
 //   topP: ${topP},
 //   topK: ${topK},
 //   updatedAt: ${override.updatedAt || Date.now()}
-// }` : 'null (no override)'}`}
+// }`
+                    : "null (no override)"
+                }`}
               </SyntaxHighlighter>
             </div>
 
@@ -331,10 +337,10 @@ export function FeatureDetail({
                   codeTagProps={{
                     style: {
                       fontFamily: "var(--font-mono)",
-                    }
+                    },
                   }}
                 >
-{`await modelKit.clearOverride("${editingFeatureId}");
+                  {`await modelKit.clearOverride("${editingFeatureId}");
 // Reverts to fallback model`}
                 </SyntaxHighlighter>
               </div>
@@ -343,7 +349,8 @@ export function FeatureDetail({
             {/* Type Safety Hint */}
             <div className="mt-mk-lg p-mk-md bg-mk-surface/30 border border-mk-border/20">
               <p className="text-xs text-mk-text-muted leading-relaxed">
-                <span className="font-bold text-mk-primary">💡 Tip:</span> Generate TypeScript types for autocomplete:{" "}
+                <span className="font-bold text-mk-primary">💡 Tip:</span>{" "}
+                Generate TypeScript types for autocomplete:{" "}
                 <code className="px-2 py-0.5 bg-mk-background/80 border border-mk-border/30 text-mk-text text-xs font-mono">
                   npx modelkit-generate --api-url &lt;url&gt;
                 </code>

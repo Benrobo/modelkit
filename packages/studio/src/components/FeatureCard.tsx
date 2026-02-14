@@ -27,7 +27,7 @@ export function FeatureCard({
           ? "border-mk-primary bg-mk-primary/10"
           : "border-mk-border bg-mk-surface hover:bg-mk-surface-hover hover:border-mk-primary/50",
         "focus:outline-none focus:border-mk-primary",
-        className,
+        className
       )}
     >
       <div className="flex flex-col gap-2 relative z-10">
@@ -38,15 +38,15 @@ export function FeatureCard({
                 "w-1.5 h-1.5 shrink-0 transition-all",
                 isActive
                   ? "bg-mk-primary"
-                  : "bg-mk-border group-hover:bg-mk-primary/70",
+                  : "bg-mk-border group-hover:bg-mk-primary/70"
               )}
             />
             <h3
               className={cn(
-                "text-sm font-medium uppercase tracking-wide truncate transition-colors",
+                "text-sm font-medium tracking-wide truncate transition-colors",
                 isActive
                   ? "text-mk-primary"
-                  : "text-mk-text group-hover:text-mk-primary",
+                  : "text-mk-text group-hover:text-mk-primary"
               )}
             >
               {featureId}
@@ -57,7 +57,7 @@ export function FeatureCard({
               "w-2 h-2 shrink-0 transition-all",
               isActive
                 ? "bg-mk-primary"
-                : "bg-mk-border group-hover:bg-mk-primary/50",
+                : "bg-mk-border group-hover:bg-mk-primary/50"
             )}
           />
         </div>

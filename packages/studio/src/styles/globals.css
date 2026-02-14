@@ -66,3 +66,27 @@
     linear-gradient(90deg, rgba(0, 245, 255, 0.015) 1px, transparent 1px);
   background-size: 50px 50px;
 }
+
+/* Custom scrollbar — thin track/thumb, theme colors */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mk-color-primary) var(--mk-color-border);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--mk-color-border);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--mk-color-primary);
+  border: 1px solid var(--mk-color-border);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--mk-color-primary-hover);
+}

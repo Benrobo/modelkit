@@ -94,7 +94,7 @@ function ModelKitStudioInner({
   return (
     <div
       className={cn(
-        "modelkit-studio min-h-screen bg-mk-background text-mk-text selection:bg-mk-primary/30 flex flex-col",
+        "modelkit-studio h-screen overflow-hidden bg-mk-background text-mk-text selection:bg-mk-primary/30 flex flex-col",
         className
       )}
       style={themeVars}
@@ -126,8 +126,8 @@ function ModelKitStudioInner({
         }
       />
 
-      <main className="flex-1 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
-        <TacticalPanel className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col border border-mk-border bg-mk-surface overflow-hidden">
+      <main className="flex-1 min-h-0 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
+        <TacticalPanel className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col min-h-0 border border-mk-border/40 bg-mk-surface overflow-hidden">
           <FeatureList
             onSelectFeature={goToDetail}
             className={cn("p-4", classNames.featureList)}
