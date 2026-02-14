@@ -37,10 +37,11 @@ Studio provides a UI for managing model configurations without touching code:
 npm install modelkit
 ```
 
-### Basic Usage
+### Backend Setup
 
 ```typescript
-import { createModelKit, createRedisAdapter } from "modelkit";
+import { Hono } from "hono";
+import { createModelKit, createRedisAdapter, createModelKitRouter } from "modelkit";
 
 const adapter = createRedisAdapter({
   url: process.env.REDIS_URL || "redis://localhost:6379"
@@ -48,12 +49,12 @@ const adapter = createRedisAdapter({
 
 const modelKit = createModelKit(adapter);
 
+// Use in your app
 const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
 
-await modelKit.setOverride("chatbot", {
-  modelId: "anthropic/claude-opus-4",
-  temperature: 0.9
-});
+// Expose REST API
+const app = new Hono();
+app.route("/api/modelkit", createModelKitRouter(modelKit));
 ```
 
 ### React UI
@@ -66,7 +67,7 @@ npm install @modelkit/studio
 import { ModelKitStudio } from "@modelkit/studio";
 import "@modelkit/studio/styles";
 
-<ModelKitStudio modelKit={modelKit} theme="dark" />
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />
 ```
 
 ## Use Cases
@@ -91,28 +92,30 @@ getModel(featureId, fallbackModel)
 
 The fallback model ensures your app works even if Redis is down.
 
-## API
+## SDK API
 
 ```typescript
-// Get model with fallback
 await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
 
-// Set override
 await modelKit.setOverride("feature-id", {
   modelId: "anthropic/claude-opus-4",
   temperature: 0.9,
   maxTokens: 4096
 });
 
-// Get current override
 await modelKit.getConfig("feature-id");
-
-// List all overrides
 await modelKit.listOverrides();
-
-// Clear override
 await modelKit.clearOverride("feature-id");
 ```
+
+## REST API
+
+Both `createModelKitRouter()` (Hono) and `createModelKitExpressRouter()` (Express) expose:
+
+- `GET /overrides` - List all overrides
+- `GET /overrides/:featureId` - Get specific override
+- `POST /overrides/:featureId` - Set override
+- `DELETE /overrides/:featureId` - Clear override
 
 ## Custom Storage Adapter
 

@@ -48,9 +48,24 @@
     "ioredis": "^5.4.1",
     "node-cache": "^5.1.2"
   },
+  "peerDependencies": {
+    "express": "^4.0.0 || ^5.0.0",
+    "hono": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@openrouter/ai-sdk-provider": "^2.2.3",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.13.13",
+    "express": "^5.2.1",
+    "hono": "^4.11.9",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   },

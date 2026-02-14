@@ -1,6 +1,6 @@
 import type { ModelOverride } from "modelkit";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useModelKit } from "./useModelKit";
+import { useModelKitApi } from "./useModelKitApi";
 
 export interface OverrideItem {
   featureId: string;
@@ -14,12 +14,12 @@ export function useOverrides(): {
   loading: boolean;
   error: Error | null;
   refetch: () => void;
-  setOverride: (featureId: string, override: Partial<ModelOverride>) => Promise<void>;
+  setOverride: (featureId: string, override: ModelOverride) => Promise<void>;
   clearOverride: (featureId: string) => Promise<void>;
   isSettingOverride: boolean;
   isClearingOverride: boolean;
 } {
-  const modelKit = useModelKit();
+  const api = useModelKitApi();
   const queryClient = useQueryClient();
 
   const {
@@ -29,7 +29,7 @@ export function useOverrides(): {
     refetch,
   } = useQuery({
     queryKey: OVERRIDES_QUERY_KEY,
-    queryFn: () => modelKit.listOverrides(),
+    queryFn: () => api.listOverrides(),
   });
 
   const setOverrideMutation = useMutation({
@@ -38,15 +38,15 @@ export function useOverrides(): {
       override,
     }: {
       featureId: string;
-      override: Partial<ModelOverride>;
-    }) => modelKit.setOverride(featureId, override),
+      override: ModelOverride;
+    }) => api.setOverride(featureId, override),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: OVERRIDES_QUERY_KEY });
     },
   });
 
   const clearOverrideMutation = useMutation({
-    mutationFn: (featureId: string) => modelKit.clearOverride(featureId),
+    mutationFn: (featureId: string) => api.clearOverride(featureId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: OVERRIDES_QUERY_KEY });
     },
@@ -54,7 +54,7 @@ export function useOverrides(): {
 
   const setOverride = async (
     featureId: string,
-    override: Partial<ModelOverride>
+    override: ModelOverride
   ) => {
     await setOverrideMutation.mutateAsync({ featureId, override });
   };

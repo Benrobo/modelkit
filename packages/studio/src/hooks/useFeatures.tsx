@@ -1,12 +1,8 @@
-import type { FeatureConfig } from "modelkit";
-import { useQuery } from "@tanstack/react-query";
-import { useModelKit } from "./useModelKit";
+import { useOverrides } from "./useOverrides";
 
-export interface FeatureWithId extends FeatureConfig {
+export interface FeatureWithId {
   id: string;
 }
-
-const FEATURES_QUERY_KEY = ["modelkit", "features"] as const;
 
 export function useFeatures(): {
   features: FeatureWithId[];
@@ -14,21 +10,16 @@ export function useFeatures(): {
   error: Error | null;
   refetch: () => void;
 } {
-  const modelKit = useModelKit();
-  const {
-    data: features = [],
-    isPending: loading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: FEATURES_QUERY_KEY,
-    queryFn: () => modelKit.listFeatures(),
-  });
+  const { overrides, loading, error, refetch } = useOverrides();
+
+  const features = overrides.map((item) => ({
+    id: item.featureId
+  }));
 
   return {
     features,
     loading,
-    error: error instanceof Error ? error : error ? new Error(String(error)) : null,
+    error,
     refetch,
   };
 }
