@@ -12,5 +12,6 @@ export type { ModelId, OpenRouterModelId } from "./models.js";
 export { createRedisAdapter } from "./adapter/index.js";
 export type { RedisAdapterOptions } from "./adapter/index.js";
 
-export { createModelKitRouter, createModelKitExpressRouter } from "./router/index.js";
-export type { CreateRouterOptions } from "./router/index.js";
+// Routers are now exported separately to avoid importing peer dependencies
+// import { createModelKitRouter } from "@benrobo/modelkit/hono"
+// import { createModelKitExpressRouter } from "@benrobo/modelkit/express"

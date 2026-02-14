@@ -2,6 +2,18 @@
 
 All notable changes to the ModelKit Studio UI will be documented in this file.
 
+## [0.0.4] - 2026-02-15
+
+### Fixed
+
+- Added TypeScript type declarations for CSS module imports (`@benrobo/modelkit-studio/styles`)
+- Improved package exports configuration for better TypeScript support
+- Fixed "Cannot find module '@benrobo/modelkit-studio/styles'" error
+
+### Changed
+
+- Updated build process to automatically generate `styles.d.ts` type declaration file
+
 ## [0.1.0] - 2026-02-14
 
 ### Added

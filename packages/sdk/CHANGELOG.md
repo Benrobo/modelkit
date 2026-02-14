@@ -2,6 +2,39 @@
 
 All notable changes to the ModelKit SDK will be documented in this file.
 
+## [0.0.3] - 2026-02-15
+
+### Breaking Changes
+
+- **Router exports moved to subpath exports** to prevent importing unused peer dependencies
+  - `createModelKitRouter` renamed to `createModelKitHonoRouter` and moved to `@benrobo/modelkit/hono`
+  - `createModelKitExpressRouter` moved to `@benrobo/modelkit/express`
+  - Main export no longer includes router functions
+
+### Migration Guide
+
+**Before:**
+```typescript
+import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+```
+
+**After (Hono):**
+```typescript
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitHonoRouter } from "@benrobo/modelkit/hono";
+```
+
+**After (Express):**
+```typescript
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitExpressRouter } from "@benrobo/modelkit/express";
+```
+
+### Fixed
+
+- Fixed peer dependency errors when using the SDK without installing both Express and Hono
+- Users can now install only the framework they need (Hono or Express)
+
 ## [0.1.0] - 2026-02-14
 
 ### Added

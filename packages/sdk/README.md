@@ -92,13 +92,14 @@ ModelKit provides ready-to-use routers for Hono and Express to expose your confi
 
 ```typescript
 import { Hono } from "hono";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitHonoRouter } from "@benrobo/modelkit/hono";
 
 const app = new Hono();
 const adapter = createRedisAdapter({ url: process.env.REDIS_URL });
 const modelKit = createModelKit(adapter);
 
-app.route("/api/modelkit", createModelKitRouter(modelKit, {
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit, {
   cors: true // optional CORS configuration
 }));
 
@@ -109,7 +110,8 @@ export default app;
 
 ```typescript
 import express from "express";
-import { createModelKit, createRedisAdapter, createModelKitExpressRouter } from "@benrobo/modelkit";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitExpressRouter } from "@benrobo/modelkit/express";
 
 const app = express();
 app.use(express.json());

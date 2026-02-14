@@ -20,11 +20,8 @@ Set up the backend API first:
 
 ```typescript
 import { Hono } from "hono";
-import {
-  createModelKit,
-  createRedisAdapter,
-  createModelKitRouter,
-} from "modelkit";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitHonoRouter } from "@benrobo/modelkit/hono";
 
 const adapter = createRedisAdapter({
   url: process.env.REDIS_URL || "redis://localhost:6379",
@@ -33,7 +30,7 @@ const adapter = createRedisAdapter({
 const modelKit = createModelKit(adapter);
 
 const app = new Hono();
-app.route("/api/modelkit", createModelKitRouter(modelKit));
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
 ```
 
 Then use the Studio UI:

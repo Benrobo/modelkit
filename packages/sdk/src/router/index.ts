@@ -1,8 +1,7 @@
 /**
  * Router exports for various frameworks
+ *
+ * Routers are now exported as separate subpath exports:
+ * - import { createModelKitHonoRouter } from "@benrobo/modelkit/hono"
+ * - import { createModelKitExpressRouter } from "@benrobo/modelkit/express"
  */
-
-export { createModelKitRouter } from "./hono.js";
-export type { CreateRouterOptions } from "./hono.js";
-
-export { createModelKitExpressRouter } from "./express.js";

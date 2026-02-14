@@ -31,8 +31,9 @@ npm install react react-dom @tanstack/react-query
 ### Backend (Node.js/Bun)
 
 ```typescript
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
 import { Hono } from "hono";
+import { createModelKitHonoRouter } from "@benrobo/modelkit/hono";
 
 // Setup storage adapter
 const adapter = createRedisAdapter({
@@ -47,13 +48,13 @@ const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet"
 
 // Expose REST API (Hono)
 const app = new Hono();
-app.route("/api/modelkit", createModelKitRouter(modelKit));
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
 
 // Or use Express
 import express from "express";
-import { createModelKitExpressRouter } from "@benrobo/modelkit";
-const app = express();
-app.use("/api/modelkit", createModelKitExpressRouter(modelKit));
+import { createModelKitExpressRouter } from "@benrobo/modelkit/express";
+const expressApp = express();
+expressApp.use("/api/modelkit", createModelKitExpressRouter(modelKit));
 ```
 
 ### React UI
@@ -158,7 +159,7 @@ function createMyAdapter(): StorageAdapter {
 
 ## REST API Endpoints
 
-Both `createModelKitRouter()` (Hono) and `createModelKitExpressRouter()` (Express) expose:
+Both `createModelKitHonoRouter()` (Hono) and `createModelKitExpressRouter()` (Express) expose:
 
 - `GET /overrides` - List all overrides
 - `GET /overrides/:featureId` - Get specific override
@@ -168,7 +169,7 @@ Both `createModelKitRouter()` (Hono) and `createModelKitExpressRouter()` (Expres
 ### CORS Configuration (Hono only)
 
 ```typescript
-app.route("/api/modelkit", createModelKitRouter(modelKit, {
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit, {
   cors: true, // Enable CORS
   // Or customize:
   cors: {
@@ -407,7 +408,7 @@ Here's a complete working example with both backend and frontend:
 ```typescript
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+import { createModelKit, createRedisAdapter, createModelKitHonoRouter } from "@benrobo/modelkit";
 
 const app = new Hono();
 
@@ -425,7 +426,7 @@ const modelKit = createModelKit(adapter, {
 });
 
 // Mount ModelKit API
-app.route("/api/modelkit", createModelKitRouter(modelKit, { cors: true }));
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit, { cors: true }));
 
 // Example: Use ModelKit in your app logic
 app.post("/chat", async (c) => {

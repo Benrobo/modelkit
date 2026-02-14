@@ -25,16 +25,17 @@ export interface CreateRouterOptions {
  * @example
  * ```ts
  * import { Hono } from "hono";
- * import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
+ * import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+ * import { createModelKitHonoRouter } from "@benrobo/modelkit/hono";
  *
  * const app = new Hono();
  * const adapter = createRedisAdapter({ url: process.env.REDIS_URL });
  * const modelKit = createModelKit(adapter);
  *
- * app.route("/api/modelkit", createModelKitRouter(modelKit));
+ * app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
  * ```
  */
-export function createModelKitRouter(
+export function createModelKitHonoRouter(
   modelKit: ModelKit,
   options: CreateRouterOptions = {}
 ): Hono {
