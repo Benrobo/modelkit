@@ -6,37 +6,29 @@
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { createModelKit, defineConfig } from "modelkit";
+import { createModelKit, createRedisAdapter } from "modelkit";
 
-const config = defineConfig({
-  storage: { type: "memory" },
-  features: {
-    "chat.default": {
-      name: "Default chat",
-      title: "Main chat model",
-      modelId: "anthropic/claude-sonnet-4-5",
-      temperature: 0.7,
-      maxTokens: 4096,
-    },
-    "summarize": {
-      name: "Summarize",
-      title: "Summarization feature",
-      modelId: "google/gemini-2.5-flash",
-      temperature: 0.3,
-      maxTokens: 2048,
-    },
-  },
-});
-
-const modelKit = createModelKit(config);
+const modelKit = createModelKit(
+  createRedisAdapter({
+    url: process.env.REDIS_URL!,
+  }),
+  {
+    cacheTTL: 60000,
+  }
+);
 
 const app = new Hono();
 
 app.use("*", cors({ origin: "*" }));
 
 app.get("/api/features", async (c) => {
-  const features = await modelKit.listFeatures();
-  return c.json(features);
+  const overrides = await modelKit.listOverrides();
+  return c.json({
+    features: overrides.map(({ featureId, override }) => ({
+      id: featureId,
+      modelId: override.modelId,
+    })),
+  });
 });
 
 app.get("/api/features/:id/config", async (c) => {
@@ -52,7 +44,7 @@ app.get("/api/features/:id/config", async (c) => {
 app.get("/api/features/:id/model", async (c) => {
   const id = c.req.param("id");
   try {
-    const modelId = await modelKit.getModel(id);
+    const modelId = await modelKit.getModel(id, "anthropic/claude-opus-4.5");
     return c.json({ modelId });
   } catch (err) {
     return c.json({ error: (err as Error).message }, 404);
@@ -61,9 +53,15 @@ app.get("/api/features/:id/model", async (c) => {
 
 app.post("/api/features/:id/override", async (c) => {
   const id = c.req.param("id");
-  const body = await c.req.json<{ modelId?: string; temperature?: number; maxTokens?: number }>();
+  const body = await c.req.json<{
+    modelId?: string;
+    temperature?: number;
+    maxTokens?: number;
+  }>();
   try {
-    await modelKit.setOverride(id, body);
+    await modelKit.setOverride(id, {
+      modelId: "ai21/jamba-large-1.7",
+    });
     return c.json({ ok: true });
   } catch (err) {
     return c.json({ error: (err as Error).message }, 400);

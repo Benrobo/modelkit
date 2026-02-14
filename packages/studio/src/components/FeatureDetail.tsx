@@ -158,6 +158,7 @@ export function FeatureDetail({
             >
               {isUpdating ? "Storing Registry Override..." : "Commit Override"}
             </button>
+            <button
               onClick={() => {
                 setModelId(override?.modelId ?? config.modelId);
                 setTemperature(override?.temperature ?? config.temperature ?? 0.7);

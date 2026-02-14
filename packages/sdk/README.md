@@ -15,114 +15,129 @@ bun add modelkit
 ## Quick Start
 
 ```typescript
-import { defineConfig, createModelKit } from "modelkit";
+import { createModelKit, createRedisAdapter } from "modelkit";
 
-const config = defineConfig({
-  features: {
-    chatbot: {
-      modelId: "anthropic/claude-3.5-sonnet",
-      temperature: 0.7,
-      maxTokens: 2048
-    }
-  },
-  storage: {
-    type: "redis",
-    url: process.env.REDIS_URL
-  }
+// Create a storage adapter
+const adapter = createRedisAdapter({
+  url: process.env.REDIS_URL || "redis://localhost:6379",
+  prefix: "modelkit:" // Optional: customize key prefix
 });
 
-const modelKit = await createModelKit(config);
+// Create ModelKit instance
+const modelKit = createModelKit(adapter, {
+  cacheTTL: 60000 // Optional: cache in memory for 60s (default)
+});
 
-// Get current model ID
-const modelId = await modelKit.getModel("chatbot");
+// Get model ID - ALWAYS provide fallback for reliability
+// Model IDs are strictly typed - autocomplete shows 340+ OpenRouter models
+const modelId = await modelKit.getModel(
+  "chatbot",
+  "anthropic/claude-3.5-sonnet" // Type-safe! Autocomplete available
+);
+// Priority: Redis override → fallbackModel
 
-// Get full configuration (with overrides applied)
-const config = await modelKit.getConfig("chatbot");
+// For custom/private models, use type assertion:
+// const modelId = await modelKit.getModel("chatbot", "my-custom-model" as ModelId);
 
-// Set runtime override
+// Get current override configuration
+const override = await modelKit.getConfig("chatbot");
+// Returns: ModelOverride | null
+
+// Set runtime override (no restart needed!)
 await modelKit.setOverride("chatbot", {
   modelId: "anthropic/claude-3.5-sonnet-20250129",
-  temperature: 0.9
+  temperature: 0.9,
+  maxTokens: 2048
 });
 ```
 
 ## API Reference
 
-### `defineConfig(config)`
+### `createRedisAdapter(options)`
 
-Helper function to define type-safe model configurations.
+Creates a Redis storage adapter for ModelKit.
 
 ```typescript
-const config = defineConfig({
-  features: {
-    [featureId: string]: FeatureConfig
-  },
-  storage: StorageConfig
+import { createRedisAdapter } from "modelkit";
+
+const adapter = createRedisAdapter({
+  url: "redis://localhost:6379",
+  prefix: "modelkit:overrides:" // Optional, default: "modelkit:overrides:"
 });
 ```
 
-**FeatureConfig:**
-```typescript
-interface FeatureConfig {
-  name?: string;          // Display name for the feature
-  title?: string;         // Description of the feature
-  modelId: string;        // AI model identifier (required)
-  temperature?: number;   // Sampling temperature (0-2)
-  maxTokens?: number;     // Maximum tokens to generate
-  topP?: number;          // Nucleus sampling parameter
-  topK?: number;          // Top-k sampling parameter
-}
-```
+**Options:**
+- `url` (string, required): Redis connection URL
+- `prefix` (string, optional): Key prefix for Redis keys. Default: `"modelkit:overrides:"`
 
-**StorageConfig:**
-```typescript
-type StorageConfig =
-  | { type: "redis"; url: string; keyPrefix?: string; ttl?: number }
-  | { type: "memory"; ttl?: number }
-  | { type: "custom"; adapter: StorageAdapter };
-```
+**Returns:** `StorageAdapter`
 
-### `createModelKit(config)`
+### `createModelKit(adapter, options?)`
 
-Creates a ModelKit instance with the specified configuration.
+Creates a ModelKit instance with the specified storage adapter.
 
 ```typescript
-const modelKit = await createModelKit(config);
+import { createModelKit } from "modelkit";
+
+const modelKit = createModelKit(adapter, {
+  cacheTTL: 60000 // Optional: in-memory cache duration in ms
+});
 ```
 
-**Returns:** `Promise<ModelKit>`
+**Parameters:**
+- `adapter` (StorageAdapter, required): Storage adapter instance
+- `options` (object, optional):
+  - `cacheTTL` (number): Cache TTL in milliseconds for in-memory caching. Default: 60000 (1 minute)
+
+**Returns:** `ModelKit`
 
 ### ModelKit Instance Methods
 
-#### `getModel(featureId: string): Promise<string>`
+#### `getModel(featureId: string, fallbackModel: ModelId): Promise<ModelId>`
 
-Get the current model ID for a feature (respects overrides).
+Get the current model ID for a feature. **Always requires a fallback model.**
+
+**Priority:** Redis override → fallbackModel
 
 ```typescript
-const modelId = await modelKit.getModel("chatbot");
-// "anthropic/claude-3.5-sonnet-20250129"
+const modelId = await modelKit.getModel(
+  "chatbot",
+  "anthropic/claude-3.5-sonnet" // Required fallback
+);
+// Returns override from Redis, or fallbackModel if no override exists or Redis is down
 ```
 
-#### `getConfig(featureId: string): Promise<FeatureConfig & ModelOverride>`
+**Type Safety:** Model IDs are strictly typed with autocomplete for 340+ OpenRouter models. Invalid model IDs will cause TypeScript errors.
 
-Get the full configuration for a feature with overrides applied.
+For custom/private models, use type assertion:
+```typescript
+const modelId = await modelKit.getModel(
+  "chatbot",
+  "my-custom-model" as ModelId // Type assertion for custom models
+);
+```
+
+#### `getConfig(featureId: string): Promise<ModelOverride | null>`
+
+Get the current override configuration from Redis. Returns `null` if no override exists.
 
 ```typescript
-const config = await modelKit.getConfig("chatbot");
+const override = await modelKit.getConfig("chatbot");
 // {
 //   modelId: "anthropic/claude-3.5-sonnet-20250129",
 //   temperature: 0.9,
 //   maxTokens: 2048,
-//   name: "Customer Support Chatbot"
-// }
+//   updatedAt: 1707912345
+// } | null
 ```
 
-#### `setOverride(featureId: string, override: Partial<ModelOverride>): Promise<void>`
+#### `setOverride(featureId: string, override: ModelOverride): Promise<void>`
 
-Set runtime overrides for a feature. Only provided fields are overridden.
+Set runtime overrides for a feature in Redis. Changes take effect immediately.
 
 ```typescript
 await modelKit.setOverride("chatbot", {
+  modelId: "anthropic/claude-3.5-sonnet-20250129",
   temperature: 0.9,
   maxTokens: 4096
 });
@@ -131,11 +146,12 @@ await modelKit.setOverride("chatbot", {
 **ModelOverride:**
 ```typescript
 interface ModelOverride {
-  modelId?: string;
-  temperature?: number;
-  maxTokens?: number;
-  topP?: number;
-  topK?: number;
+  modelId: ModelId;      // Required: AI model identifier (type-safe)
+  temperature?: number;  // Optional: 0-2
+  maxTokens?: number;    // Optional: max tokens
+  topP?: number;         // Optional: nucleus sampling
+  topK?: number;         // Optional: top-k sampling
+  updatedAt?: number;    // Auto-set by adapter
 }
 ```
 
@@ -165,34 +181,37 @@ const overrides = await modelKit.listOverrides();
 // ]
 ```
 
-#### `listFeatures(): Promise<Array<FeatureConfig & { id: string }>>`
+## Custom Storage Adapters
 
-List all configured features with their base configurations.
-
-```typescript
-const features = await modelKit.listFeatures();
-// [
-//   {
-//     id: "chatbot",
-//     modelId: "anthropic/claude-3.5-sonnet",
-//     temperature: 0.7,
-//     maxTokens: 2048,
-//     name: "Customer Support Chatbot"
-//   }
-// ]
-```
-
-## Storage Adapters
-
-### Redis Storage (Production)
-
-Persistent storage using Redis. Recommended for production use.
+You can create your own storage adapter by implementing the `StorageAdapter` interface:
 
 ```typescript
-import { createModelKit } from "modelkit";
+import type { StorageAdapter, ModelOverride } from "modelkit";
 
-const config = defineConfig({
-  features: { /* ... */ },
+function createMyCustomAdapter(): StorageAdapter {
+  return {
+    async get(featureId: string): Promise<ModelOverride | null> {
+      // Your custom logic to retrieve override
+      return null;
+    },
+
+    async set(featureId: string, override: ModelOverride): Promise<void> {
+      // Your custom logic to save override
+    },
+
+    async delete(featureId: string): Promise<void> {
+      // Your custom logic to delete override
+    },
+
+    async list(): Promise<Array<{ featureId: string; override: ModelOverride }>> {
+      // Your custom logic to list all overrides
+      return [];
+    }
+  };
+}
+
+// Use your custom adapter
+const modelKit = createModelKit(createMyCustomAdapter());
   storage: {
     type: "redis",
     url: "redis://localhost:6379",

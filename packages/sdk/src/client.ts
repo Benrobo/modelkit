@@ -1,98 +1,67 @@
-/**
- * ModelKit client: creates the main API instance with storage adapter and caching.
- */
-
-import type {
-  FeatureConfig,
-  ModelKit,
-  ModelKitConfig,
-  ModelOverride,
-} from "./types.js";
-import { createStorage } from "./adapter/index.js";
+import type { ModelKit, ModelOverride, StorageAdapter } from "./types.js";
+import type { ModelId } from "./models.js";
+import { MemoryStorage } from "./adapter/memory.js";
 
 const DEFAULT_CACHE_TTL_MS = 60_000; // 1 minute
 
-interface CachedConfig {
-  modelId: string;
-  fetchedAt: number;
-  source: "redis" | "config";
-}
-
 export interface CreateModelKitOptions {
+  /** Cache TTL in milliseconds for in-memory caching of model lookups. Default: 60000 (1 minute) */
   cacheTTL?: number;
 }
 
 export function createModelKit(
-  config: ModelKitConfig,
+  adapter: StorageAdapter,
   options: CreateModelKitOptions = {}
 ): ModelKit {
   const { cacheTTL = DEFAULT_CACHE_TTL_MS } = options;
-  const storage = createStorage(config);
-  const { features } = config;
-  const configCache = new Map<string, CachedConfig>();
 
-  async function getModel(featureId: string): Promise<string> {
-    const cached = configCache.get(featureId);
-    if (cached && Date.now() - cached.fetchedAt < cacheTTL) {
+  const cache = new MemoryStorage({ stdTTL: Math.floor(cacheTTL / 1000) });
+
+  async function getModel(
+    featureId: string,
+    fallbackModel: ModelId
+  ): Promise<ModelId> {
+    const cached = await cache.get(featureId);
+    if (cached) {
       return cached.modelId;
     }
 
     try {
-      const override = await storage.get(featureId);
+      const override = await adapter.get(featureId);
       if (override) {
-        configCache.set(featureId, {
-          modelId: override.modelId,
-          fetchedAt: Date.now(),
-          source: "redis",
-        });
+        await cache.set(featureId, override);
         return override.modelId;
       }
     } catch (err) {
       console.warn(
-        `[modelkit] Redis unavailable, using config default:`,
+        `[modelkit] Storage adapter unavailable, using fallback model:`,
         err instanceof Error ? err.message : err
       );
     }
 
-    const def = features[featureId];
-    if (!def) throw new Error(`Feature "${featureId}" not found`);
-    configCache.set(featureId, {
-      modelId: def.modelId,
-      fetchedAt: Date.now(),
-      source: "config",
-    });
-    return def.modelId;
+    await cache.set(featureId, { modelId: fallbackModel });
+    return fallbackModel;
   }
 
-  async function getConfig(
-    featureId: string
-  ): Promise<FeatureConfig & ModelOverride> {
-    const def = features[featureId];
-    if (!def) throw new Error(`Feature "${featureId}" not found`);
+  async function getConfig(featureId: string): Promise<ModelOverride | null> {
     try {
-      const override = await storage.get(featureId);
-      return override ? { ...def, ...override } : { ...def };
+      return await adapter.get(featureId);
     } catch {
-      return { ...def };
+      return null;
     }
   }
 
   async function setOverride(
     featureId: string,
-    override: Partial<ModelOverride>
+    override: ModelOverride
   ): Promise<void> {
-    const def = features[featureId];
-    if (!def) throw new Error(`Feature "${featureId}" not found`);
-    configCache.delete(featureId);
-    await storage.set(featureId, {
-      modelId: override.modelId ?? def.modelId,
-      ...override,
-    });
+    await cache.delete(featureId);
+    await adapter.set(featureId, override);
   }
 
   async function clearOverride(featureId: string): Promise<void> {
-    configCache.delete(featureId);
-    await storage.delete(featureId);
+    await cache.delete(featureId);
+    await adapter.delete(featureId);
   }
 
   return {
@@ -100,10 +69,6 @@ export function createModelKit(
     getConfig,
     setOverride,
     clearOverride,
-    listOverrides: () => storage.list(),
-    listFeatures: () =>
-      Promise.resolve(
-        Object.entries(features).map(([id, f]) => ({ ...f, id }))
-      ),
+    listOverrides: () => adapter.list(),
   };
 }

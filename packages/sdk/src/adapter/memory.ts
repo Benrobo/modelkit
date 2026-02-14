@@ -1,10 +1,9 @@
 /**
- * In-memory storage adapter using node-cache (for testing and development).
+ * In-memory storage adapter using node-cache (internal use for caching).
  */
 
 import NodeCache from "node-cache";
-import type { StorageAdapter } from "./types.js";
-import type { ModelOverride } from "../types.js";
+import type { StorageAdapter, ModelOverride } from "../types.js";
 
 const KEY_PREFIX = "modelkit:memory:";
 

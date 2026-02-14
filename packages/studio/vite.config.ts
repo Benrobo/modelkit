@@ -2,10 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import dts from "vite-plugin-dts";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import path from "path";
 
 export default defineConfig({
   plugins: [
@@ -17,15 +14,10 @@ export default defineConfig({
       insertTypesEntry: false,
     }),
   ],
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-    },
-  },
   build: {
     minify: false,
     lib: {
-      entry: resolve(__dirname, "src/index.tsx"),
+      entry: path.resolve(__dirname, "src/index.tsx"),
       formats: ["es"],
       fileName: () => "index.js",
     },

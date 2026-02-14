@@ -19,7 +19,20 @@ ModelKit is a lightweight TypeScript library that enables dynamic AI model confi
 | Package | Version | Description |
 |---------|---------|-------------|
 | [modelkit](./packages/sdk) | [![npm](https://img.shields.io/npm/v/modelkit.svg)](https://www.npmjs.com/package/modelkit) | Core SDK for model configuration management |
-| [@modelkit/studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@modelkit/studio.svg)](https://www.npmjs.com/package/@modelkit/studio) | React UI components for visual management |
+| [@modelkit/studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@modelkit/studio.svg)](https://www.npmjs.com/package/@modelkit/studio) | React UI for visual model management |
+
+### Why Studio Matters
+
+**ModelKit Studio** is critical for production AI applications:
+
+- **Visual Control** - Non-technical team members can switch models without code changes
+- **Emergency Response** - Instantly revert problematic model updates with one click
+- **Real-time Monitoring** - See which features use which models at a glance
+- **Cost Management** - Quickly test cheaper models for specific features
+- **Team Collaboration** - Product managers can optimize model costs without engineering help
+- **Audit Trail** - Track who changed what model and when (via Redis timestamps)
+
+While the SDK handles runtime configuration, **Studio makes it accessible to your entire team**. Engineers define the features in code, but anyone can manage model selection through the UI.
 
 ## Quick Start
 
@@ -38,44 +51,38 @@ npm install @modelkit/studio modelkit react react-dom
 ### Basic Usage
 
 ```typescript
-import { defineConfig, createModelKit } from "modelkit";
+import { createModelKit, createRedisAdapter } from "modelkit";
 
-// Define your AI model configurations
-const config = defineConfig({
-  features: {
-    chatbot: {
-      name: "Customer Support Chatbot",
-      modelId: "anthropic/claude-3.5-sonnet",
-      temperature: 0.7,
-      maxTokens: 2048
-    },
-    summarizer: {
-      name: "Document Summarizer",
-      modelId: "openai/gpt-4-turbo",
-      temperature: 0.3,
-      maxTokens: 1024
-    }
-  },
-  storage: {
-    type: "redis",
-    url: process.env.REDIS_URL
-  }
+// Create a Redis adapter
+const adapter = createRedisAdapter({
+  url: process.env.REDIS_URL || "redis://localhost:6379"
 });
 
-// Create ModelKit instance
-const modelKit = await createModelKit(config);
+// Create ModelKit with the adapter
+const modelKit = createModelKit(adapter, {
+  cacheTTL: 60000 // Optional: cache lookups in memory for 60s (default)
+});
 
-// Use in your application
-const modelId = await modelKit.getModel("chatbot");
-const fullConfig = await modelKit.getConfig("chatbot");
-console.log(fullConfig);
-// { modelId: "anthropic/claude-3.5-sonnet", temperature: 0.7, maxTokens: 2048 }
+// ALWAYS provide fallbackModel for reliability
+const modelId = await modelKit.getModel(
+  "chatbot",
+  "anthropic/claude-3.5-sonnet" // Required fallback
+);
+// Priority: Redis override → fallbackModel
 
-// Runtime override (no restart needed!)
+// Get current override from Redis (returns null if none exists)
+const override = await modelKit.getConfig("chatbot");
+console.log(override);
+// { modelId: "anthropic/claude-3.5-sonnet-20250129", temperature: 0.9, updatedAt: 1707912345 } | null
+
+// Set runtime override via API (no restart needed!)
 await modelKit.setOverride("chatbot", {
   modelId: "anthropic/claude-3.5-sonnet-20250129",
-  temperature: 0.9
+  temperature: 0.9,
+  maxTokens: 2048
 });
+
+// Or use Studio UI to change models visually
 ```
 
 ### React UI
@@ -109,31 +116,37 @@ function App() {
 
 ## Architecture
 
+### Configuration Priority
+
+ModelKit uses a simple two-tier system:
+
 ```
-┌─────────────────────┐
-│  Your Application   │
-└──────────┬──────────┘
-           │
-           ▼
-    ┌─────────────┐
-    │  ModelKit   │  ← Core SDK
-    │   Client    │
-    └──────┬──────┘
-           │
-     ┌─────┴─────┐
-     ▼           ▼
-┌─────────┐  ┌──────────┐
-│  Redis  │  │  Config  │
-│ Storage │  │ (static) │
-└─────────┘  └──────────┘
+getModel(featureId, fallbackModel)
+          ↓
+    1. In-memory cache (60s TTL)
+          ↓
+    2. Redis override (persistent)
+          ↓
+    3. fallbackModel parameter (required)
 ```
 
-**Configuration Flow:**
-1. Define base configuration with `defineConfig()`
-2. Create client with `createModelKit(config)`
-3. Client checks cache → Redis → static config
-4. Override values stored in Redis take precedence
-5. Changes propagate instantly (after cache TTL)
+**Why this matters:**
+
+- **Redis override** - Runtime changes via Studio UI or API (highest priority)
+- **Fallback model** - Your code-defined default (always required)
+- **No config file needed** - Just storage settings
+
+**Best Practice:**
+
+```typescript
+// Always provide a fallbackModel (required parameter)
+const modelId = await modelKit.getModel(
+  "chatbot",
+  "anthropic/claude-3.5-sonnet" // Used when no Redis override exists
+);
+```
+
+This ensures your app keeps working even if Redis is temporarily unavailable. No config file needed - you control the defaults in your code!
 
 ## Storage Options
 
