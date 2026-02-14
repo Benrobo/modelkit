@@ -79,8 +79,7 @@ function ModelKitStudioInner({
 
       <main className="flex-1 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
         {/* Sidebar: Feature List */}
-        <aside className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col border-2 border-mk-border bg-mk-surface overflow-hidden relative mk-panel">
-          <div className="absolute inset-0 z-0 opacity-5 pointer-events-none bg-linear-to-b from-mk-primary/10 to-transparent" />
+        <aside className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col border border-mk-border bg-mk-surface overflow-hidden relative mk-panel">
           <div className="relative z-10 flex flex-col h-full">
             <FeatureList
               onSelectFeature={goToDetail}
@@ -103,10 +102,8 @@ function ModelKitStudioInner({
               />
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-mk-text-muted border-2 border-mk-border border-dashed p-mk-xl relative">
-              <div className="absolute inset-0 bg-linear-to-br from-mk-primary/5 to-transparent opacity-30" />
-              <div className="font-mk-mono text-sm uppercase tracking-widest text-center relative z-10">
-                <div className="mb-4 text-mk-primary text-4xl">▸</div>
+            <div className="h-full flex flex-col items-center justify-center text-mk-text-muted border border-mk-border border-dashed p-mk-xl">
+              <div className="text-sm uppercase tracking-wider text-center">
                 Select a configuration from the registry
                 <br />
                 to begin editing
