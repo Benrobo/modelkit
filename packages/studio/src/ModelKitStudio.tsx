@@ -13,6 +13,8 @@ import { ThemeSelector } from "./components/ThemeSelector";
 import { resolveTheme, themeToCssVars } from "./themes/themeUtils";
 import type { StudioThemeOverride } from "./themes";
 
+const THEME_STORAGE_KEY = "modelkit-studio-theme";
+
 const defaultQueryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -59,12 +61,37 @@ export interface ModelKitStudioProps {
 }
 
 function ModelKitStudioInner({
-  theme = "dark",
+  theme: initialTheme = "dark",
   themeBase = "dark",
   className,
   classNames = {},
 }: Omit<ModelKitStudioProps, "apiUrl">): ReactElement {
   const { selectedFeatureId, goToList, goToDetail } = useNavigation();
+
+  const isThemeMode = typeof initialTheme === "string";
+
+  // State for current theme (only when using ThemeMode presets)
+  const [currentTheme, setCurrentTheme] = useState<ThemeMode>(() => {
+    if (!isThemeMode) return "dark";
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY);
+      if (saved && (saved as ThemeMode)) {
+        return saved as ThemeMode;
+      }
+    } catch (e) {}
+    return initialTheme;
+  });
+
+  // Save theme to localStorage when it changes
+  useEffect(() => {
+    if (isThemeMode) {
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, currentTheme);
+      } catch (e) {}
+    }
+  }, [currentTheme, isThemeMode]);
+
+  const theme = isThemeMode ? currentTheme : initialTheme;
   const resolvedTheme = resolveTheme(theme, themeBase);
   const themeVars = themeToCssVars(resolvedTheme);
 
@@ -93,6 +120,14 @@ function ModelKitStudioInner({
         showBack={false}
         className={classNames.header}
         title="ModelKit Studio"
+        actions={
+          isThemeMode ? (
+            <ThemeSelector
+              currentTheme={currentTheme}
+              onThemeChange={setCurrentTheme}
+            />
+          ) : undefined
+        }
       />
 
       <main className="flex-1 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
