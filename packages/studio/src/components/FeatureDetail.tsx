@@ -4,7 +4,7 @@ import { useOverrides } from "../hooks/useOverrides";
 import { ModelSelector } from "./ModelSelector";
 import { ParameterEditor } from "./ParameterEditor";
 import { TacticalPanel } from "./TacticalPanel";
-import { OpenRouterModelId } from "modelkit";
+import { OpenRouterModelId } from "@benrobo/modelkit";
 
 export interface FeatureDetailProps {
   featureId: string;

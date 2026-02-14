@@ -3,7 +3,7 @@ import {
   createModelKit,
   createRedisAdapter,
   createModelKitRouter,
-} from "modelkit";
+} from "@benrobo/modelkit";
 
 const adapter = createRedisAdapter({
   url: process.env.REDIS_URL || "redis://192.168.215.2:6379",

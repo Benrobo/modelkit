@@ -25,7 +25,7 @@ export interface CreateRouterOptions {
  * @example
  * ```ts
  * import { Hono } from "hono";
- * import { createModelKit, createRedisAdapter, createModelKitRouter } from "modelkit";
+ * import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
  *
  * const app = new Hono();
  * const adapter = createRedisAdapter({ url: process.env.REDIS_URL });

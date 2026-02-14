@@ -1,4 +1,4 @@
-import type { ModelOverride } from "modelkit";
+import type { ModelOverride } from "@benrobo/modelkit";
 
 export interface OverrideItem {
   featureId: string;

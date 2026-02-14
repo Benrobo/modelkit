@@ -5,13 +5,13 @@ Type-safe AI model configuration with runtime overrides.
 ## Installation
 
 ```bash
-npm install modelkit
+npm install @benrobo/modelkit
 ```
 
 ## Quick Start
 
 ```typescript
-import { createModelKit, createRedisAdapter } from "modelkit";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
 
 const adapter = createRedisAdapter({
   url: process.env.REDIS_URL || "redis://localhost:6379"
@@ -35,7 +35,7 @@ ModelKit provides ready-to-use routers for Hono and Express to expose your confi
 
 ```typescript
 import { Hono } from "hono";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "modelkit";
+import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
 
 const app = new Hono();
 const adapter = createRedisAdapter({ url: process.env.REDIS_URL });
@@ -52,7 +52,7 @@ export default app;
 
 ```typescript
 import express from "express";
-import { createModelKit, createRedisAdapter, createModelKitExpressRouter } from "modelkit";
+import { createModelKit, createRedisAdapter, createModelKitExpressRouter } from "@benrobo/modelkit";
 
 const app = express();
 app.use(express.json());
@@ -156,7 +156,7 @@ await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
 ## Custom Storage Adapter
 
 ```typescript
-import type { StorageAdapter, ModelOverride } from "modelkit";
+import type { StorageAdapter, ModelOverride } from "@benrobo/modelkit";
 
 function createMyAdapter(): StorageAdapter {
   return {

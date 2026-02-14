@@ -11,12 +11,12 @@ export default defineConfig({
   server: {
     port: 3480,
     strictPort: true,
-    // Reload when the linked @modelkit/studio package is rebuilt (run studio's `dev` in another terminal)
+    // Reload when the linked @benrobo/modelkit-studio package is rebuilt (run studio's `dev` in another terminal)
     watch: {
       ignored: (path) => {
         const n = path.replace(/\\/g, "/");
         if (!n.includes("node_modules")) return false;
-        return !n.includes("node_modules/@modelkit/studio");
+        return !n.includes("node_modules/@benrobo/modelkit-studio");
       },
     },
   },
@@ -27,13 +27,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
-      "@modelkit/studio/styles": resolve(
+      "@benrobo/modelkit-studio/styles": resolve(
         __dirname,
         "../studio/src/styles/globals.css"
       ),
     },
   },
   optimizeDeps: {
-    exclude: ["@modelkit/studio"],
+    exclude: ["@benrobo/modelkit-studio"],
   },
 });

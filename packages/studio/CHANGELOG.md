@@ -1,4 +1,4 @@
-# Changelog - @modelkit/studio
+# Changelog - @benrobo/modelkit-studio
 
 All notable changes to the ModelKit Studio UI will be documented in this file.
 

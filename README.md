@@ -16,8 +16,8 @@ Change models and parameters on the fly without redeploying your app.
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [modelkit](./packages/sdk) | [![npm](https://img.shields.io/npm/v/modelkit.svg)](https://www.npmjs.com/package/modelkit) | Core SDK for model configuration management |
-| [@modelkit/studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@modelkit/studio.svg)](https://www.npmjs.com/package/@modelkit/studio) | React UI for visual model management |
+| [@benrobo/modelkit](./packages/sdk) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit.svg)](https://www.npmjs.com/package/@benrobo/modelkit) | Core SDK for model configuration management |
+| [@benrobo/modelkit-studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit-studio.svg)](https://www.npmjs.com/package/@benrobo/modelkit-studio) | React UI for visual model management |
 
 ### Why Studio?
 
@@ -34,14 +34,14 @@ Studio provides a UI for managing model configurations without touching code:
 ### Installation
 
 ```bash
-npm install modelkit
+npm install @benrobo/modelkit
 ```
 
 ### Backend Setup
 
 ```typescript
 import { Hono } from "hono";
-import { createModelKit, createRedisAdapter, createModelKitRouter } from "modelkit";
+import { createModelKit, createRedisAdapter, createModelKitRouter } from "@benrobo/modelkit";
 
 const adapter = createRedisAdapter({
   url: process.env.REDIS_URL || "redis://localhost:6379"
@@ -60,12 +60,12 @@ app.route("/api/modelkit", createModelKitRouter(modelKit));
 ### React UI
 
 ```bash
-npm install @modelkit/studio
+npm install @benrobo/modelkit-studio
 ```
 
 ```tsx
-import { ModelKitStudio } from "@modelkit/studio";
-import "@modelkit/studio/styles";
+import { ModelKitStudio } from "@benrobo/modelkit-studio";
+import "@benrobo/modelkit-studio/styles";
 
 <ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />
 ```
@@ -120,7 +120,7 @@ Both `createModelKitRouter()` (Hono) and `createModelKitExpressRouter()` (Expres
 ## Custom Storage Adapter
 
 ```typescript
-import type { StorageAdapter } from "modelkit";
+import type { StorageAdapter } from "@benrobo/modelkit";
 
 function createMyAdapter(): StorageAdapter {
   return {

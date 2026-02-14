@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from "react";
-import type { OpenRouterModelId } from "modelkit";
+import type { OpenRouterModelId } from "@benrobo/modelkit";
 import { cn } from "../utils/cn";
 import { useOverrides } from "../hooks/useOverrides";
 import { ModelSelector } from "./ModelSelector";

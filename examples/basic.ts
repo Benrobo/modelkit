@@ -1,4 +1,4 @@
-import { createModelKit, createRedisAdapter } from "modelkit";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
 
 const adapter = createRedisAdapter({
   url: process.env.REDIS_URL || "redis://localhost:6379"

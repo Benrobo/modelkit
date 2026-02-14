@@ -199,7 +199,7 @@ theme="amber"
 ### Method 1: Using Preset Themes
 
 ```tsx
-import { ModelKitStudio } from "@modelkit/studio";
+import { ModelKitStudio } from "@benrobo/modelkit-studio";
 
 <ModelKitStudio apiUrl={apiUrl} theme="choco" />
 ```
@@ -207,7 +207,7 @@ import { ModelKitStudio } from "@modelkit/studio";
 ### Method 2: Import Theme Objects
 
 ```tsx
-import { ModelKitStudio, oceanTheme, chocoTheme } from "@modelkit/studio";
+import { ModelKitStudio, oceanTheme, chocoTheme } from "@benrobo/modelkit-studio";
 
 <ModelKitStudio apiUrl={apiUrl} theme={oceanTheme} />
 ```
@@ -217,7 +217,7 @@ import { ModelKitStudio, oceanTheme, chocoTheme } from "@modelkit/studio";
 **IMPORTANT**: Define the theme object separately with an explicit type annotation for TypeScript autocomplete:
 
 ```tsx
-import { ModelKitStudio, type StudioThemeOverride } from "@modelkit/studio";
+import { ModelKitStudio, type StudioThemeOverride } from "@benrobo/modelkit-studio";
 
 // Define custom theme with type-safe autocomplete
 const customTheme: StudioThemeOverride = {
@@ -247,7 +247,7 @@ const customTheme: StudioThemeOverride = {
 ### Method 4: Full Custom Theme
 
 ```tsx
-import { type StudioTheme } from "@modelkit/studio";
+import { type StudioTheme } from "@benrobo/modelkit-studio";
 
 const myTheme: StudioTheme = {
   colors: {
@@ -389,7 +389,7 @@ Ensure sufficient contrast between:
 
 To get full TypeScript autocomplete when creating custom themes:
 
-1. **Always import the type**: `import { type StudioThemeOverride } from "@modelkit/studio"`
+1. **Always import the type**: `import { type StudioThemeOverride } from "@benrobo/modelkit-studio"`
 2. **Define theme separately**: Don't define inline in JSX
 3. **Use explicit type annotation**: `const myTheme: StudioThemeOverride = { ... }`
 
@@ -412,7 +412,7 @@ Export your custom themes from a dedicated file:
 
 ```typescript
 // themes.ts
-import { type StudioTheme } from "@modelkit/studio";
+import { type StudioTheme } from "@benrobo/modelkit-studio";
 
 export const corporateTheme: StudioTheme = {
   // ... theme definition
@@ -433,7 +433,7 @@ import { corporateTheme } from "./themes";
 ## Troubleshooting
 
 ### Theme not applying
-- Ensure you've imported `@modelkit/studio/styles`
+- Ensure you've imported `@benrobo/modelkit-studio/styles`
 - Check that CSS variables are being set on `.modelkit-studio` root element
 - Verify theme object structure matches `StudioTheme` or `StudioThemeOverride` type
 

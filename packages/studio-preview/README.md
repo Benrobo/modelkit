@@ -14,7 +14,7 @@ Dev app for the Studio component. Uses mock or the example API server.
    - Terminal 1: `cd packages/studio && bun run dev` (watch build)
    - Terminal 2: `cd packages/studio-preview && bun run dev`
 
-When you edit files in `packages/studio`, the studio rebuilds and the preview **reloads automatically** (no need to stop/restart the preview). The preview is configured to watch the linked `@modelkit/studio` package.
+When you edit files in `packages/studio`, the studio rebuilds and the preview **reloads automatically** (no need to stop/restart the preview). The preview is configured to watch the linked `@benrobo/modelkit-studio` package.
 
 ## With real API
 
@@ -23,7 +23,7 @@ When you edit files in `packages/studio`, the studio rebuilds and the preview **
 bun run --filter modelkit-api-server dev
 
 # Terminal 2: preview pointed at API
-VITE_API_URL=http://localhost:3456 bun run --filter @modelkit/studio-preview dev
+VITE_API_URL=http://localhost:3456 bun run --filter @benrobo/modelkit-studio-preview dev
 ```
 
 Then open http://localhost:3480.

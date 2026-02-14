@@ -1,11 +1,11 @@
-# @modelkit/studio
+# @benrobo/modelkit-studio
 
 React UI for managing ModelKit overrides.
 
 ## Installation
 
 ```bash
-npm install @modelkit/studio
+npm install @benrobo/modelkit-studio
 ```
 
 ## Quick Start
@@ -33,8 +33,8 @@ app.route("/api/modelkit", createModelKitRouter(modelKit));
 Then use the Studio UI:
 
 ```tsx
-import { ModelKitStudio } from "@modelkit/studio";
-import "@modelkit/studio/styles";
+import { ModelKitStudio } from "@benrobo/modelkit-studio";
+import "@benrobo/modelkit-studio/styles";
 
 <ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />;
 ```
@@ -71,7 +71,7 @@ import {
   crimsonTheme,
   cyanTheme,
   amberTheme,
-} from "@modelkit/studio";
+} from "@benrobo/modelkit-studio";
 
 // Use a preset theme
 <ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme={chocoTheme} />
@@ -97,7 +97,7 @@ import {
 **Important:** To get TypeScript autocomplete for custom themes, define the theme object separately with an explicit type annotation:
 
 ```tsx
-import { ModelKitStudio, type StudioThemeOverride } from "@modelkit/studio";
+import { ModelKitStudio, type StudioThemeOverride } from "@benrobo/modelkit-studio";
 
 // Define custom theme
 const customTheme: StudioThemeOverride = {
@@ -173,7 +173,7 @@ All properties are optional - only override what you need. Unspecified values wi
 Import the CSS:
 
 ```tsx
-import "@modelkit/studio/styles";
+import "@benrobo/modelkit-studio/styles";
 ```
 
 Override classes:

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { cn } from "../utils/cn";
-import type { ModelOverride } from "modelkit";
+import type { ModelOverride } from "@benrobo/modelkit";
 
 export interface FeatureCardProps {
   featureId: string;

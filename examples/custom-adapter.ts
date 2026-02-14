@@ -1,4 +1,4 @@
-import { createModelKit, type StorageAdapter, type ModelOverride } from "modelkit";
+import { createModelKit, type StorageAdapter, type ModelOverride } from "@benrobo/modelkit";
 import { readFileSync, writeFileSync } from "fs";
 
 function createFileAdapter(filepath: string): StorageAdapter {

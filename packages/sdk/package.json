@@ -1,6 +1,10 @@
 {
-  "name": "modelkit",
+  "name": "@benrobo/modelkit",
+  "pricing": false,
   "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Type-safe, zero-downtime AI model configuration management with runtime overrides",
   "keywords": [
     "ai",
@@ -12,17 +16,17 @@
     "runtime-override",
     "zero-downtime"
   ],
-  "homepage": "https://github.com/benaiah/modelkit#readme",
+  "homepage": "https://github.com/benrobo/modelkit#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/benaiah/modelkit.git",
+    "url": "https://github.com/benrobo/modelkit.git",
     "directory": "packages/sdk"
   },
   "bugs": {
-    "url": "https://github.com/benaiah/modelkit/issues"
+    "url": "https://github.com/benrobo/modelkit/issues"
   },
   "license": "MIT",
-  "author": "Benaiah",
+  "author": "benrobo",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

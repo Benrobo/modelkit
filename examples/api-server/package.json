@@ -9,8 +9,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "hono": "^4.6.0",
-    "modelkit": "workspace:*"
+    "@benrobo/modelkit": "workspace:*",
+    "hono": "^4.6.0"
   },
   "devDependencies": {
     "@types/bun": "latest",

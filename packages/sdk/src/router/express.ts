@@ -13,7 +13,7 @@ import type { ModelKit } from "../types.js";
  * @example
  * ```ts
  * import express from "express";
- * import { createModelKit, createRedisAdapter, createModelKitExpressRouter } from "modelkit";
+ * import { createModelKit, createRedisAdapter, createModelKitExpressRouter } from "@benrobo/modelkit";
  *
  * const app = express();
  * app.use(express.json());

@@ -1,4 +1,4 @@
-import type { ModelOverride } from "modelkit";
+import type { ModelOverride } from "@benrobo/modelkit";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { TacticalToast } from "../components/TacticalToast";

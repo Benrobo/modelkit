@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release of ModelKit
 - Core SDK (`modelkit`) for type-safe AI model configuration management
-- React Studio UI (`@modelkit/studio`) for visual configuration management
+- React Studio UI (`@benrobo/modelkit-studio`) for visual configuration management
 - Redis and in-memory storage adapters
 - Runtime override system with zero-downtime updates
 - Two-tier caching strategy (in-memory + Redis)
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Memory storage adapter for development
 - Custom storage adapter support
 
-**Studio (`@modelkit/studio`):**
+**Studio (`@benrobo/modelkit-studio`):**
 - `<ModelKitStudio />` - Main React component
 - Light and dark theme presets
 - Custom theme override system with deep partial support

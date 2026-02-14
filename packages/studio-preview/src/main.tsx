@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
-import { ModelKitStudio, type StudioThemeOverride } from "@modelkit/studio";
-import "@modelkit/studio/styles";
+import { ModelKitStudio, type StudioThemeOverride } from "@benrobo/modelkit-studio";
+import "@benrobo/modelkit-studio/styles";
 import "./styles/globals.css";
 
 const apiUrl =
