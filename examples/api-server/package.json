@@ -1,0 +1,19 @@
+{
+  "name": "modelkit-api-server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "modelkit": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.7.2"
+  }
+}

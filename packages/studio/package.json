@@ -1,0 +1,78 @@
+{
+  "name": "@modelkit/studio",
+  "version": "0.1.0",
+  "description": "React UI components for ModelKit - manage AI model configurations with live updates and theme customization",
+  "keywords": [
+    "modelkit",
+    "react",
+    "ui",
+    "ai",
+    "llm",
+    "configuration",
+    "typescript",
+    "react-component"
+  ],
+  "homepage": "https://github.com/benaiah/modelkit#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benaiah/modelkit.git",
+    "directory": "packages/studio"
+  },
+  "bugs": {
+    "url": "https://github.com/benaiah/modelkit/issues"
+  },
+  "license": "MIT",
+  "author": "Benaiah",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build && postcss src/styles/globals.css -o dist/styles.css",
+    "dev": "vite build --watch",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.5",
+    "@fontsource-variable/jetbrains-mono": "^5.2.5",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@tanstack/react-query": "^5.90.12",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.2"
+  },
+  "peerDependencies": {
+    "modelkit": "^0.1.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.17",
+    "@tailwindcss/vite": "^4.0.17",
+    "postcss-cli": "^11.0.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.1.0",
+    "vite-plugin-dts": "^4.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

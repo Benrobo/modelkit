@@ -1,0 +1,27 @@
+{
+  "name": "@modelkit/studio-preview",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "cd ../studio && bun run build",
+    "dev": "vite",
+    "build": "vite build",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelkit/studio": "workspace:*",
+    "modelkit": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.17",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.1.0"
+  }
+}

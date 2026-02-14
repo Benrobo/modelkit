@@ -1,0 +1,58 @@
+{
+  "name": "modelkit",
+  "version": "0.1.0",
+  "description": "Type-safe, zero-downtime AI model configuration management with runtime overrides",
+  "keywords": [
+    "ai",
+    "llm",
+    "model-config",
+    "configuration",
+    "redis",
+    "typescript",
+    "runtime-override",
+    "zero-downtime"
+  ],
+  "homepage": "https://github.com/benaiah/modelkit#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benaiah/modelkit.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/benaiah/modelkit/issues"
+  },
+  "license": "MIT",
+  "author": "Benaiah",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1",
+    "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.13",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
