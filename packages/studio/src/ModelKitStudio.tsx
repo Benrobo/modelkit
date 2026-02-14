@@ -161,7 +161,6 @@ function ModelKitStudioInner({
   );
 }
 
-/** ModelKit Studio root component. Props are type-safe; use IDE autocomplete for theme, classNames, etc. */
 export function ModelKitStudio({
   apiUrl,
   theme = "dark",
