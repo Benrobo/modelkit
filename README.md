@@ -1,37 +1,42 @@
 # ModelKit
 
-Type-safe AI model configuration with zero-downtime runtime overrides.
+Type-safe, runtime-overridable model configuration for apps that already call AI APIs (Vercel AI SDK, OpenRouter, etc.). You keep your API keys and inference; ModelKit supplies the model ID—and optional parameters—so you can change which model a feature uses without redeploying.
 
-Change models and parameters on the fly without redeploying your app.
+## Problems ModelKit solves
+
+- **Model choice is fixed in code or config.** Changing which model a feature uses (for cost, quality, or an outage) usually means editing code or config and redeploying.
+- **Only engineers can switch models.** Product or ops can’t roll back or tune models without a deploy.
+- **Feature and model IDs are untyped.** Typos and invalid model IDs show up at runtime instead of at build time.
+
+ModelKit moves model selection to runtime: your app calls `getModel(featureId, fallback)`, gets the effective model ID (from overrides or fallback), and passes it to your existing SDK. Overrides are stored in Redis and editable via API or Studio—no redeploy required. Not a managed inference service.
 
 ## Features
 
-- Type-safe with 340+ OpenRouter models
-- Zero-downtime configuration updates
-- Redis-backed persistence
-- React UI for visual management
-- In-memory caching for performance
+- **Type-safe:** generated feature IDs and 340+ OpenRouter model IDs; invalid IDs fail at compile time
+- **Runtime overrides:** change model and parameters per feature in production without redeploying
+- **Redis-backed persistence** with in-memory caching (60s TTL)
+- **Studio:** Visual interface for overrides; mount it in your app and point it at your ModelKit API so non-engineers can list and edit overrides
 
 ## Packages
 
 | Package                                       | Version                                                                                                                     | Description                                 |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | [@benrobo/modelkit](./packages/sdk)           | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit.svg)](https://www.npmjs.com/package/@benrobo/modelkit)               | Core SDK for model configuration management |
-| [@benrobo/modelkit-studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit-studio.svg)](https://www.npmjs.com/package/@benrobo/modelkit-studio) | React UI for visual model management        |
+| [@benrobo/modelkit-studio](./packages/studio) | [![npm](https://img.shields.io/npm/v/@benrobo/modelkit-studio.svg)](https://www.npmjs.com/package/@benrobo/modelkit-studio) | Visual interface for overrides (mount in your app, point at ModelKit API) |
 
 ## Studio
 
-ModelKit Studio is a React UI that connects to **your existing backend**—the one where you’ve already configured the ModelKit SDK. You pass it the backend URL (e.g. your API base + the route where the ModelKit router is mounted), and Studio uses that to list overrides, set/clear them, and show live SDK examples.
+Studio is a visual interface for your overrides: list, set, or clear them and view live SDK examples. You mount it in your app (e.g. in your routes) and pass the backend URL that exposes the ModelKit API—your API base plus the route where the ModelKit router is mounted (e.g. `https://api.yourapp.com/api/modelkit`).
 
-**Supported backends:** only **Hono** and **Express** are supported for now (via `createModelKitHonoRouter` and `createModelKitExpressRouter`).
+**Supported backends:** Hono and Express (`createModelKitHonoRouter`, `createModelKitExpressRouter`).
 
 ![ModelKit Studio](screenshots/prev-2.png)
 
-What you get:
+Capabilities:
 
-- Switch models and parameters per feature without touching code
-- See all active overrides and edit temperature, max tokens, top P/K in real time
-- Non-engineers can manage model selection; useful for rollbacks and cost tuning
+- Change model and parameters per feature without code changes
+- View all active overrides and edit temperature, max tokens, top P/K
+- Allow non-engineers to manage model selection (rollbacks, cost tuning)
 
 Install and mount the component (import the styles once so it renders correctly):
 
@@ -47,7 +52,7 @@ import "@benrobo/modelkit-studio/styles";
 <ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />;
 ```
 
-Use your real backend URL for `apiUrl` (e.g. `https://api.yourapp.com/api/modelkit` in production). See [packages/studio/README.md](./packages/studio/README.md) for themes and props.
+Use your production backend URL for `apiUrl`. See [packages/studio/README.md](./packages/studio/README.md) for themes and props.
 
 ## Quick Start
 
@@ -114,46 +119,95 @@ await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
 await modelKit.getModel("invalid", "gpt-4");
 ```
 
-### React UI (Studio)
+## Examples
 
-Install [@benrobo/modelkit-studio](./packages/studio), then point it at your backend’s ModelKit API URL. See [Studio](#studio) for the screenshot, setup, and supported backends (Hono and Express).
+ModelKit returns a model ID string (e.g. `anthropic/claude-3.5-sonnet`). You pass it to your AI provider with your own API key. Inference and keys remain in your app.
 
-## Use Cases
+### With Vercel AI SDK + OpenRouter
 
-- A/B test different models without redeploying
-- Switch to cheaper models for cost optimization
-- Emergency fallback during model outages
-- Adjust parameters (temperature, tokens) in production
-- Different models per environment (dev/staging/prod)
+```bash
+npm install ai @openrouter/ai-sdk-provider @benrobo/modelkit
+```
 
-## How It Works
+```typescript
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { streamText } from "ai";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+
+const modelKit = createModelKit(createRedisAdapter({ url: process.env.REDIS_URL }));
+
+// In your route or handler: get the effective model ID, then stream with your key
+const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+const result = streamText({
+  model: openrouter(modelId),
+  messages: [{ role: "user", content: "Hello" }],
+});
+// Use result as usual (e.g. pipe to response)
+```
+
+### With OpenRouter HTTP API
+
+```typescript
+const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+
+const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: modelId,
+    messages: [{ role: "user", content: "Hello" }],
+  }),
+});
+```
+
+Your API key and the request/response cycle stay in your server; ModelKit only determines which `model` value to send.
+
+### Studio
+
+Install [@benrobo/modelkit-studio](./packages/studio), mount it in your app, and point it at the URL that exposes your ModelKit API. See [Studio](#studio) for setup and supported backends (Hono, Express).
+
+## Use cases
+
+- A/B test models or switch to a cheaper model without redeploying
+- Roll back or adjust parameters (temperature, tokens) in production
+- Let product or ops change model selection for a feature
+- Use a fallback model when Redis is unavailable (no code change)
+
+## How it works
 
 ```
 getModel(featureId, fallbackModel)
-  ↓
-1. Check in-memory cache (60s TTL)
-  ↓
-2. Check Redis override
-  ↓
-3. Return fallbackModel
+  → in-memory cache (60s TTL)
+  → Redis override (if set)
+  → fallbackModel
 ```
 
-The fallback model ensures your app works even if Redis is down.
+If Redis is unavailable, the fallback is used so the app continues to run.
 
 ## SDK API
 
 ```typescript
-await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
+// getModel: returns the effective model ID (string). Use this when calling your AI provider.
+const modelId = await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
 
+// setOverride: persist a runtime override (modelId required; temperature, maxTokens, topP, topK optional).
 await modelKit.setOverride("feature-id", {
   modelId: "anthropic/claude-opus-4",
   temperature: 0.9,
   maxTokens: 4096,
 });
 
-await modelKit.getConfig("feature-id");
-await modelKit.listOverrides();
-await modelKit.clearOverride("feature-id");
+// getConfig: returns the full override for a feature, or null. Use when you need params (e.g. temperature), not just the ID.
+const config = await modelKit.getConfig("feature-id"); // { modelId, temperature?, maxTokens?, ... } | null
+
+await modelKit.listOverrides();   // All overrides: [{ featureId, override }, ...]
+await modelKit.clearOverride("feature-id");   // Remove override; getModel will return fallback
 ```
 
 ## REST API

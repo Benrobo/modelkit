@@ -33,6 +33,8 @@
   </script>
   <style>
     body { font-family: "JetBrains Mono", ui-monospace, monospace; background-color: #0a0e14; }
+    ::selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
+    ::-moz-selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
     .grid-bg {
       background-image:
         linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
@@ -113,7 +115,7 @@
   </aside>
   <main class="docs-main px-4 sm:px-6 lg:px-10 py-10 max-w-3xl">
     <h1 class="text-2xl font-bold text-primary uppercase tracking-wide mb-2">Studio</h1>
-    <p class="text-text-secondary text-sm mb-8">React UI that connects to your backend. Pass the API URL; list, set, and clear overrides with live SDK examples. Hono and Express only.</p>
+    <p class="text-text-secondary text-sm mb-8">Visual interface for your overrides: list, set, and clear them, and view live SDK snippets. Mount Studio in your app and pass the backend URL that exposes the ModelKit API (e.g. your API base + the route where the ModelKit router is mounted). Supported backends: Hono, Express.</p>
 
     <section class="mb-10">
       <div class="relative border border-border mb-6">

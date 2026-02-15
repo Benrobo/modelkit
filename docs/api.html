@@ -32,6 +32,8 @@
   </script>
   <style>
     body { font-family: "JetBrains Mono", ui-monospace, monospace; background-color: #0a0e14; }
+    ::selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
+    ::-moz-selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
     .grid-bg {
       background-image:
         linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
@@ -90,17 +92,23 @@
       <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-4">SDK API</h2>
       <div class="code-wrap">
         <span class="code-lang">typescript</span>
-        <pre><code class="language-typescript">await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
+        <pre><code class="language-typescript">// Returns the effective model ID (string) to pass to your AI SDK. Uses override if set, else fallback.
+const modelId = await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
+// → e.g. "anthropic/claude-3.5-sonnet" or "anthropic/claude-opus-4" if overridden
 
+// Set or update the runtime override for a feature. modelId required; temperature, maxTokens, topP, topK optional.
 await modelKit.setOverride("feature-id", {
   modelId: "anthropic/claude-opus-4",
   temperature: 0.9,
   maxTokens: 4096,
 });
 
-await modelKit.getConfig("feature-id");
-await modelKit.listOverrides();
-await modelKit.clearOverride("feature-id");</code></pre>
+// Returns the full override for a feature (modelId, temperature, maxTokens, etc.) or null if no override.
+const config = await modelKit.getConfig("feature-id");
+// → { modelId, temperature?, maxTokens?, ... } | null — use when you need params, not just the ID
+
+await modelKit.listOverrides();   // All overrides: [{ featureId, override }, ...]
+await modelKit.clearOverride("feature-id");   // Remove override; getModel will use fallback</code></pre>
       </div>
     </section>
 

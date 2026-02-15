@@ -44,6 +44,14 @@
         font-family: "JetBrains Mono", ui-monospace, monospace;
         background-color: #0a0e14;
       }
+      ::selection {
+        background: rgba(0, 245, 255, 0.35);
+        color: #fff;
+      }
+      ::-moz-selection {
+        background: rgba(0, 245, 255, 0.35);
+        color: #fff;
+      }
       .grid-bg {
         background-image: linear-gradient(
             rgba(0, 245, 255, 0.02) 1px,
@@ -170,9 +178,15 @@
       <h1 class="text-2xl font-bold text-primary uppercase tracking-wide mb-2">
         Quick Start
       </h1>
-      <p class="text-text-secondary text-sm mb-8">
-        Install the SDK, wire your backend (Hono or Express), and optionally
-        generate types.
+      <p class="text-text-secondary text-sm mb-4">
+        Install the SDK, configure your backend (Hono or Express), and optionally
+        generate types. ModelKit supplies the model ID your app uses with your
+        existing AI SDK; your API keys and inference stay in your code.
+      </p>
+      <p class="text-text-muted text-xs mb-8">
+        Not a managed inference service. Overrides are stored in Redis and
+        editable via API or Studio so you can change which model a feature uses
+        without redeploying.
       </p>
 
       <div class="space-y-8">
@@ -206,7 +220,7 @@ const adapter = createRedisAdapter({
 });
 const modelKit = createModelKit(adapter);
 
-// Resolve the effective model ID for feature "chatbot", falling back to the given default
+// getModel returns the effective model ID (string). Pass it to your AI SDK; override or fallback is resolved here.
 const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
 
 // Mount the ModelKit REST API and Studio under /api/modelkit
@@ -262,10 +276,56 @@ await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet"); // ✅
 await modelKit.getModel("invalid", "gpt-4"); // ❌ compile error</code></pre>
           </div>
           <p class="text-sm text-text-muted mt-3">
-            For the React UI, see
+            For Studio, see
             <a href="studio.html" class="text-primary hover:underline">Studio</a
             >.
           </p>
+        </section>
+        <section>
+          <h2
+            class="text-xs font-bold text-primary uppercase tracking-widest mb-3"
+          >
+            5. Examples — use the model ID with your SDK
+          </h2>
+          <p class="text-sm text-text-secondary mb-4">
+            <code class="bg-background/80 px-1 border border-border text-xs">getModel</code> returns the effective model ID (string). Use <code class="bg-background/80 px-1 border border-border text-xs">getConfig(featureId)</code> when you need the full override (temperature, maxTokens, etc.) instead of just the ID. Pass the ID to your SDK with your own API key; inference remains in your app.
+          </p>
+          <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-2 mt-6">
+            Vercel AI SDK + OpenRouter
+          </h3>
+          <div class="code-wrap mb-6">
+            <span class="code-lang">typescript</span>
+            <pre><code class="language-typescript">import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { streamText } from "ai";
+
+// In your route: get effective model ID, then stream with your key
+const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+const result = streamText({
+  model: openrouter(modelId),
+  messages: [{ role: "user", content: "Hello" }],
+});</code></pre>
+          </div>
+          <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-2 mt-6">
+            OpenRouter HTTP API
+          </h3>
+          <div class="code-wrap">
+            <span class="code-lang">typescript</span>
+            <pre><code class="language-typescript">const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet");
+
+const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: modelId,
+    messages: [{ role: "user", content: "Hello" }],
+  }),
+});</code></pre>
+          </div>
         </section>
       </div>
       <footer class="mt-16 pt-8 border-t border-border">

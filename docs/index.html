@@ -6,7 +6,7 @@
   <title>ModelKit — Type-safe AI model configuration</title>
   <!-- Open Graph -->
   <meta property="og:title" content="ModelKit — Type-safe AI model configuration" />
-  <meta property="og:description" content="Type-safe AI model configuration with zero-downtime runtime overrides. Change models and parameters on the fly without redeploying." />
+  <meta property="og:description" content="Type-safe, runtime-overridable model configuration. Change which model a feature uses without redeploying; your API keys and inference stay in your app." />
   <meta property="og:image" content="https://benrobo.github.io/modelkit/assets/og.png" />
   <meta property="og:url" content="https://benrobo.github.io/modelkit/" />
   <meta property="og:type" content="website" />
@@ -37,6 +37,8 @@
   </script>
   <style>
     body { font-family: "JetBrains Mono", ui-monospace, monospace; background-color: #0a0e14; }
+    ::selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
+    ::-moz-selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
     .grid-bg {
       background-image:
         linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
@@ -105,8 +107,8 @@
     <!-- Hero -->
     <section class="pt-16 pb-20 sm:pt-24 sm:pb-28">
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary uppercase tracking-wide mb-4">ModelKit</h1>
-      <p class="text-xl sm:text-2xl text-text-secondary max-w-2xl mb-6">Type-safe AI model configuration with zero-downtime runtime overrides.</p>
-      <p class="text-text-muted text-sm sm:text-base max-w-xl mb-10">Change models and parameters on the fly without redeploying. Hono and Express supported.</p>
+      <p class="text-xl sm:text-2xl text-text-secondary max-w-2xl mb-4">Type-safe, runtime-overridable model configuration for your existing AI stack.</p>
+      <p class="text-text-muted text-sm sm:text-base max-w-xl mb-6">API keys and inference remain in your application (Vercel AI SDK, OpenRouter, or any provider). ModelKit provides the model ID and optional parameters at runtime, so the model used per feature can be changed without redeploying. Not a managed inference service. Supported backends: Hono, Express.</p>
       <div class="flex flex-wrap gap-4">
         <a href="quick-start.html" class="inline-block px-6 py-3 border-2 border-primary bg-primary text-background font-bold text-sm uppercase tracking-wider hover:bg-transparent hover:text-primary transition-colors">Get started</a>
         <a href="studio.html" class="inline-block px-6 py-3 border-2 border-border text-text-secondary font-bold text-sm uppercase tracking-wider hover:border-primary hover:text-primary transition-colors">Studio</a>
@@ -114,9 +116,22 @@
       </div>
     </section>
 
-    <!-- Features grid -->
+    <!-- Problems we solve -->
     <section class="py-12 border-t border-border">
-      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-8 flex items-center gap-2">
+      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-6 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 bg-primary"></span> Problems ModelKit solves
+      </h2>
+      <div class="relative border border-border bg-surface/50 p-6 max-w-2xl mb-8">
+        <span class="corner-tl"></span>
+        <span class="corner-br"></span>
+        <ul class="text-sm text-text-secondary space-y-2 list-none">
+          <li><strong class="text-text">Model choice is fixed in code or config.</strong> Changing which model a feature uses (e.g. for cost, quality, or an outage) means editing code or config and redeploying.</li>
+          <li><strong class="text-text">Only engineers can switch models.</strong> Product or ops can’t roll back or tune models without a deploy.</li>
+          <li><strong class="text-text">Feature and model IDs are untyped.</strong> Typos and invalid model IDs surface at runtime instead of at build time.</li>
+        </ul>
+        <p class="text-sm text-text-secondary mt-4">ModelKit moves model selection to runtime: your app calls <code class="bg-background/80 px-1 border border-border text-xs">getModel(featureId, fallback)</code>, gets the effective model ID (from overrides or fallback), and passes it to your existing SDK. Overrides are stored in Redis and editable via API or Studio—no redeploy required.</p>
+      </div>
+      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-6 flex items-center gap-2">
         <span class="w-1.5 h-1.5 bg-primary"></span> Why ModelKit
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -124,19 +139,19 @@
           <span class="corner-tl"></span>
           <span class="corner-br"></span>
           <p class="text-sm font-bold text-primary uppercase tracking-wider mb-2">Type-safe</p>
-          <p class="text-sm text-text-secondary">340+ OpenRouter models with generated feature IDs and autocomplete.</p>
+          <p class="text-sm text-text-secondary">Generated feature IDs and 340+ OpenRouter model IDs; invalid IDs fail at compile time.</p>
         </div>
         <div class="relative border border-border bg-surface/60 p-5">
           <span class="corner-tl"></span>
           <span class="corner-br"></span>
-          <p class="text-sm font-bold text-primary uppercase tracking-wider mb-2">Zero downtime</p>
-          <p class="text-sm text-text-secondary">Update models and params in production without redeploys.</p>
+          <p class="text-sm font-bold text-primary uppercase tracking-wider mb-2">Runtime overrides</p>
+          <p class="text-sm text-text-secondary">Change model and parameters per feature in production without redeploying.</p>
         </div>
         <div class="relative border border-border bg-surface/60 p-5">
           <span class="corner-tl"></span>
           <span class="corner-br"></span>
-          <p class="text-sm font-bold text-primary uppercase tracking-wider mb-2">React UI</p>
-          <p class="text-sm text-text-secondary">Studio connects to your backend; non-engineers can manage overrides.</p>
+          <p class="text-sm font-bold text-primary uppercase tracking-wider mb-2">Studio</p>
+          <p class="text-sm text-text-secondary">Studio: visual interface to list and edit overrides so non-engineers can manage model selection.</p>
         </div>
       </div>
     </section>
@@ -149,8 +164,8 @@
       <div class="relative border border-border bg-surface/50 p-6 max-w-2xl">
         <span class="corner-tl"></span>
         <span class="corner-br"></span>
-        <p class="text-sm text-text-secondary font-mono">getModel(featureId, fallback)</p>
-        <p class="text-xs text-text-muted mt-2">→ In-memory cache (60s) → Redis override → or return fallback. Your app keeps running even if Redis is down.</p>
+        <p class="text-sm text-text-secondary font-mono">getModel(featureId, fallback) → effective model ID</p>
+        <p class="text-xs text-text-muted mt-2">Pass that ID into your SDK (Vercel AI, OpenRouter, etc.) with your own API key. Lookup order: in-memory cache (60s) → Redis override → fallback. If Redis is unavailable, the fallback is used so the app continues to run.</p>
       </div>
     </section>
 
@@ -161,8 +176,8 @@
       </h2>
       <div class="grid lg:grid-cols-2 gap-8 items-center">
         <div>
-          <p class="text-sm text-text-secondary mb-4">A React UI that points at your backend URL. List overrides, set/clear them, and see live SDK examples. Hono and Express only.</p>
-          <a href="studio.html" class="inline-block text-primary font-bold text-sm uppercase tracking-wider hover:underline">Read Studio docs →</a>
+          <p class="text-sm text-text-secondary mb-4">Studio is a visual interface for your overrides: list, set, or clear them and view live SDK snippets. You mount it in your app and point it at the route that exposes the ModelKit API (e.g. <code class="bg-background/80 px-1 border border-border text-xs">/api/modelkit</code>). Supported backends: Hono, Express.</p>
+          <a href="studio.html" class="inline-block text-primary font-bold text-sm uppercase tracking-wider hover:underline">Studio documentation →</a>
         </div>
         <div class="relative border border-border">
           <span class="corner-tl"></span>
@@ -182,15 +197,15 @@
       <div class="grid sm:grid-cols-3 gap-4">
         <a href="quick-start.html" class="block p-4 border border-border bg-surface/50 hover:border-primary hover:bg-surface/80 transition-colors">
           <span class="text-sm font-bold text-primary uppercase tracking-wider">Quick start</span>
-          <p class="text-xs text-text-muted mt-1">Install, backend (Hono/Express), type safety</p>
+          <p class="text-xs text-text-muted mt-1">Installation, backend setup, type safety, examples (Vercel AI SDK, OpenRouter)</p>
         </a>
         <a href="studio.html" class="block p-4 border border-border bg-surface/50 hover:border-primary hover:bg-surface/80 transition-colors">
           <span class="text-sm font-bold text-primary uppercase tracking-wider">Studio</span>
-          <p class="text-xs text-text-muted mt-1">Props, themes, styling, install</p>
+          <p class="text-xs text-text-muted mt-1">Installation, props, themes, styling</p>
         </a>
         <a href="api.html" class="block p-4 border border-border bg-surface/50 hover:border-primary hover:bg-surface/80 transition-colors">
           <span class="text-sm font-bold text-primary uppercase tracking-wider">API</span>
-          <p class="text-xs text-text-muted mt-1">SDK, REST endpoints, custom storage</p>
+          <p class="text-xs text-text-muted mt-1">SDK methods, REST endpoints, custom storage adapter</p>
         </a>
       </div>
     </section>
