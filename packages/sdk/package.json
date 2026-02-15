@@ -1,7 +1,7 @@
 {
   "name": "@benrobo/modelkit",
   "pricing": false,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publishConfig": {
     "access": "public"
   },
@@ -57,6 +57,7 @@
     "dev": "tsup src/index.ts src/router/hono.ts src/router/express.ts --format esm --dts --watch",
     "type-check": "tsc --noEmit",
     "generate:models": "bun scripts/generate-models.ts",
+    "generate:features:types": "bun scripts/generate.ts",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {

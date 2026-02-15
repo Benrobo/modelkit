@@ -51,7 +51,7 @@ export function FeatureDetail({
 
   if (overridesLoading) {
     return (
-      <div className="p-mk-xl text-mk-text-muted text-sm animate-pulse">
+      <div className="mk:p-mk-xl mk:text-mk-text-muted mk:text-sm mk:animate-pulse">
         Loading...
       </div>
     );
@@ -104,29 +104,29 @@ export function FeatureDetail({
   return (
     <TacticalPanel
       className={cn(
-        "bg-mk-surface/50 border border-mk-border/40 h-full flex flex-col overflow-hidden",
+        "mk:bg-mk-surface/50 mk:border mk:border-mk-border/40 mk:h-full mk:flex mk:flex-col mk:overflow-hidden",
         className
       )}
     >
-      <div className="p-mk-xl border-b border-mk-border/50 flex items-start justify-between gap-mk-lg flex-shrink-0">
-        <div className="flex-1 min-w-0">
-          <label className="block text-[10px] font-bold text-mk-text-secondary uppercase tracking-widest mb-1.5">
+      <div className="mk:p-mk-xl mk:border-b mk:border-mk-border/50 mk:flex mk:items-start mk:justify-between mk:gap-mk-lg mk:flex-shrink-0">
+        <div className="mk:flex-1 mk:min-w-0">
+          <label className="mk:block mk:text-[10px] mk:font-bold mk:text-mk-text-secondary mk:uppercase mk:tracking-widest mk:mb-1.5">
             Feature ID
           </label>
-          <div className="flex items-center gap-3">
+          <div className="mk:flex mk:items-center mk:gap-3">
             <input
               type="text"
               value={editingFeatureId}
               onChange={(e) => setEditingFeatureId(e.target.value)}
-              className="flex-1 px-3 py-2 bg-mk-surface border border-mk-border text-mk-text text-base font-bold focus:border-mk-border-accent focus:outline-none"
+              className="mk:flex-1 mk:px-3 mk:py-2 mk:bg-mk-surface mk:border mk:border-mk-border mk:text-mk-text mk:text-base mk:font-bold mk:focus:border-mk-border-accent mk:focus:outline-none"
             />
             {/* {!isNewOverride && (
-              <div className="px-3 py-1.5 bg-mk-primary text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
+              <div className="mk:px-3 mk:py-1.5 mk:bg-mk-primary mk:text-mk-background mk:text-[10px] mk:font-bold mk:uppercase mk:tracking-widest mk:shrink-0">
                 ACTIVE OVERRIDE
               </div>
             )} */}
             {isNewOverride && (
-              <div className="px-3 py-1.5 bg-mk-text-muted text-mk-background text-[10px] font-bold uppercase tracking-widest shrink-0">
+              <div className="mk:px-3 mk:py-1.5 mk:bg-mk-text-muted mk:text-mk-background mk:text-[10px] mk:font-bold mk:uppercase mk:tracking-widest mk:shrink-0">
                 NEW
               </div>
             )}
@@ -137,23 +137,23 @@ export function FeatureDetail({
           <button
             onClick={handleReset}
             disabled={isUpdating}
-            className="text-mk-color-error/70 hover:text-mk-color-error text-xs font-bold uppercase tracking-widest transition-colors px-4 py-2.5 border border-mk-color-error/20 hover:bg-mk-color-error/5 shrink-0 self-end"
+            className="mk:text-mk-color-error/70 mk:hover:text-mk-color-error mk:text-xs mk:font-bold mk:uppercase mk:tracking-widest mk:transition-colors mk:px-4 mk:py-2.5 mk:border mk:border-mk-color-error/20 mk:hover:bg-mk-color-error/5 mk:shrink-0 mk:self-end"
           >
             Clear Override
           </button>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-mk-xl space-y-mk-xl custom-scrollbar min-h-0">
-        <section className="space-y-mk-xl animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="flex items-center gap-2 mb-mk-md">
-            <div className="w-1.5 h-1.5 bg-mk-primary shadow-[0_0_8px_rgba(var(--mk-primary-rgb),0.5)]" />
-            <h3 className="text-sm font-mk-mono font-bold text-mk-text uppercase tracking-widest">
+      <div className="mk:flex-1 mk:overflow-y-auto mk:p-mk-xl mk:space-y-mk-xl custom-scrollbar mk:min-h-0">
+        <section className="mk:space-y-mk-xl mk:animate-in mk:fade-in mk:slide-in-from-top-4 mk:duration-500">
+          <div className="mk:flex mk:items-center mk:gap-2 mk:mb-mk-md">
+            <div className="mk:w-1.5 mk:h-1.5 mk:bg-mk-primary mk:shadow-[0_0_8px_rgba(var(--mk-primary-rgb),0.5)]" />
+            <h3 className="mk:text-sm mk:font-mk-mono mk:font-bold mk:text-mk-text mk:uppercase mk:tracking-widest">
               Override Parameters
             </h3>
           </div>
 
-          <div className="space-y-mk-xl pl-mk-md border-l-2 border-mk-border/20">
+          <div className="mk:space-y-mk-xl mk:pl-mk-md mk:border-l-2 mk:border-mk-border/20">
             <ModelSelector value={modelId} onChange={setModelId} />
             <ParameterEditor
               temperature={temperature}
@@ -167,13 +167,13 @@ export function FeatureDetail({
             />
           </div>
 
-          <div className="pt-mk-xl flex flex-col sm:flex-row gap-mk-md border-t border-mk-border/10 flex-shrink-0">
+          <div className="mk:pt-mk-xl mk:flex mk:flex-col mk:sm:flex-row mk:gap-mk-md mk:border-t mk:border-mk-border/10 mk:flex-shrink-0">
             <button
               onClick={handleCommit}
               disabled={!isModified || isUpdating || !modelId}
               className={cn(
-                "flex-1 border border-mk-primary bg-mk-primary text-mk-background px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all",
-                "hover:bg-transparent hover:text-mk-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                "mk:flex-1 mk:border mk:border-mk-primary mk:bg-mk-primary mk:text-mk-background mk:px-8 mk:py-4 mk:text-sm mk:font-bold mk:uppercase mk:tracking-widest mk:transition-all",
+                "mk:hover:bg-transparent mk:hover:text-mk-primary mk:disabled:opacity-30 mk:disabled:cursor-not-allowed"
               )}
             >
               {isUpdating
@@ -200,8 +200,8 @@ export function FeatureDetail({
               }}
               disabled={!isModified || isUpdating}
               className={cn(
-                "flex-1 border border-mk-border text-mk-text-muted px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all",
-                "hover:text-mk-text hover:bg-mk-surface-hover disabled:opacity-30"
+                "mk:flex-1 mk:border mk:border-mk-border mk:text-mk-text-muted mk:px-8 mk:py-4 mk:text-sm mk:font-bold mk:uppercase mk:tracking-widest mk:transition-all",
+                "mk:hover:text-mk-text mk:hover:bg-mk-surface-hover mk:disabled:opacity-30"
               )}
             >
               Discard Changes
@@ -210,18 +210,18 @@ export function FeatureDetail({
         </section>
 
         {/* Usage Examples Section */}
-        <section className="space-y-mk-md animate-in fade-in slide-in-from-top-6 duration-700 delay-150">
-          <div className="flex items-center gap-2 mb-mk-md">
-            <div className="w-1.5 h-1.5 bg-mk-text-secondary/50 shadow-[0_0_8px_rgba(var(--mk-text-secondary-rgb),0.3)]" />
-            <h3 className="text-sm font-mk-mono font-bold text-mk-text-secondary uppercase tracking-widest">
+        <section className="mk:space-y-mk-md mk:animate-in mk:fade-in mk:slide-in-from-top-6 mk:duration-700 mk:delay-150">
+          <div className="mk:flex mk:items-center mk:gap-2 mk:mb-mk-md">
+            <div className="mk:w-1.5 mk:h-1.5 mk:bg-mk-text-secondary/50 mk:shadow-[0_0_8px_rgba(var(--mk-text-secondary-rgb),0.3)]" />
+            <h3 className="mk:text-sm mk:font-mk-mono mk:font-bold mk:text-mk-text-secondary mk:uppercase mk:tracking-widest">
               SDK Usage Examples
             </h3>
           </div>
 
-          <div className="pl-mk-md border-l-2 border-mk-border/10 space-y-mk-lg">
+          <div className="mk:pl-mk-md mk:border-l-2 mk:border-mk-border/10 mk:space-y-mk-lg">
             {/* Get Model */}
-            <div className="space-y-2">
-              <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+            <div className="mk:space-y-2">
+              <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
                 Get Model
               </p>
               <SyntaxHighlighter
@@ -251,8 +251,8 @@ export function FeatureDetail({
             </div>
 
             {/* Set Override */}
-            <div className="space-y-2">
-              <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+            <div className="mk:space-y-2">
+              <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
                 Set Override
               </p>
               <SyntaxHighlighter
@@ -282,8 +282,8 @@ export function FeatureDetail({
             </div>
 
             {/* Get Config */}
-            <div className="space-y-2">
-              <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+            <div className="mk:space-y-2">
+              <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
                 Get Configuration
               </p>
               <SyntaxHighlighter
@@ -320,8 +320,8 @@ export function FeatureDetail({
 
             {/* Clear Override */}
             {override && (
-              <div className="space-y-2">
-                <p className="text-xs text-mk-text-muted font-bold uppercase tracking-wide">
+              <div className="mk:space-y-2">
+                <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
                   Clear Override
                 </p>
                 <SyntaxHighlighter
@@ -347,11 +347,11 @@ export function FeatureDetail({
             )}
 
             {/* Type Safety Hint */}
-            <div className="mt-mk-lg p-mk-md bg-mk-surface/30 border border-mk-border/20">
-              <p className="text-xs text-mk-text-muted leading-relaxed">
-                <span className="font-bold text-mk-primary">💡 Tip:</span>{" "}
+            <div className="mk:mt-mk-lg mk:p-mk-md mk:bg-mk-surface/30 mk:border mk:border-mk-border/20">
+              <p className="mk:text-xs mk:text-mk-text-muted mk:leading-relaxed">
+                <span className="mk:font-bold mk:text-mk-primary">💡 Tip:</span>{" "}
                 Generate TypeScript types for autocomplete:{" "}
-                <code className="px-2 py-0.5 bg-mk-background/80 border border-mk-border/30 text-mk-text text-xs font-mono">
+                <code className="mk:px-2 mk:py-0.5 mk:bg-mk-background/80 mk:border mk:border-mk-border/30 mk:text-mk-text mk:text-xs mk:font-mono">
                   npx modelkit-generate --api-url &lt;url&gt;
                 </code>
               </p>

@@ -8,10 +8,10 @@ export interface TacticalPanelProps {
 
 export function TacticalPanel({ children, className }: TacticalPanelProps) {
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("mk:relative", className)}>
       {/* Top-left corner */}
       <div
-        className="absolute w-3 h-3 pointer-events-none z-10"
+        className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none mk:z-10"
         style={{
           top: "-1px",
           left: "-1px",
@@ -22,7 +22,7 @@ export function TacticalPanel({ children, className }: TacticalPanelProps) {
 
       {/* Top-right corner */}
       <div
-        className="absolute w-3 h-3 pointer-events-none z-10"
+        className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none mk:z-10"
         style={{
           top: "-1px",
           right: "-1px",
@@ -33,7 +33,7 @@ export function TacticalPanel({ children, className }: TacticalPanelProps) {
 
       {/* Bottom-left corner */}
       <div
-        className="absolute w-3 h-3 pointer-events-none z-10"
+        className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none mk:z-10"
         style={{
           bottom: "-1px",
           left: "-1px",
@@ -44,7 +44,7 @@ export function TacticalPanel({ children, className }: TacticalPanelProps) {
 
       {/* Bottom-right corner */}
       <div
-        className="absolute w-3 h-3 pointer-events-none z-10"
+        className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none mk:z-10"
         style={{
           bottom: "-1px",
           right: "-1px",

@@ -94,7 +94,7 @@ function ModelKitStudioInner({
   return (
     <div
       className={cn(
-        "modelkit-studio h-screen overflow-hidden bg-mk-background text-mk-text selection:bg-mk-primary/30 flex flex-col",
+        "modelkit-studio mk:h-screen mk:overflow-hidden mk:bg-mk-background mk:text-mk-text mk:selection:bg-mk-primary/30 mk:flex mk:flex-col",
         className
       )}
       style={themeVars}
@@ -126,19 +126,19 @@ function ModelKitStudioInner({
         }
       />
 
-      <main className="flex-1 min-h-0 flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full px-mk-lg pb-mk-xl gap-mk-xl overflow-hidden">
-        <TacticalPanel className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col min-h-0 border border-mk-border/40 bg-mk-surface overflow-hidden">
+      <main className="mk:flex-1 mk:min-h-0 mk:flex mk:flex-col mk:md:flex-row mk:max-w-screen-2xl mk:mx-auto mk:w-full mk:px-mk-lg mk:pb-mk-xl mk:gap-mk-xl mk:overflow-hidden">
+        <TacticalPanel className="mk:w-full mk:md:w-80 mk:lg:w-96 mk:shrink-0 mk:flex mk:flex-col mk:min-h-0 mk:border mk:border-mk-border/40 mk:bg-mk-surface mk:overflow-hidden">
           <FeatureList
             onSelectFeature={goToDetail}
-            className={cn("p-4", classNames.featureList)}
+            className={cn("mk:p-4", classNames.featureList)}
           />
         </TacticalPanel>
 
-        <section className="flex-1 min-w-0 relative">
+        <section className="mk:flex-1 mk:min-w-0 mk:relative">
           {selectedFeatureId ? (
             <div
               key={selectedFeatureId}
-              className="animate-in fade-in slide-in-from-right-4 duration-500 h-full"
+              className="mk:animate-in mk:fade-in mk:slide-in-from-right-4 mk:duration-500 mk:h-full"
             >
               <FeatureDetail
                 featureId={selectedFeatureId}
@@ -147,8 +147,8 @@ function ModelKitStudioInner({
               />
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-mk-text-muted border border-mk-border border-dashed p-mk-xl">
-              <div className="text-sm uppercase tracking-wider text-center">
+            <div className="mk:h-full mk:flex mk:flex-col mk:items-center mk:justify-center mk:text-mk-text-muted mk:border mk:border-mk-border mk:border-dashed mk:p-mk-xl">
+              <div className="mk:text-sm mk:uppercase mk:tracking-wider mk:text-center">
                 Select a configuration from the registry
                 <br />
                 to begin editing

@@ -45,28 +45,28 @@ export function CreateOverrideModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <TacticalPanel className="w-full max-w-2xl bg-mk-surface border border-mk-border">
+    <div className="mk:fixed mk:inset-0 mk:z-50 mk:flex mk:items-center mk:justify-center mk:bg-black/70 mk:backdrop-blur-sm mk:p-4">
+      <TacticalPanel className="mk:w-full mk:max-w-2xl mk:bg-mk-surface mk:border mk:border-mk-border">
         <form
           onSubmit={handleSubmit}
-          className="p-mk-xl space-y-mk-lg max-h-[85vh] overflow-y-auto"
+          className="mk:p-mk-xl mk:space-y-mk-lg mk:max-h-[85vh] mk:overflow-y-auto"
         >
-          <div className="flex items-center justify-between border-b border-mk-border pb-mk-md">
-            <h2 className="text-xl font-bold text-mk-text uppercase tracking-tight">
+          <div className="mk:flex mk:items-center mk:justify-between mk:border-b mk:border-mk-border mk:pb-mk-md">
+            <h2 className="mk:text-xl mk:font-bold mk:text-mk-text mk:uppercase mk:tracking-tight">
               Create New Override
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="text-mk-text-secondary hover:text-mk-text px-2 py-1"
+              className="mk:text-mk-text-secondary mk:hover:text-mk-text mk:px-2 mk:py-1"
             >
               ✕
             </button>
           </div>
 
-          <div className="space-y-mk-md">
+          <div className="mk:space-y-mk-md">
             <div>
-              <label className="block text-xs font-bold text-mk-text-secondary uppercase tracking-wide mb-2">
+              <label className="mk:block mk:text-xs mk:font-bold mk:text-mk-text-secondary mk:uppercase mk:tracking-wide mk:mb-2">
                 Feature ID
               </label>
               <input
@@ -74,7 +74,7 @@ export function CreateOverrideModal({
                 value={featureId}
                 onChange={(e) => setFeatureId(e.target.value)}
                 placeholder="my-feature-id"
-                className="w-full px-3 py-2 bg-mk-background/50 border border-mk-border text-mk-text focus:border-mk-primary/50 focus:outline-none"
+                className="mk:w-full mk:px-3 mk:py-2 mk:bg-mk-background/50 mk:border mk:border-mk-border mk:text-mk-text mk:focus:border-mk-primary/50 mk:focus:outline-none"
                 autoFocus
                 required
               />
@@ -94,14 +94,14 @@ export function CreateOverrideModal({
             />
           </div>
 
-          <div className="flex gap-mk-md pt-mk-md border-t border-mk-border">
+          <div className="mk:flex mk:gap-mk-md mk:pt-mk-md mk:border-t mk:border-mk-border">
             <button
               type="submit"
               disabled={isCreating || !featureId.trim() || !modelId}
               className={cn(
-                "flex-1 px-6 py-3 uppercase font-bold tracking-wide transition-colors",
-                "bg-mk-primary text-mk-background hover:bg-mk-primary/90",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
+                "mk:flex-1 mk:px-6 mk:py-3 mk:uppercase mk:font-bold mk:tracking-wide mk:transition-colors",
+                "mk:bg-mk-primary mk:text-mk-background mk:hover:bg-mk-primary/90",
+                "mk:disabled:opacity-50 mk:disabled:cursor-not-allowed"
               )}
             >
               {isCreating ? "Creating..." : "Create Override"}
@@ -109,7 +109,7 @@ export function CreateOverrideModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 uppercase font-bold tracking-wide transition-colors border border-mk-border text-mk-text hover:bg-mk-surface-hover"
+              className="mk:flex-1 mk:px-6 mk:py-3 mk:uppercase mk:font-bold mk:tracking-wide mk:transition-colors mk:border mk:border-mk-border mk:text-mk-text mk:hover:bg-mk-surface-hover"
             >
               Cancel
             </button>

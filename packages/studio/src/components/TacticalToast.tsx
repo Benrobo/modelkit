@@ -35,10 +35,10 @@ export function TacticalToast({
   const color = colors[type];
 
   return (
-    <div className="relative inline-block">
+    <div className="mk:relative mk:inline-block">
       {/* Main toast content */}
       <div
-        className="px-4 py-3 min-w-[300px] relative"
+        className="mk:px-4 mk:py-3 mk:min-w-[300px] mk:relative"
         style={{
           background: color.bg,
           border: `1px solid ${color.border}`,
@@ -46,7 +46,7 @@ export function TacticalToast({
       >
         {/* Top-left corner */}
         <div
-          className="absolute w-3 h-3 pointer-events-none"
+          className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none"
           style={{
             top: "-1px",
             left: "-1px",
@@ -57,7 +57,7 @@ export function TacticalToast({
 
         {/* Top-right corner */}
         <div
-          className="absolute w-3 h-3 pointer-events-none"
+          className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none"
           style={{
             top: "-1px",
             right: "-1px",
@@ -68,7 +68,7 @@ export function TacticalToast({
 
         {/* Bottom-left corner */}
         <div
-          className="absolute w-3 h-3 pointer-events-none"
+          className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none"
           style={{
             bottom: "-1px",
             left: "-1px",
@@ -79,7 +79,7 @@ export function TacticalToast({
 
         {/* Bottom-right corner */}
         <div
-          className="absolute w-3 h-3 pointer-events-none"
+          className="mk:absolute mk:w-3 mk:h-3 mk:pointer-events-none"
           style={{
             bottom: "-1px",
             right: "-1px",
@@ -88,7 +88,7 @@ export function TacticalToast({
           }}
         />
 
-        <div className="text-mk-text text-sm uppercase tracking-wide font-medium">
+        <div className="mk:text-mk-text mk:text-sm mk:uppercase mk:tracking-wide mk:font-medium">
           {message}
         </div>
       </div>

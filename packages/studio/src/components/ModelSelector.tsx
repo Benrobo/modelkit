@@ -99,13 +99,13 @@ export function ModelSelector({
 
   if (loading) {
     return (
-      <div className={cn("space-y-1", className)}>
-        <label className="text-sm font-medium text-mk-text-secondary block">
+      <div className={cn("mk:space-y-1", className)}>
+        <label className="mk:text-sm mk:font-medium mk:text-mk-text-secondary mk:block">
           Model
         </label>
         <div
           className={cn(
-            "w-full border border-mk-border bg-mk-surface px-3 py-2 text-mk-text-secondary text-sm font-mk-mono",
+            "mk:w-full mk:border mk:border-mk-border mk:bg-mk-surface mk:px-3 mk:py-2 mk:text-mk-text-secondary mk:text-sm mk:font-mk-mono",
           )}
         >
           Loading models from OpenRouter…
@@ -116,11 +116,11 @@ export function ModelSelector({
 
   if (error) {
     return (
-      <div className={cn("space-y-1", className)}>
-        <label className="text-sm font-medium text-mk-text-secondary block">
+      <div className={cn("mk:space-y-1", className)}>
+        <label className="mk:text-sm mk:font-medium mk:text-mk-text-secondary mk:block">
           Model
         </label>
-        <div className="text-mk-color-error text-sm">
+        <div className="mk:text-mk-color-error mk:text-sm">
           Failed to load models: {error.message}
         </div>
       </div>
@@ -128,8 +128,8 @@ export function ModelSelector({
   }
 
   return (
-    <div className={cn("space-y-1.5", className)}>
-      <label className="text-[10px] font-mk-mono font-bold text-mk-text-muted uppercase tracking-wider block">
+    <div className={cn("mk:space-y-1.5", className)}>
+      <label className="mk:text-[10px] mk:font-mk-mono mk:font-bold mk:text-mk-text-muted mk:uppercase mk:tracking-wider mk:block">
         Model Engine
       </label>
       <Popover open={open} onOpenChange={setOpen}>
@@ -137,34 +137,34 @@ export function ModelSelector({
           <button
             type="button"
             className={cn(
-              "w-full flex items-center justify-between gap-2 border border-mk-border bg-mk-background/50 px-3 py-2.5 text-xs font-mk-mono text-mk-text",
-              "hover:border-mk-primary/30 focus:outline-none focus:border-mk-primary/50 transition-all group",
+              "mk:w-full mk:flex mk:items-center mk:justify-between mk:gap-2 mk:border mk:border-mk-border mk:bg-mk-background/50 mk:px-3 mk:py-2.5 mk:text-xs mk:font-mk-mono mk:text-mk-text",
+              "mk:hover:border-mk-primary/30 mk:focus:outline-none mk:focus:border-mk-primary/50 mk:transition-all mk:group",
             )}
           >
-            <span className="truncate text-left group-hover:text-mk-primary transition-colors">
+            <span className="mk:truncate mk:text-left mk:group-hover:text-mk-primary mk:transition-colors">
               {displayLabel}
             </span>
-            <ChevronDownIcon className="shrink-0 text-mk-text-muted group-hover:text-mk-primary transition-colors" />
+            <ChevronDownIcon className="mk:shrink-0 mk:text-mk-text-muted mk:group-hover:text-mk-primary mk:transition-colors" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="max-h-80 flex flex-col p-0">
-          <div className="sticky top-0 z-10 border-b border-mk-border bg-mk-surface p-2">
-            <div className="flex items-center gap-2 border border-mk-border bg-mk-background px-2 py-1.5">
-              <SearchIcon className="shrink-0 text-mk-text-secondary" />
+        <PopoverContent align="start" className="mk:max-h-80 mk:flex mk:flex-col mk:p-0">
+          <div className="mk:sticky mk:top-0 mk:z-10 mk:border-b mk:border-mk-border mk:bg-mk-surface mk:p-2">
+            <div className="mk:flex mk:items-center mk:gap-2 mk:border mk:border-mk-border mk:bg-mk-background mk:px-2 mk:py-1.5">
+              <SearchIcon className="mk:shrink-0 mk:text-mk-text-secondary" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search models…"
                 className={cn(
-                  "min-w-0 flex-1 bg-transparent text-sm font-mk-mono text-mk-text",
-                  "placeholder:text-mk-text-secondary focus:outline-none",
+                  "mk:min-w-0 mk:flex-1 mk:bg-transparent mk:text-sm mk:font-mk-mono mk:text-mk-text",
+                  "mk:placeholder:text-mk-text-secondary mk:focus:outline-none",
                 )}
                 aria-label="Search models"
               />
             </div>
           </div>
-          <div className="min-h-0 overflow-y-auto">
+          <div className="mk:min-h-0 mk:overflow-y-auto">
             {!valueInList && value && (
               <button
                 type="button"
@@ -173,15 +173,15 @@ export function ModelSelector({
                   setOpen(false);
                 }}
                 className={cn(
-                  "w-full px-3 py-2 text-left text-sm font-mk-mono border-b border-mk-border",
-                  "bg-mk-primary/10 text-mk-primary hover:bg-mk-primary/20",
+                  "mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mk-mono mk:border-b mk:border-mk-border",
+                  "mk:bg-mk-primary/10 mk:text-mk-primary mk:hover:bg-mk-primary/20",
                 )}
               >
                 {getModelDisplayName(value)} (current)
               </button>
             )}
             {filtered.providers.length === 0 ? (
-              <div className="px-3 py-4 text-center text-sm font-mk-mono text-mk-text-secondary">
+              <div className="mk:px-3 mk:py-4 mk:text-center mk:text-sm mk:font-mk-mono mk:text-mk-text-secondary">
                 {query ? "No models match your search" : "No models available"}
               </div>
             ) : (
@@ -189,7 +189,7 @@ export function ModelSelector({
                 const models = filtered.modelsByProvider[provider] ?? [];
                 return (
                   <div key={provider}>
-                    <div className="px-3 py-1.5 text-xs font-mk-mono font-medium text-mk-text-secondary border-b border-mk-border bg-mk-background">
+                    <div className="mk:px-3 mk:py-1.5 mk:text-xs mk:font-mk-mono mk:font-medium mk:text-mk-text-secondary mk:border-b mk:border-mk-border mk:bg-mk-background">
                       {provider}
                     </div>
                     {models.map((model) => {
@@ -208,10 +208,10 @@ export function ModelSelector({
                             setOpen(false);
                           }}
                           className={cn(
-                            "w-full px-3 py-2 text-left text-sm font-mk-mono transition-colors cursor-pointer",
+                            "mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mk-mono mk:transition-colors mk:cursor-pointer",
                             isSelected
-                              ? "bg-mk-primary/10 text-mk-primary"
-                              : "text-mk-text hover:bg-mk-surface-hover hover:text-mk-primary",
+                              ? "mk:bg-mk-primary/10 mk:text-mk-primary"
+                              : "mk:text-mk-text mk:hover:bg-mk-surface-hover mk:hover:text-mk-primary",
                           )}
                         >
                           {label}

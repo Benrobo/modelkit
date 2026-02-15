@@ -35,12 +35,12 @@ export function ThemeSelector({
         <button
           type="button"
           className={cn(
-            "px-3 py-1.5 border border-mk-border bg-mk-surface text-xs uppercase tracking-wide transition-colors",
-            "hover:border-mk-primary hover:text-mk-primary",
-            "flex items-center gap-2"
+            "mk:px-3 mk:py-1.5 mk:border mk:border-mk-border mk:bg-mk-surface mk:text-xs mk:uppercase mk:tracking-wide mk:transition-colors",
+            "mk:hover:border-mk-primary mk:hover:text-mk-primary",
+            "mk:flex mk:items-center mk:gap-2"
           )}
         >
-          <span className="w-3 h-3 bg-mk-primary border border-mk-border" />
+          <span className="mk:w-3 mk:h-3 mk:bg-mk-primary mk:border mk:border-mk-border" />
           <span>{currentThemeData?.label || "Theme"}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -57,9 +57,9 @@ export function ThemeSelector({
           </svg>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-64 p-2">
-        <div className="space-y-1">
-          <div className="px-2 py-1.5 text-[10px] uppercase tracking-wider text-mk-text-secondary font-bold border-b border-mk-border mb-2">
+      <PopoverContent align="end" className="mk:w-64 mk:p-2">
+        <div className="mk:space-y-1">
+          <div className="mk:px-2 mk:py-1.5 mk:text-[10px] mk:uppercase mk:tracking-wider mk:text-mk-text-secondary mk:font-bold mk:border-b mk:border-mk-border mk:mb-2">
             Select Theme
           </div>
           {THEMES.map((theme) => {
@@ -73,15 +73,15 @@ export function ThemeSelector({
                   setOpen(false);
                 }}
                 className={cn(
-                  "w-full px-3 py-2 text-left text-sm font-mk-mono transition-colors cursor-pointer",
-                  "hover:bg-mk-surface-hover",
+                  "mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mk-mono mk:transition-colors mk:cursor-pointer",
+                  "mk:hover:bg-mk-surface-hover",
                   isSelected
-                    ? "bg-mk-primary/10 text-mk-primary border-l-2 border-mk-primary"
-                    : "text-mk-text"
+                    ? "mk:bg-mk-primary/10 mk:text-mk-primary mk:border-l-2 mk:border-mk-primary"
+                    : "mk:text-mk-text"
                 )}
               >
-                <div className="font-medium">{theme.label}</div>
-                <div className="text-xs text-mk-text-secondary">
+                <div className="mk:font-medium">{theme.label}</div>
+                <div className="mk:text-xs mk:text-mk-text-secondary">
                   {theme.description}
                 </div>
               </button>

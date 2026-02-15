@@ -19,39 +19,39 @@ export function Navigation({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 mk-glass flex items-center justify-between px-mk-lg py-mk-md mb-mk-xl border-b border-mk-border",
-        className,
+        "mk:sticky mk:top-0 mk:z-50 mk-glass mk:flex mk:items-center mk:justify-between mk:px-mk-lg mk:py-mk-md mk:mb-mk-xl mk:border-b mk:border-mk-border",
+        className
       )}
     >
-      <div className="flex items-center gap-mk-xl">
-        <div className="flex items-center gap-mk-md">
+      <div className="mk:flex mk:items-center mk:gap-mk-xl">
+        <div className="mk:flex mk:items-center mk:gap-mk-md">
           {showBack && (
             <button
               type="button"
               onClick={onBack}
-              className="flex items-center gap-2 text-mk-text-secondary hover:text-mk-primary text-xs uppercase tracking-wide transition-colors group border border-mk-border hover:border-mk-primary px-3 py-1"
+              className="mk:flex mk:items-center mk:gap-2 mk:text-mk-text-secondary mk:hover:text-mk-primary mk:text-xs mk:uppercase mk:tracking-wide mk:transition-colors mk:group mk:border mk:border-mk-border mk:hover:border-mk-primary mk:px-3 mk:py-1"
             >
-              <span className="group-hover:-translate-x-1 transition-transform">
+              <span className="mk:group-hover:-translate-x-1 mk:transition-transform">
                 ←
               </span>
               <span>Back</span>
             </button>
           )}
-          <div className="flex items-center gap-mk-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-mk-primary" />
-              <h1 className="text-sm font-bold text-mk-primary tracking-wide uppercase">
+          <div className="mk:flex mk:items-center mk:gap-mk-sm">
+            <div className="mk:flex mk:items-center mk:gap-2">
+              <div className="mk:w-1.5 mk:h-1.5 mk:bg-mk-primary" />
+              <h1 className="mk:text-sm mk:font-bold mk:text-mk-primary mk:tracking-wide mk:uppercase">
                 {title}
               </h1>
             </div>
-            <div className="h-4 w-px bg-mk-border hidden sm:block" />
-            <span className="text-[10px] text-mk-text-secondary hidden sm:block uppercase tracking-wider">
+            <div className="mk:h-4 mk:w-px mk:bg-mk-border mk:hidden mk:sm:block" />
+            <span className="mk:text-[10px] mk:text-mk-text-secondary mk:hidden mk:sm:block mk:uppercase mk:tracking-wider">
               Production Environment
             </span>
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-mk-md">{actions}</div>
+      <div className="mk:flex mk:items-center mk:gap-mk-md">{actions}</div>
     </header>
   );
 }

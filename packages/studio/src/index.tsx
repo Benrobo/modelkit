@@ -1,3 +1,5 @@
+import "./styles/globals.css";
+
 export { ModelKitStudio } from "./ModelKitStudio";
 export type {
   ModelKitStudioProps,

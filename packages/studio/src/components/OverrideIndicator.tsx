@@ -19,34 +19,34 @@ export function OverrideIndicator({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2 gap-mk-lg font-mk-mono",
+        "mk:grid mk:grid-cols-1 mk:sm:grid-cols-2 mk:gap-mk-lg mk:font-mk-mono",
         className,
       )}
     >
-      <div className="space-y-2">
-        <span className="text-[11px] text-mk-text-muted uppercase tracking-widest block font-bold">
+      <div className="mk:space-y-2">
+        <span className="mk:text-[11px] mk:text-mk-text-muted mk:uppercase mk:tracking-widest mk:block mk:font-bold">
           Primary Configuration
         </span>
-        <div className="p-mk-md bg-mk-background/50 border border-mk-border text-sm text-mk-text-secondary">
+        <div className="mk:p-mk-md mk:bg-mk-background/50 mk:border mk:border-mk-border mk:text-sm mk:text-mk-text-secondary">
           {getModelDisplayName(defaultModelId)}
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="mk:space-y-2">
         <span
           className={cn(
-            "text-[11px] uppercase tracking-widest block font-bold",
-            hasOverride ? "text-mk-primary" : "text-mk-text-muted",
+            "mk:text-[11px] mk:uppercase mk:tracking-widest mk:block mk:font-bold",
+            hasOverride ? "mk:text-mk-primary" : "mk:text-mk-text-muted",
           )}
         >
           Registry Override
         </span>
         <div
           className={cn(
-            "p-mk-md border text-sm transition-all duration-300",
+            "mk:p-mk-md mk:border mk:text-sm mk:transition-all mk:duration-300",
             hasOverride
-              ? "bg-mk-primary/5 border-mk-primary/30 text-mk-primary font-bold shadow-[0_0_15px_rgba(var(--mk-primary-rgb),0.05)]"
-              : "bg-mk-background/50 border-mk-border text-mk-text-muted italic",
+              ? "mk:bg-mk-primary/5 mk:border-mk-primary/30 mk:text-mk-primary mk:font-bold mk:shadow-[0_0_15px_rgba(var(--mk-primary-rgb),0.05)]"
+              : "mk:bg-mk-background/50 mk:border-mk-border mk:text-mk-text-muted mk:italic",
           )}
         >
           {hasOverride

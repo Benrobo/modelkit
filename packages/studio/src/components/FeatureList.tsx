@@ -26,7 +26,7 @@ export function FeatureList({
 
   if (loading) {
     return (
-      <div className="p-mk-xl text-mk-text-secondary text-sm animate-pulse">
+      <div className="mk:p-mk-xl mk:text-mk-text-secondary mk:text-sm mk:animate-pulse">
         Loading overrides...
       </div>
     );
@@ -34,7 +34,7 @@ export function FeatureList({
 
   if (error) {
     return (
-      <div className="p-mk-xl text-mk-color-error text-sm border border-mk-color-error/20 bg-mk-color-error/5">
+      <div className="mk:p-mk-xl mk:text-mk-color-error mk:text-sm mk:border mk:border-mk-color-error/20 mk:bg-mk-color-error/5">
         Error: {error.message}
       </div>
     );
@@ -51,24 +51,24 @@ export function FeatureList({
         />
       )}
 
-      <div className={cn("flex flex-col h-full", className)}>
-        <div className="mb-4 flex-shrink-0 space-y-2">
-          <div className="relative">
+      <div className={cn("mk:flex mk:flex-col mk:h-full", className)}>
+        <div className="mk:mb-4 mk:flex-shrink-0 mk:space-y-2">
+          <div className="mk:relative">
             <input
               type="text"
               placeholder="Search overrides..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
-                "w-full bg-mk-surface border border-mk-border px-4 py-2.5 text-sm text-mk-text",
-                "focus:outline-none focus:border-mk-primary transition-colors placeholder:text-mk-text-muted"
+                "mk:w-full mk:bg-mk-surface mk:border mk:border-mk-border mk:px-4 mk:py-2.5 mk:text-sm mk:text-mk-text",
+                "mk:focus:outline-none mk:focus:border-mk-primary mk:transition-colors mk:placeholder:text-mk-text-muted"
               )}
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-mk-text-muted hover:text-mk-primary transition-colors"
+                className="mk:absolute mk:right-3 mk:top-1/2 mk:-translate-y-1/2 mk:text-mk-text-muted mk:hover:text-mk-primary mk:transition-colors"
               >
                 ×
               </button>
@@ -78,15 +78,15 @@ export function FeatureList({
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="w-full px-4 py-2.5 border border-mk-border bg-mk-primary hover:border-mk-primary text-white hover:text-mk-background transition-colors text-sm uppercase tracking-wide"
+            className="mk:w-full mk:px-4 mk:py-2.5 mk:border mk:border-mk-border mk:bg-mk-primary mk:hover:border-mk-primary mk:text-white mk:hover:text-mk-background mk:transition-colors mk:text-sm mk:uppercase mk:tracking-wide"
           >
             + New Override
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-0">
+        <div className="mk:flex-1 mk:overflow-y-auto mk:space-y-2 mk:pr-1 custom-scrollbar mk:min-h-0">
           {filteredOverrides.length === 0 ? (
-            <div className="text-mk-text-muted text-xs py-10 text-center uppercase tracking-wider border border-dashed border-mk-border">
+            <div className="mk:text-mk-text-muted mk:text-xs mk:py-10 mk:text-center mk:uppercase mk:tracking-wider mk:border mk:border-dashed mk:border-mk-border">
               {searchQuery ? "No matching overrides" : "No active overrides"}
             </div>
           ) : (
