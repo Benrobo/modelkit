@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API — ModelKit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#00f5ff",
+            surface: "#151b24",
+            background: "#0a0e14",
+            border: "#30363d",
+            "text-muted": "#6e7681",
+            "text-secondary": "#8b949e",
+            "text": "#e6edf3",
+          },
+          fontFamily: { mono: ["JetBrains Mono", "ui-monospace", "monospace"] },
+          borderRadius: { none: "0" },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: "JetBrains Mono", ui-monospace, monospace; background-color: #0a0e14; }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .docs-sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 14rem;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid #30363d;
+      background: rgba(21, 27, 36, 0.98);
+    }
+    .docs-main { margin-left: 14rem; min-height: 100vh; }
+    .corner-tl { position: absolute; top: -1px; left: -1px; width: 10px; height: 10px; border-top: 2px solid #00f5ff; border-left: 2px solid #00f5ff; }
+    .corner-br { position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; border-bottom: 2px solid #00f5ff; border-right: 2px solid #00f5ff; }
+    .code-wrap { position: relative; border: 1px solid #30363d; }
+    .code-wrap .code-lang { position: absolute; top: 0; right: 0; padding: 6px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #6e7681; border-left: 1px solid #30363d; border-bottom: 1px solid #30363d; }
+    .code-wrap pre {
+      margin: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .code-wrap pre::-webkit-scrollbar { display: none; }
+    .code-wrap pre code { padding: 1rem 1.25rem; font-size: 13px; line-height: 1.5; }
+    .hljs { background: #0d1117 !important; padding: 1rem 1.25rem !important; }
+    @media (max-width: 768px) {
+      .docs-sidebar { position: relative; width: 100%; height: auto; border-right: 0; border-bottom: 1px solid #30363d; }
+      .docs-main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-text antialiased grid-bg">
+  <aside class="docs-sidebar p-4">
+    <a href="index.html" class="flex items-center gap-2 mb-4">
+      <span class="w-1.5 h-1.5 bg-primary"></span>
+      <span class="text-sm font-bold text-primary uppercase tracking-wide">ModelKit</span>
+    </a>
+    <a href="https://github.com/benrobo/modelkit" target="_blank" rel="noopener noreferrer" class="text-xs text-text-muted hover:text-primary transition-colors block mb-6">GitHub →</a>
+    <nav class="flex flex-col gap-1 text-xs uppercase tracking-wider">
+      <a href="index.html" class="text-text-muted hover:text-primary transition-colors py-1.5">Home</a>
+      <a href="quick-start.html" class="text-text-muted hover:text-primary transition-colors py-1.5">Quick start</a>
+      <a href="studio.html" class="text-text-muted hover:text-primary transition-colors py-1.5">Studio</a>
+      <a href="api.html" class="text-primary py-1.5">API</a>
+    </nav>
+  </aside>
+  <main class="docs-main px-4 sm:px-6 lg:px-10 py-10 max-w-3xl">
+    <h1 class="text-2xl font-bold text-primary uppercase tracking-wide mb-2">API</h1>
+    <p class="text-text-secondary text-sm mb-8">SDK methods, REST endpoints, and custom storage adapter.</p>
+
+    <section class="mb-10" id="sdk">
+      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-4">SDK API</h2>
+      <div class="code-wrap">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">await modelKit.getModel("feature-id", "anthropic/claude-3.5-sonnet");
+
+await modelKit.setOverride("feature-id", {
+  modelId: "anthropic/claude-opus-4",
+  temperature: 0.9,
+  maxTokens: 4096,
+});
+
+await modelKit.getConfig("feature-id");
+await modelKit.listOverrides();
+await modelKit.clearOverride("feature-id");</code></pre>
+      </div>
+    </section>
+
+    <section class="mb-10" id="rest">
+      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-4">REST API</h2>
+      <p class="text-sm text-text-secondary mb-4">Hono and Express routers expose:</p>
+      <div class="grid gap-2">
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 border border-border bg-surface/50">
+          <span class="text-xs font-mono text-primary font-bold">GET</span>
+          <span class="text-sm font-mono text-text">/overrides</span>
+          <span class="text-text-muted text-xs">List all</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 border border-border bg-surface/50">
+          <span class="text-xs font-mono text-primary font-bold">GET</span>
+          <span class="text-sm font-mono text-text">/overrides/:featureId</span>
+          <span class="text-text-muted text-xs">Get one</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 border border-border bg-surface/50">
+          <span class="text-xs font-mono text-primary font-bold">POST</span>
+          <span class="text-sm font-mono text-text">/overrides/:featureId</span>
+          <span class="text-text-muted text-xs">Set override</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 border border-border bg-surface/50">
+          <span class="text-xs font-mono text-primary font-bold">DELETE</span>
+          <span class="text-sm font-mono text-text">/overrides/:featureId</span>
+          <span class="text-text-muted text-xs">Clear override</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-10" id="custom-storage">
+      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-4">Custom Storage Adapter</h2>
+      <div class="code-wrap">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">import type { StorageAdapter } from "@benrobo/modelkit";
+
+function createMyAdapter(): StorageAdapter {
+  return {
+    async get(featureId) { /* ... */ },
+    async set(featureId, override) { /* ... */ },
+    async delete(featureId) { /* ... */ },
+    async list() { /* ... */ },
+  };
+}
+const modelKit = createModelKit(createMyAdapter());</code></pre>
+      </div>
+    </section>
+
+    <footer class="pt-8 border-t border-border">
+      <a href="index.html" class="text-sm text-text-muted hover:text-primary">← Home</a>
+    </footer>
+  </main>
+  <script>
+    document.querySelectorAll('pre code').forEach(function(el) { if (!el.classList.contains('hljs')) hljs.highlightElement(el); });
+  </script>
+</body>
+</html>

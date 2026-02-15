@@ -33,13 +33,13 @@ const app = new Hono();
 app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
 ```
 
-Then use the Studio UI:
+Then use the Studio UI (you must import the styles for the component to display correctly):
 
 ```tsx
 import { ModelKitStudio } from "@benrobo/modelkit-studio";
 import "@benrobo/modelkit-studio/styles";
 
-<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />;
+<ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" />
 ```
 
 ## Props
@@ -176,11 +176,13 @@ All properties are optional - only override what you need. Unspecified values wi
 
 ## Styling
 
-Import the CSS:
+Import the package CSS once (e.g. in your root layout or main entry):
 
 ```tsx
 import "@benrobo/modelkit-studio/styles";
 ```
+
+Studio uses Tailwind with the `mk:` prefix, so its classes won’t conflict with your app’s Tailwind.
 
 Override classes:
 

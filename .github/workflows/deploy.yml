@@ -1,4 +1,4 @@
-name: Deploy Studio Preview to GitHub Pages
+name: Deploy docs to GitHub Pages
 
 on:
   push:
@@ -21,31 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Build SDK
-        run: |
-          cd packages/sdk
-          bun run build
-
-      - name: Build Studio
-        run: |
-          cd packages/studio
-          bun run build
-
-      - name: Build Studio Preview
-        env:
-          GITHUB_PAGES: true
-        run: |
-          cd packages/studio-preview
-          bun run build
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
@@ -54,7 +29,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './packages/studio-preview/dist'
+          path: './docs'
 
   deploy:
     environment:
