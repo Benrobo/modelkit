@@ -253,11 +253,41 @@ Both `createModelKitHonoRouter()` and `createModelKitExpressRouter()` expose:
 
 ```typescript
 createModelKitHonoRouter(modelKit, {
-  studio?: boolean;       // Serve Studio UI. Default: true
-  studioPath?: string;    // Studio path relative to mount point. Default: "/studio"
+  studio?: boolean;             // Serve Studio UI. Default: true
+  studioPath?: string;          // Studio path relative to mount point. Default: "/studio"
   cors?: boolean | CorsOptions; // CORS (Hono only)
 });
 ```
+
+### Protecting routes (auth)
+
+The ModelKit router exposes write endpoints — anyone who can reach it can set or delete overrides and access Studio. Protect it by adding your own middleware on the mount path **before** the router.
+
+```typescript
+// Hono — add middleware on the same path before app.route()
+app.use("/api/modelkit/*", async (c, next) => {
+  if (c.req.header("Authorization") !== `Bearer ${process.env.MODELKIT_SECRET}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  await next();
+});
+
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
+```
+
+```typescript
+// Express — pass middleware as a second argument to app.use()
+const authGuard = (req, res, next) => {
+  if (req.headers.authorization !== `Bearer ${process.env.MODELKIT_SECRET}`) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+};
+
+app.use("/api/modelkit", authGuard, createModelKitExpressRouter(modelKit));
+```
+
+Any auth strategy works — JWT, session cookies, IP allowlist, etc.
 
 ## Custom Storage Adapter
 

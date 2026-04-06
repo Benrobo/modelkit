@@ -145,7 +145,7 @@ await modelKit.clearOverride("feature-id");   // Remove override; getModel will 
 
       <h3 class="text-xs font-bold text-text uppercase tracking-wider mb-3">Router options</h3>
       <p class="text-sm text-text-secondary mb-3">Both <code class="bg-background/80 px-1 border border-border text-xs">createModelKitHonoRouter</code> and <code class="bg-background/80 px-1 border border-border text-xs">createModelKitExpressRouter</code> accept an optional options object:</p>
-      <div class="code-wrap mb-4">
+      <div class="code-wrap mb-6">
         <span class="code-lang">typescript</span>
         <pre><code class="language-typescript">interface ModelKitRouterOptions {
   /** Serve the Studio UI. Default: true */
@@ -156,19 +156,37 @@ await modelKit.clearOverride("feature-id");   // Remove override; getModel will 
   cors?: boolean | CorsOptions;
 }
 
-// Examples
-createModelKitHonoRouter(modelKit)
-// → Studio at /api/modelkit/studio
-
-createModelKitHonoRouter(modelKit, { studio: false })
-// → Studio disabled
-
-createModelKitHonoRouter(modelKit, { studioPath: "/admin/ui" })
-// → Studio at /api/modelkit/admin/ui
-
-createModelKitHonoRouter(modelKit, { cors: true })
-// → CORS enabled with permissive defaults</code></pre>
+createModelKitHonoRouter(modelKit, { studio: false })         // disable Studio
+createModelKitHonoRouter(modelKit, { studioPath: "/admin" })  // custom path → /api/modelkit/admin</code></pre>
       </div>
+
+      <h3 class="text-xs font-bold text-text uppercase tracking-wider mb-2">Protecting routes (auth)</h3>
+      <p class="text-sm text-text-secondary mb-3">The ModelKit router exposes write endpoints — anyone who can reach it can set or delete overrides. Protect it with your own middleware registered on the mount path, <em>before</em> the router.</p>
+      <div class="code-wrap mb-4">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">// Hono — add middleware on the same path before app.route()
+app.use("/api/modelkit/*", async (c, next) => {
+  if (c.req.header("Authorization") !== `Bearer ${process.env.MODELKIT_SECRET}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  await next();
+});
+
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));</code></pre>
+      </div>
+      <div class="code-wrap mb-4">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">// Express — pass middleware as a second argument to app.use()
+const authGuard = (req, res, next) => {
+  if (req.headers.authorization !== `Bearer ${process.env.MODELKIT_SECRET}`) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+};
+
+app.use("/api/modelkit", authGuard, createModelKitExpressRouter(modelKit));</code></pre>
+      </div>
+      <p class="text-sm text-text-muted">Any auth strategy works here — JWT verification, session cookie checks, IP allowlisting, etc. The middleware runs before every route the ModelKit router serves, including the Studio UI.</p>
     </section>
 
     <section class="mb-10" id="custom-storage">
