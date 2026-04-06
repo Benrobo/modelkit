@@ -43,7 +43,10 @@ export function createModelKitExpressRouter(
 
   if (serveStudio) {
     router.get(studioPath, (req: Request, res: Response) => {
-      const protocol = req.protocol;
+      const forwarded = req.headers["x-forwarded-proto"];
+      const protocol =
+        (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0].trim()) ??
+        req.protocol;
       const host = req.get("host") ?? "localhost";
       const mountPath = (req.baseUrl ?? "").replace(/\/$/, "");
       const apiUrl = `${protocol}://${host}${mountPath}`;

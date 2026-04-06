@@ -64,8 +64,11 @@ export function createModelKitHonoRouter(
   if (serveStudio) {
     app.get(studioPath, (c) => {
       const url = new URL(c.req.url);
+      const proto =
+        c.req.header("x-forwarded-proto")?.split(",")[0].trim() ?? url.protocol.replace(":", "");
       const apiUrl =
-        url.origin + url.pathname.replace(studioPath, "").replace(/\/$/, "");
+        `${proto}://${url.host}` +
+        url.pathname.replace(studioPath, "").replace(/\/$/, "");
       return c.html(renderStudioHtml(apiUrl));
     });
   }
