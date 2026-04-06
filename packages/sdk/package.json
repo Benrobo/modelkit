@@ -58,7 +58,8 @@
     "type-check": "tsc --noEmit",
     "generate:models": "bun scripts/generate-models.ts",
     "generate:features:types": "bun scripts/generate.ts",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "npm:publish": "bun run build && npm publish --access public"
   },
   "dependencies": {
     "ioredis": "^5.4.1",
