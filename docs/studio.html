@@ -178,15 +178,39 @@ app.use("/api/modelkit", createModelKitExpressRouter(modelKit));
 // Studio is now live at: http://localhost:3000/api/modelkit/studio</code></pre>
       </div>
 
-      <p class="text-sm text-text-secondary mb-2">Studio is enabled by default. To disable it or change the path, use router options:</p>
-      <div class="code-wrap mb-4">
+      <p class="text-sm text-text-secondary mb-2">Studio is enabled by default. To disable it or change the path:</p>
+      <div class="code-wrap mb-6">
         <span class="code-lang">typescript</span>
-        <pre><code class="language-typescript">// Disable Studio
-createModelKitHonoRouter(modelKit, { studio: false })
-
-// Custom path (default: /studio)
+        <pre><code class="language-typescript">createModelKitHonoRouter(modelKit, { studio: false })
 createModelKitHonoRouter(modelKit, { studioPath: "/admin/ui" })
 // Studio will be at: /api/modelkit/admin/ui</code></pre>
+      </div>
+
+      <h3 class="text-xs font-bold text-text uppercase tracking-wider mb-2">Protecting Studio (auth)</h3>
+      <p class="text-sm text-text-secondary mb-3">Studio exposes write access to all your overrides — you should protect it in production. Add your own middleware on the mount path <em>before</em> the router:</p>
+      <div class="code-wrap mb-4">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">// Hono — register middleware on the same path before app.route()
+app.use("/api/modelkit/*", async (c, next) => {
+  if (c.req.header("Authorization") !== `Bearer ${process.env.MODELKIT_SECRET}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  await next();
+});
+
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));</code></pre>
+      </div>
+      <div class="code-wrap mb-4">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">// Express — pass middleware as a second arg to app.use()
+const authGuard = (req, res, next) => {
+  if (req.headers.authorization !== `Bearer ${process.env.MODELKIT_SECRET}`) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+};
+
+app.use("/api/modelkit", authGuard, createModelKitExpressRouter(modelKit));</code></pre>
       </div>
 
       <div class="relative border border-border bg-surface/30 p-4 mt-4">
