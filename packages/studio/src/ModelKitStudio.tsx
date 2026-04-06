@@ -8,9 +8,9 @@ import { useNavigation } from "./hooks/useNavigation";
 import { Navigation } from "./components/Navigation";
 import { FeatureList } from "./components/FeatureList";
 import { FeatureDetail } from "./components/FeatureDetail";
-import { TacticalPanel } from "./components/TacticalPanel";
 import { ThemeSelector } from "./components/ThemeSelector";
 import { resolveTheme, themeToCssVars } from "./themes/themeUtils";
+import { SparklesIcon, LayersIcon } from "./components/Icons";
 import type { StudioThemeOverride } from "./themes";
 
 const THEME_STORAGE_KEY = "modelkit-studio-theme";
@@ -18,7 +18,7 @@ const THEME_STORAGE_KEY = "modelkit-studio-theme";
 const defaultQueryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute
+      staleTime: 60 * 1000,
     },
   },
 });
@@ -68,24 +68,27 @@ function ModelKitStudioInner({
 }: Omit<ModelKitStudioProps, "apiUrl">): ReactElement {
   const isThemeMode = typeof initialTheme === "string";
   const { selectedFeatureId, goToList, goToDetail } = useNavigation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [currentTheme, setCurrentTheme] = useState<ThemeMode>(() => {
     if (!isThemeMode) return "dark";
     try {
       const saved = localStorage.getItem(THEME_STORAGE_KEY);
-      if (saved && (saved as ThemeMode)) {
-        return saved as ThemeMode;
-      }
+      if (saved && (saved as ThemeMode)) return saved as ThemeMode;
     } catch (e) {}
     return initialTheme;
   });
 
   useEffect(() => {
     if (isThemeMode) {
-      try {
-        localStorage.setItem(THEME_STORAGE_KEY, currentTheme);
-      } catch (e) {}
+      try { localStorage.setItem(THEME_STORAGE_KEY, currentTheme); } catch (e) {}
     }
   }, [currentTheme, isThemeMode]);
+
+  // Close sidebar drawer when a feature is selected on mobile
+  useEffect(() => {
+    if (selectedFeatureId) setSidebarOpen(false);
+  }, [selectedFeatureId]);
 
   const theme = isThemeMode ? currentTheme : initialTheme;
   const resolvedTheme = resolveTheme(theme, themeBase);
@@ -94,28 +97,31 @@ function ModelKitStudioInner({
   return (
     <div
       className={cn(
-        "modelkit-studio mk:h-screen mk:overflow-hidden mk:bg-mk-background mk:text-mk-text mk:selection:bg-mk-primary/30 mk:flex mk:flex-col",
+        "modelkit-studio mk:h-screen mk:overflow-hidden mk:bg-mk-background mk:text-mk-text mk:selection:bg-mk-primary/20 mk:selection:text-mk-text mk:flex mk:flex-col",
         className
       )}
       style={themeVars}
       data-theme={typeof theme === "string" ? theme : "custom"}
     >
       <Toaster
-        theme="dark"
-        position="top-right"
+        position="bottom-right"
         toastOptions={{
           style: {
-            background: "var(--mk-color-surface)",
+            background: "var(--mk-color-surface-raised)",
             color: "var(--mk-color-text)",
             border: "1px solid var(--mk-color-border)",
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: "var(--mk-font-body)",
+            fontSize: "13px",
+            borderRadius: "var(--mk-border-radius-md)",
           },
         }}
       />
+
       <Navigation
         showBack={false}
         className={classNames.header}
         title="ModelKit Studio"
+        onMenuToggle={() => setSidebarOpen((v) => !v)}
         actions={
           isThemeMode ? (
             <ThemeSelector
@@ -126,19 +132,38 @@ function ModelKitStudioInner({
         }
       />
 
-      <main className="mk:flex-1 mk:min-h-0 mk:flex mk:flex-col mk:md:flex-row mk:max-w-screen-2xl mk:mx-auto mk:w-full mk:px-mk-lg mk:pb-mk-xl mk:gap-mk-xl mk:overflow-hidden">
-        <TacticalPanel className="mk:w-full mk:md:w-80 mk:lg:w-96 mk:shrink-0 mk:flex mk:flex-col mk:min-h-0 mk:border mk:border-mk-border/40 mk:bg-mk-surface mk:overflow-hidden">
+      <div className="mk:flex-1 mk:min-h-0 mk:flex mk:overflow-hidden mk:relative">
+        {/* Mobile backdrop */}
+        {sidebarOpen && (
+          <div
+            className="mk:fixed mk:inset-0 mk:z-30 mk:bg-black/50 mk:md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar — drawer on mobile, fixed on desktop */}
+        <aside
+          className={cn(
+            "mk:flex mk:flex-col mk:border-r mk:border-mk-border mk:bg-mk-surface mk:overflow-hidden mk:shrink-0",
+            // Desktop: always visible
+            "mk:hidden mk:md:flex mk:w-64",
+            // Mobile: fixed drawer, slides in
+            sidebarOpen &&
+              "mk:flex! mk:fixed mk:inset-y-0 mk:left-0 mk:w-72 mk:z-40 mk:top-12"
+          )}
+        >
           <FeatureList
             onSelectFeature={goToDetail}
-            className={cn("mk:p-4", classNames.featureList)}
+            className={classNames.featureList}
           />
-        </TacticalPanel>
+        </aside>
 
-        <section className="mk:flex-1 mk:min-w-0 mk:relative">
+        {/* Main panel */}
+        <main className="mk:flex-1 mk:min-w-0 mk:overflow-hidden mk:bg-mk-background">
           {selectedFeatureId ? (
             <div
               key={selectedFeatureId}
-              className="mk:animate-in mk:fade-in mk:slide-in-from-right-4 mk:duration-500 mk:h-full"
+              className="mk:h-full mk:animate-in mk:fade-in mk:duration-200"
             >
               <FeatureDetail
                 featureId={selectedFeatureId}
@@ -147,16 +172,33 @@ function ModelKitStudioInner({
               />
             </div>
           ) : (
-            <div className="mk:h-full mk:flex mk:flex-col mk:items-center mk:justify-center mk:text-mk-text-muted mk:border mk:border-mk-border mk:border-dashed mk:p-mk-xl">
-              <div className="mk:text-sm mk:uppercase mk:tracking-wider mk:text-center">
-                Select a configuration from the registry
-                <br />
-                to begin editing
+            <div className="mk:h-full mk:flex mk:flex-col mk:items-center mk:justify-center mk:gap-4 mk:select-none mk:px-6">
+              <div className="mk:flex mk:flex-col mk:items-center mk:gap-3 mk:text-center">
+                <div className="mk:w-12 mk:h-12 mk:rounded-xl mk:border mk:border-mk-border mk:flex mk:items-center mk:justify-center mk:bg-mk-surface">
+                  <LayersIcon size={20} className="mk:text-mk-text-muted" />
+                </div>
+                <div>
+                  <p className="mk:text-sm mk:font-medium mk:text-mk-text-secondary mk:mb-1">
+                    No override selected
+                  </p>
+                  <p className="mk:text-xs mk:text-mk-text-muted mk:max-w-xs">
+                    Select an override from the sidebar to inspect and edit its configuration.
+                  </p>
+                </div>
+                {/* Mobile hint */}
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(true)}
+                  className="mk:md:hidden mk:flex mk:items-center mk:gap-2 mk:px-4 mk:py-2 mk:rounded-md mk:text-sm mk:text-mk-text-secondary mk:border mk:border-mk-border mk:hover:bg-mk-surface mk:transition-colors mk:mt-1"
+                >
+                  <SparklesIcon size={14} className="mk:text-mk-primary" />
+                  View overrides
+                </button>
               </div>
             </div>
           )}
-        </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

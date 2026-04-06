@@ -115,7 +115,7 @@ await modelKit.clearOverride("feature-id");   // Remove override; getModel will 
     <section class="mb-10" id="rest">
       <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-4">REST API</h2>
       <p class="text-sm text-text-secondary mb-4">Hono and Express routers expose:</p>
-      <div class="grid gap-2">
+      <div class="grid gap-2 mb-6">
         <div class="flex flex-wrap items-center gap-2 py-2 px-3 border border-border bg-surface/50">
           <span class="text-xs font-mono text-primary font-bold">GET</span>
           <span class="text-sm font-mono text-text">/overrides</span>
@@ -136,6 +136,38 @@ await modelKit.clearOverride("feature-id");   // Remove override; getModel will 
           <span class="text-sm font-mono text-text">/overrides/:featureId</span>
           <span class="text-text-muted text-xs">Clear override</span>
         </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 border border-border bg-surface/50">
+          <span class="text-xs font-mono text-primary font-bold">GET</span>
+          <span class="text-sm font-mono text-text">/studio</span>
+          <span class="text-text-muted text-xs">Studio UI (served automatically; configurable via router options)</span>
+        </div>
+      </div>
+
+      <h3 class="text-xs font-bold text-text uppercase tracking-wider mb-3">Router options</h3>
+      <p class="text-sm text-text-secondary mb-3">Both <code class="bg-background/80 px-1 border border-border text-xs">createModelKitHonoRouter</code> and <code class="bg-background/80 px-1 border border-border text-xs">createModelKitExpressRouter</code> accept an optional options object:</p>
+      <div class="code-wrap mb-4">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">interface ModelKitRouterOptions {
+  /** Serve the Studio UI. Default: true */
+  studio?: boolean;
+  /** Path to serve Studio at, relative to the mount point. Default: "/studio" */
+  studioPath?: string;
+  /** Enable CORS (Hono only). Pass true for permissive defaults or a config object. */
+  cors?: boolean | CorsOptions;
+}
+
+// Examples
+createModelKitHonoRouter(modelKit)
+// → Studio at /api/modelkit/studio
+
+createModelKitHonoRouter(modelKit, { studio: false })
+// → Studio disabled
+
+createModelKitHonoRouter(modelKit, { studioPath: "/admin/ui" })
+// → Studio at /api/modelkit/admin/ui
+
+createModelKitHonoRouter(modelKit, { cors: true })
+// → CORS enabled with permissive defaults</code></pre>
       </div>
     </section>
 

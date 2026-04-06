@@ -225,7 +225,8 @@ const modelId = await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet"
 
 // Mount the ModelKit REST API and Studio under /api/modelkit
 const app = new Hono();
-app.route("/api/modelkit", createModelKitHonoRouter(modelKit));</code></pre>
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
+// Studio UI is now live at: http://localhost:3000/api/modelkit/studio</code></pre>
           </div>
         </section>
         <section>
@@ -249,7 +250,8 @@ const modelKit = createModelKit(adapter);
 
 // Mount the ModelKit REST API and Studio at /api/modelkit
 app.use("/api/modelkit", createModelKitExpressRouter(modelKit));
-app.listen(3000);</code></pre>
+app.listen(3000);
+// Studio UI is now live at: http://localhost:3000/api/modelkit/studio</code></pre>
           </div>
         </section>
         <section>
@@ -276,9 +278,7 @@ await modelKit.getModel("chatbot", "anthropic/claude-3.5-sonnet"); // ✅
 await modelKit.getModel("invalid", "gpt-4"); // ❌ compile error</code></pre>
           </div>
           <p class="text-sm text-text-muted mt-3">
-            For Studio, see
-            <a href="studio.html" class="text-primary hover:underline">Studio</a
-            >.
+            Studio is served automatically at <code class="bg-background/80 px-1 border border-border text-xs">/api/modelkit/studio</code> — no separate install needed. See <a href="studio.html" class="text-primary hover:underline">Studio</a> for options and the React embed.
           </p>
         </section>
         <section>

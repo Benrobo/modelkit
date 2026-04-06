@@ -3,15 +3,32 @@ import { cn } from "../utils/cn";
 import { useOverrides } from "../hooks/useOverrides";
 import { ModelSelector } from "./ModelSelector";
 import { ParameterEditor } from "./ParameterEditor";
-import { TacticalPanel } from "./TacticalPanel";
 import { OpenRouterModelId } from "@benrobo/modelkit";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { DeleteIcon, InfoIcon } from "./Icons";
 
 export interface FeatureDetailProps {
   featureId: string;
   onBack?: () => void;
   className?: string;
+}
+
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mk:space-y-3">
+      <h3 className="mk:text-xs mk:font-medium mk:text-mk-text-muted mk:uppercase mk:tracking-wider">
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
 }
 
 export function FeatureDetail({
@@ -34,6 +51,7 @@ export function FeatureDetail({
   const [topP, setTopP] = useState(override?.topP ?? 1);
   const [topK, setTopK] = useState(override?.topK ?? 0);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [activeTab, setActiveTab] = useState<"config" | "usage">("config");
 
   useEffect(() => {
     setEditingFeatureId(featureId);
@@ -51,8 +69,8 @@ export function FeatureDetail({
 
   if (overridesLoading) {
     return (
-      <div className="mk:p-mk-xl mk:text-mk-text-muted mk:text-sm mk:animate-pulse">
-        Loading...
+      <div className="mk:h-full mk:flex mk:items-center mk:justify-center">
+        <div className="mk:w-5 mk:h-5 mk:border-2 mk:border-mk-border mk:border-t-mk-primary mk:rounded-full mk:animate-spin" />
       </div>
     );
   }
@@ -69,7 +87,6 @@ export function FeatureDetail({
 
   const handleCommit = async () => {
     if (!editingFeatureId.trim() || !modelId) return;
-
     setIsUpdating(true);
     try {
       if (!isNewOverride && editingFeatureId !== featureId) {
@@ -101,264 +118,238 @@ export function FeatureDetail({
     }
   };
 
+  const codeSnippetStyle = {
+    margin: 0,
+    fontSize: "12px",
+    lineHeight: "1.6",
+    background: "var(--mk-color-surface)",
+    border: "1px solid var(--mk-color-border)",
+    borderRadius: "var(--mk-border-radius-md)",
+    padding: "12px 16px",
+  };
+
   return (
-    <TacticalPanel
+    <div
       className={cn(
-        "mk:bg-mk-surface/50 mk:border mk:border-mk-border/40 mk:h-full mk:flex mk:flex-col mk:overflow-hidden",
+        "mk:h-full mk:flex mk:flex-col mk:overflow-hidden",
         className
       )}
     >
-      <div className="mk:p-mk-xl mk:border-b mk:border-mk-border/50 mk:flex mk:items-start mk:justify-between mk:gap-mk-lg mk:flex-shrink-0">
-        <div className="mk:flex-1 mk:min-w-0">
-          <label className="mk:block mk:text-[10px] mk:font-bold mk:text-mk-text-secondary mk:uppercase mk:tracking-widest mk:mb-1.5">
-            Feature ID
-          </label>
-          <div className="mk:flex mk:items-center mk:gap-3">
-            <input
-              type="text"
-              value={editingFeatureId}
-              onChange={(e) => setEditingFeatureId(e.target.value)}
-              className="mk:flex-1 mk:px-3 mk:py-2 mk:bg-mk-surface mk:border mk:border-mk-border mk:text-mk-text mk:text-base mk:font-bold mk:focus:border-mk-border-accent mk:focus:outline-none"
-            />
-            {/* {!isNewOverride && (
-              <div className="mk:px-3 mk:py-1.5 mk:bg-mk-primary mk:text-mk-background mk:text-[10px] mk:font-bold mk:uppercase mk:tracking-widest mk:shrink-0">
-                ACTIVE OVERRIDE
-              </div>
-            )} */}
+      {/* Detail header */}
+      <div className="mk:px-6 mk:py-4 mk:border-b mk:border-mk-border mk:shrink-0 mk:flex mk:items-start mk:justify-between mk:gap-4">
+        <div className="mk:flex-1 mk:min-w-0 mk:space-y-1.5">
+          <div className="mk:flex mk:items-center mk:gap-2">
+            <label className="mk:text-xs mk:font-medium mk:text-mk-text-muted">
+              Feature ID
+            </label>
             {isNewOverride && (
-              <div className="mk:px-3 mk:py-1.5 mk:bg-mk-text-muted mk:text-mk-background mk:text-[10px] mk:font-bold mk:uppercase mk:tracking-widest mk:shrink-0">
-                NEW
-              </div>
+              <span className="mk:inline-flex mk:items-center mk:px-1.5 mk:py-0.5 mk:rounded mk:text-[10px] mk:font-medium mk:bg-mk-color-warning/10 mk:text-mk-color-warning mk:border mk:border-mk-color-warning/20">
+                New
+              </span>
             )}
           </div>
+          <input
+            type="text"
+            value={editingFeatureId}
+            onChange={(e) => setEditingFeatureId(e.target.value)}
+            className={cn(
+              "mk:w-full mk:px-3 mk:py-2 mk:rounded-md mk:text-sm mk:font-mono mk:font-medium mk:text-mk-text",
+              "mk:bg-mk-surface mk:border mk:border-mk-border",
+              "mk:focus:outline-none mk:focus:ring-1 mk:focus:ring-mk-primary/40 mk:focus:border-mk-border-hover",
+              "mk:transition-all mk:placeholder:text-mk-text-muted"
+            )}
+          />
         </div>
-
         {!isNewOverride && (
           <button
             onClick={handleReset}
             disabled={isUpdating}
-            className="mk:text-mk-color-error/70 mk:hover:text-mk-color-error mk:text-xs mk:font-bold mk:uppercase mk:tracking-widest mk:transition-colors mk:px-4 mk:py-2.5 mk:border mk:border-mk-color-error/20 mk:hover:bg-mk-color-error/5 mk:shrink-0 mk:self-end"
+            className={cn(
+              "mk:shrink-0 mk:flex mk:items-center mk:gap-1.5 mk:text-xs mk:text-mk-text-muted mk:mt-6",
+              "mk:hover:text-mk-color-error mk:transition-colors mk:px-2.5 mk:py-1.5 mk:rounded-md",
+              "mk:hover:bg-mk-color-error/8 mk:disabled:opacity-40"
+            )}
           >
-            Clear Override
+            <DeleteIcon size={12} />
+            Clear
           </button>
         )}
       </div>
 
-      <div className="mk:flex-1 mk:overflow-y-auto mk:p-mk-xl mk:space-y-mk-xl custom-scrollbar mk:min-h-0">
-        <section className="mk:space-y-mk-xl mk:animate-in mk:fade-in mk:slide-in-from-top-4 mk:duration-500">
-          <div className="mk:flex mk:items-center mk:gap-2 mk:mb-mk-md">
-            <div className="mk:w-1.5 mk:h-1.5 mk:bg-mk-primary mk:shadow-[0_0_8px_rgba(var(--mk-primary-rgb),0.5)]" />
-            <h3 className="mk:text-sm mk:font-mk-mono mk:font-bold mk:text-mk-text mk:uppercase mk:tracking-widest">
-              Override Parameters
-            </h3>
-          </div>
+      {/* Tab bar */}
+      <div className="mk:flex mk:items-center mk:gap-0 mk:border-b mk:border-mk-border mk:px-6 mk:shrink-0">
+        {(["config", "usage"] as const).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={cn(
+              "mk:relative mk:px-0 mk:py-2.5 mk:mr-5 mk:text-sm mk:transition-colors mk:capitalize",
+              activeTab === tab
+                ? "mk:text-mk-text mk:font-medium"
+                : "mk:text-mk-text-muted mk:hover:text-mk-text-secondary"
+            )}
+          >
+            {tab}
+            {activeTab === tab && (
+              <span className="mk:absolute mk:bottom-0 mk:left-0 mk:right-0 mk:h-px mk:bg-mk-primary" />
+            )}
+          </button>
+        ))}
+      </div>
 
-          <div className="mk:space-y-mk-xl mk:pl-mk-md mk:border-l-2 mk:border-mk-border/20">
-            <ModelSelector value={modelId} onChange={setModelId} />
-            <ParameterEditor
-              temperature={temperature}
-              maxTokens={maxTokens}
-              topP={topP}
-              topK={topK}
-              onTemperatureChange={setTemperature}
-              onMaxTokensChange={setMaxTokens}
-              onTopPChange={setTopP}
-              onTopKChange={setTopK}
-            />
-          </div>
+      {/* Scrollable body */}
+      <div className="mk:flex-1 mk:overflow-y-auto custom-scrollbar mk:min-h-0">
+        {activeTab === "config" ? (
+          <div className="mk:p-6 mk:space-y-6">
+            <Section title="Model">
+              <ModelSelector value={modelId} onChange={setModelId} />
+            </Section>
 
-          <div className="mk:pt-mk-xl mk:flex mk:flex-col mk:sm:flex-row mk:gap-mk-md mk:border-t mk:border-mk-border/10 mk:flex-shrink-0">
-            <button
-              onClick={handleCommit}
-              disabled={!isModified || isUpdating || !modelId}
-              className={cn(
-                "mk:flex-1 mk:border mk:border-mk-primary mk:bg-mk-primary mk:text-mk-background mk:px-8 mk:py-4 mk:text-sm mk:font-bold mk:uppercase mk:tracking-widest mk:transition-all",
-                "mk:hover:bg-transparent mk:hover:text-mk-primary mk:disabled:opacity-30 mk:disabled:cursor-not-allowed"
-              )}
-            >
-              {isUpdating
-                ? "Updating..."
-                : isNewOverride
-                ? "Create Override"
-                : "Update Override"}
-            </button>
-            <button
-              onClick={() => {
-                if (override) {
-                  setModelId(override.modelId);
-                  setTemperature(override.temperature ?? 0.7);
-                  setMaxTokens(override.maxTokens ?? 4096);
-                  setTopP(override.topP ?? 1);
-                  setTopK(override.topK ?? 0);
-                } else {
-                  setModelId("");
-                  setTemperature(0.7);
-                  setMaxTokens(4096);
-                  setTopP(1);
-                  setTopK(0);
-                }
-              }}
-              disabled={!isModified || isUpdating}
-              className={cn(
-                "mk:flex-1 mk:border mk:border-mk-border mk:text-mk-text-muted mk:px-8 mk:py-4 mk:text-sm mk:font-bold mk:uppercase mk:tracking-widest mk:transition-all",
-                "mk:hover:text-mk-text mk:hover:bg-mk-surface-hover mk:disabled:opacity-30"
-              )}
-            >
-              Discard Changes
-            </button>
-          </div>
-        </section>
+            <Section title="Parameters">
+              <ParameterEditor
+                temperature={temperature}
+                maxTokens={maxTokens}
+                topP={topP}
+                topK={topK}
+                onTemperatureChange={setTemperature}
+                onMaxTokensChange={setMaxTokens}
+                onTopPChange={setTopP}
+                onTopKChange={setTopK}
+              />
+            </Section>
 
-        {/* Usage Examples Section */}
-        <section className="mk:space-y-mk-md mk:animate-in mk:fade-in mk:slide-in-from-top-6 mk:duration-700 mk:delay-150">
-          <div className="mk:flex mk:items-center mk:gap-2 mk:mb-mk-md">
-            <div className="mk:w-1.5 mk:h-1.5 mk:bg-mk-text-secondary/50 mk:shadow-[0_0_8px_rgba(var(--mk-text-secondary-rgb),0.3)]" />
-            <h3 className="mk:text-sm mk:font-mk-mono mk:font-bold mk:text-mk-text-secondary mk:uppercase mk:tracking-widest">
-              SDK Usage Examples
-            </h3>
+            {/* Action bar */}
+            <div className="mk:flex mk:items-center mk:gap-2 mk:pt-2">
+              <button
+                onClick={handleCommit}
+                disabled={!isModified || isUpdating || !modelId}
+                className={cn(
+                  "mk:flex mk:items-center mk:gap-2 mk:px-4 mk:py-2 mk:rounded-md mk:text-sm mk:font-medium",
+                  "mk:bg-mk-primary mk:text-white mk:transition-colors",
+                  "mk:hover:bg-mk-primary/90",
+                  "mk:disabled:opacity-40 mk:disabled:cursor-not-allowed"
+                )}
+              >
+                {isUpdating ? (
+                  <>
+                    <span className="mk:w-3.5 mk:h-3.5 mk:border-2 mk:border-white/30 mk:border-t-white mk:rounded-full mk:animate-spin mk:inline-block" />
+                    Saving...
+                  </>
+                ) : isNewOverride ? (
+                  "Create override"
+                ) : (
+                  "Save changes"
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  if (override) {
+                    setModelId(override.modelId);
+                    setTemperature(override.temperature ?? 0.7);
+                    setMaxTokens(override.maxTokens ?? 4096);
+                    setTopP(override.topP ?? 1);
+                    setTopK(override.topK ?? 0);
+                  } else {
+                    setModelId("");
+                    setTemperature(0.7);
+                    setMaxTokens(4096);
+                    setTopP(1);
+                    setTopK(0);
+                  }
+                  setEditingFeatureId(featureId);
+                }}
+                disabled={!isModified || isUpdating}
+                className={cn(
+                  "mk:px-4 mk:py-2 mk:rounded-md mk:text-sm mk:text-mk-text-muted",
+                  "mk:hover:text-mk-text mk:hover:bg-mk-surface-hover mk:transition-colors",
+                  "mk:disabled:opacity-40 mk:disabled:cursor-not-allowed"
+                )}
+              >
+                Discard
+              </button>
+            </div>
           </div>
-
-          <div className="mk:pl-mk-md mk:border-l-2 mk:border-mk-border/10 mk:space-y-mk-lg">
-            {/* Get Model */}
+        ) : (
+          <div className="mk:p-6 mk:space-y-5">
             <div className="mk:space-y-2">
-              <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
-                Get Model
+              <p className="mk:text-xs mk:text-mk-text-muted mk:font-medium">
+                Get model
               </p>
               <SyntaxHighlighter
                 language="typescript"
                 style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  fontSize: "0.75rem",
-                  background: "rgba(var(--mk-background-rgb), 0.8)",
-                  border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
-                  padding: "var(--mk-spacing-md)",
-                }}
+                customStyle={codeSnippetStyle}
                 codeTagProps={{
-                  style: {
-                    fontFamily: "var(--font-mono)",
-                  },
+                  style: { fontFamily: "var(--mk-font-mono)" },
                 }}
               >
-                {`const modelId = await modelKit.getModel(
-  "${editingFeatureId}",
-  "anthropic/claude-3.5-sonnet" // fallback
-);
-// Returns: "${modelId || "fallback-model"}"${
-                  override ? " (override)" : " (fallback)"
-                }`}
+                {`const modelId = await modelKit.getModel(\n  "${editingFeatureId}",\n  "anthropic/claude-3.5-sonnet"\n);\n// → "${modelId || "fallback-model"}"${override ? " (override)" : " (fallback)"}`}
               </SyntaxHighlighter>
             </div>
 
-            {/* Set Override */}
             <div className="mk:space-y-2">
-              <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
-                Set Override
+              <p className="mk:text-xs mk:text-mk-text-muted mk:font-medium">
+                Set override
               </p>
               <SyntaxHighlighter
                 language="typescript"
                 style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  fontSize: "0.75rem",
-                  background: "rgba(var(--mk-background-rgb), 0.8)",
-                  border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
-                  padding: "var(--mk-spacing-md)",
-                }}
+                customStyle={codeSnippetStyle}
                 codeTagProps={{
-                  style: {
-                    fontFamily: "var(--font-mono)",
-                  },
+                  style: { fontFamily: "var(--mk-font-mono)" },
                 }}
               >
-                {`await modelKit.setOverride("${editingFeatureId}", {
-  modelId: "${modelId || "anthropic/claude-3.5-sonnet"}",
-  temperature: ${temperature},
-  maxTokens: ${maxTokens},
-  topP: ${topP},
-  topK: ${topK}
-});`}
+                {`await modelKit.setOverride("${editingFeatureId}", {\n  modelId: "${modelId || "anthropic/claude-3.5-sonnet"}",\n  temperature: ${temperature},\n  maxTokens: ${maxTokens},\n  topP: ${topP},\n  topK: ${topK}\n});`}
               </SyntaxHighlighter>
             </div>
 
-            {/* Get Config */}
             <div className="mk:space-y-2">
-              <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
-                Get Configuration
+              <p className="mk:text-xs mk:text-mk-text-muted mk:font-medium">
+                Get config
               </p>
               <SyntaxHighlighter
                 language="typescript"
                 style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  fontSize: "0.75rem",
-                  background: "rgba(var(--mk-background-rgb), 0.8)",
-                  border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
-                  padding: "var(--mk-spacing-md)",
-                }}
+                customStyle={codeSnippetStyle}
                 codeTagProps={{
-                  style: {
-                    fontFamily: "var(--font-mono)",
-                  },
+                  style: { fontFamily: "var(--mk-font-mono)" },
                 }}
               >
-                {`const config = await modelKit.getConfig("${editingFeatureId}");
-// Returns: ${
-                  override
-                    ? `{
-//   modelId: "${modelId}",
-//   temperature: ${temperature},
-//   maxTokens: ${maxTokens},
-//   topP: ${topP},
-//   topK: ${topK},
-//   updatedAt: ${override.updatedAt || Date.now()}
-// }`
-                    : "null (no override)"
-                }`}
+                {`const config = await modelKit.getConfig("${editingFeatureId}");\n// → ${override ? `{ modelId: "${modelId}", temperature: ${temperature}, ... }` : "null"}`}
               </SyntaxHighlighter>
             </div>
 
-            {/* Clear Override */}
             {override && (
               <div className="mk:space-y-2">
-                <p className="mk:text-xs mk:text-mk-text-muted mk:font-bold mk:uppercase mk:tracking-wide">
-                  Clear Override
+                <p className="mk:text-xs mk:text-mk-text-muted mk:font-medium">
+                  Clear override
                 </p>
                 <SyntaxHighlighter
                   language="typescript"
                   style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    fontSize: "0.75rem",
-                    background: "rgba(var(--mk-background-rgb), 0.8)",
-                    border: "1px solid rgba(var(--mk-border-rgb), 0.3)",
-                    padding: "var(--mk-spacing-md)",
-                  }}
+                  customStyle={codeSnippetStyle}
                   codeTagProps={{
-                    style: {
-                      fontFamily: "var(--font-mono)",
-                    },
+                    style: { fontFamily: "var(--mk-font-mono)" },
                   }}
                 >
-                  {`await modelKit.clearOverride("${editingFeatureId}");
-// Reverts to fallback model`}
+                  {`await modelKit.clearOverride("${editingFeatureId}");\n// Reverts to fallback model`}
                 </SyntaxHighlighter>
               </div>
             )}
 
-            {/* Type Safety Hint */}
-            <div className="mk:mt-mk-lg mk:p-mk-md mk:bg-mk-surface/30 mk:border mk:border-mk-border/20">
-              <p className="mk:text-xs mk:text-mk-text-muted mk:leading-relaxed">
-                <span className="mk:font-bold mk:text-mk-primary">💡 Tip:</span>{" "}
-                Generate TypeScript types for autocomplete:{" "}
-                <code className="mk:px-2 mk:py-0.5 mk:bg-mk-background/80 mk:border mk:border-mk-border/30 mk:text-mk-text mk:text-xs mk:font-mono">
+            <div className="mk:p-3 mk:rounded-md mk:bg-mk-surface mk:border mk:border-mk-border mk:flex mk:items-start mk:gap-2.5">
+              <InfoIcon size={14} className="mk:text-mk-primary mk:shrink-0 mk:mt-0.5" />
+              <p className="mk:text-xs mk:text-mk-text-secondary mk:leading-relaxed">
+                Generate TypeScript types for full autocomplete:{" "}
+                <code className="mk:font-mono mk:text-mk-text mk:bg-mk-background mk:px-1 mk:py-0.5 mk:rounded">
                   npx modelkit-generate --api-url &lt;url&gt;
                 </code>
               </p>
             </div>
           </div>
-        </section>
+        )}
       </div>
-    </TacticalPanel>
+    </div>
   );
 }

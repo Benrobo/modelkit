@@ -40,7 +40,7 @@ const PopoverContent = React.forwardRef<
         sideOffset={sideOffset}
         style={{ ...themeVars, ...style }}
         className={cn(
-          "mk:z-50 mk:w-[var(--radix-popover-trigger-width)] mk:min-w-56 mk:border mk:border-mk-border mk:bg-mk-surface mk:p-1 mk:text-mk-text mk:shadow-md mk:outline-none",
+          "mk:z-50 mk:w-[var(--radix-popover-trigger-width)] mk:min-w-56 mk:border mk:border-mk-border mk:rounded-md mk:bg-mk-surface mk:p-1 mk:text-mk-text mk:shadow-lg mk:outline-none",
           "mk:data-[state=open]:animate-in mk:data-[state=closed]:animate-out mk:data-[state=closed]:fade-out-0 mk:data-[state=open]:fade-in-0",
           "mk:data-[state=closed]:zoom-out-95 mk:data-[state=open]:zoom-in-95",
           "mk:data-[side=bottom]:slide-in-from-top-2 mk:data-[side=top]:slide-in-from-bottom-2",

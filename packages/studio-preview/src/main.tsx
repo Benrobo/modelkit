@@ -19,7 +19,7 @@ if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <div className="min-h-screen">
-      <ModelKitStudio apiUrl={apiUrl} theme={"choco"} />
+      <ModelKitStudio apiUrl={apiUrl} theme={"dark"} />
     </div>
   );
 }
