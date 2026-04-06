@@ -10,6 +10,16 @@ export interface FeatureCardProps {
   isActive?: boolean;
 }
 
+function getProviderFromModelId(modelId: string): string {
+  const parts = modelId.split("/");
+  return parts.length > 1 ? parts[0] : "";
+}
+
+function getModelShortName(modelId: string): string {
+  const parts = modelId.split("/");
+  return parts.length > 1 ? parts[1] : modelId;
+}
+
 export function FeatureCard({
   featureId,
   override,
@@ -17,54 +27,48 @@ export function FeatureCard({
   className,
   isActive,
 }: FeatureCardProps): ReactElement {
+  const provider = getProviderFromModelId(override.modelId);
+  const modelName = getModelShortName(override.modelId);
+
   return (
     <button
       type="button"
       onClick={onSelect}
       className={cn(
-        "mk:w-full mk:text-left mk:p-4 mk:border mk:transition-all mk:relative mk:group mk:cursor-pointer",
+        "mk:w-full mk:text-left mk:px-3 mk:py-2.5 mk:rounded-md mk:transition-colors mk:group mk:relative mk:cursor-pointer",
         isActive
-          ? "mk:border-mk-primary mk:bg-mk-primary/10"
-          : "mk:border-mk-border mk:bg-mk-surface mk:hover:bg-mk-surface-hover mk:hover:border-mk-primary/50",
-        "mk:focus:outline-none mk:focus:border-mk-primary",
+          ? "mk:bg-mk-primary/10 mk:text-mk-text"
+          : "mk:text-mk-text mk:hover:bg-mk-surface-hover",
+        "mk:focus-visible:outline-none mk:focus-visible:ring-1 mk:focus-visible:ring-mk-primary/50",
         className
       )}
     >
-      <div className="mk:flex mk:flex-col mk:gap-2 mk:relative mk:z-10">
-        <div className="mk:flex mk:items-center mk:justify-between mk:gap-3">
-          <div className="mk:min-w-0 mk:flex mk:items-center mk:gap-2">
-            <div
-              className={cn(
-                "mk:w-1.5 mk:h-1.5 mk:shrink-0 mk:transition-all",
-                isActive
-                  ? "mk:bg-mk-primary"
-                  : "mk:bg-mk-border mk:group-hover:bg-mk-primary/70"
-              )}
-            />
-            <h3
-              className={cn(
-                "mk:text-sm mk:font-medium mk:tracking-wide mk:truncate mk:transition-colors",
-                isActive
-                  ? "mk:text-mk-primary"
-                  : "mk:text-mk-text mk:group-hover:text-mk-primary"
-              )}
-            >
-              {featureId}
-            </h3>
-          </div>
-          <div
-            className={cn(
-              "mk:w-2 mk:h-2 mk:shrink-0 mk:transition-all",
-              isActive
-                ? "mk:bg-mk-primary"
-                : "mk:bg-mk-border mk:group-hover:bg-mk-primary/50"
-            )}
-          />
-        </div>
-
-        <div className="mk:text-xs mk:text-mk-text-secondary mk:uppercase mk:tracking-wide mk:truncate">
-          {override.modelId}
-        </div>
+      {isActive && (
+        <span className="mk:absolute mk:left-0 mk:top-1/2 mk:-translate-y-1/2 mk:w-0.5 mk:h-5 mk:bg-mk-primary mk:rounded-r-full" />
+      )}
+      <div className="mk:flex mk:items-center mk:justify-between mk:gap-2">
+        <span
+          className={cn(
+            "mk:text-sm mk:font-medium mk:truncate mk:leading-none",
+            isActive ? "mk:text-mk-text" : "mk:text-mk-text"
+          )}
+        >
+          {featureId}
+        </span>
+        <span className="mk:shrink-0 mk:w-1.5 mk:h-1.5 mk:rounded-full mk:bg-mk-color-success mk:opacity-70" />
+      </div>
+      <div className="mk:mt-1 mk:flex mk:items-center mk:gap-1.5">
+        {provider && (
+          <span className="mk:text-[11px] mk:text-mk-text-muted mk:font-mono mk:leading-none">
+            {provider}
+          </span>
+        )}
+        {provider && (
+          <span className="mk:text-mk-border mk:text-[11px] mk:leading-none">/</span>
+        )}
+        <span className="mk:text-[11px] mk:text-mk-text-secondary mk:font-mono mk:leading-none mk:truncate">
+          {modelName}
+        </span>
       </div>
     </button>
   );

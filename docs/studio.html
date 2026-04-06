@@ -97,6 +97,9 @@
     }
     .img-modal-close:hover { border-color: #00f5ff; color: #00f5ff; }
     .img-clickable { cursor: pointer; }
+    .badge { display: inline-block; padding: 2px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid; }
+    .badge-green { color: #3fb950; border-color: #3fb950; background: rgba(63, 185, 80, 0.08); }
+    .badge-muted { color: #6e7681; border-color: #30363d; }
   </style>
 </head>
 <body class="min-h-screen text-text antialiased grid-bg">
@@ -112,72 +115,171 @@
       <a href="studio.html" class="text-primary py-1.5">Studio</a>
       <a href="api.html" class="text-text-muted hover:text-primary transition-colors py-1.5">API</a>
     </nav>
+    <div class="mt-6 pt-4 border-t border-border">
+      <p class="text-xs text-text-muted uppercase tracking-wider mb-2">On this page</p>
+      <nav class="flex flex-col gap-1 text-xs">
+        <a href="#zero-install" class="text-text-muted hover:text-primary transition-colors py-1">Zero-install (SDK router)</a>
+        <a href="#react-component" class="text-text-muted hover:text-primary transition-colors py-1">React component</a>
+        <a href="#props" class="text-text-muted hover:text-primary transition-colors py-1">Props</a>
+        <a href="#themes" class="text-text-muted hover:text-primary transition-colors py-1">Themes</a>
+        <a href="#styling" class="text-text-muted hover:text-primary transition-colors py-1">Styling</a>
+      </nav>
+    </div>
   </aside>
   <main class="docs-main px-4 sm:px-6 lg:px-10 py-10 max-w-3xl">
     <h1 class="text-2xl font-bold text-primary uppercase tracking-wide mb-2">Studio</h1>
-    <p class="text-text-secondary text-sm mb-8">Visual interface for your overrides: list, set, and clear them, and view live SDK snippets. Mount Studio in your app and pass the backend URL that exposes the ModelKit API (e.g. your API base + the route where the ModelKit router is mounted). Supported backends: Hono, Express.</p>
+    <p class="text-text-secondary text-sm mb-8">A visual interface for your model overrides: list, set, and clear them per feature, and view live SDK usage snippets. Fully responsive — works on desktop and mobile.</p>
 
-    <section class="mb-10">
-      <div class="relative border border-border mb-6">
+    <div class="relative border border-border mb-10">
+      <span class="corner-tl"></span>
+      <span class="corner-br"></span>
+      <button type="button" class="w-full block text-left img-clickable" aria-label="View full size" onclick="openImgModal(this)">
+        <img src="assets/prev-3.png" alt="ModelKit Studio" class="w-full block" data-modal-src="assets/prev-3.png" />
+      </button>
+    </div>
+
+    <!-- Zero-install -->
+    <section class="mb-12" id="zero-install">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-xs font-bold text-primary uppercase tracking-widest">Zero-install — served by the SDK router</h2>
+        <span class="badge badge-green">Recommended</span>
+      </div>
+      <p class="text-sm text-text-secondary mb-4">If you already use the Hono or Express router, Studio is served automatically. No separate package, no React app, no extra config. Just mount the router and open the URL.</p>
+
+      <h3 class="text-xs font-bold text-text uppercase tracking-wider mb-2">Hono</h3>
+      <div class="code-wrap mb-6">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">import { Hono } from "hono";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitHonoRouter } from "@benrobo/modelkit/hono";
+
+const modelKit = createModelKit(
+  createRedisAdapter({ url: process.env.REDIS_URL || "redis://localhost:6379" })
+);
+
+const app = new Hono();
+app.route("/api/modelkit", createModelKitHonoRouter(modelKit));
+// Studio is now live at: http://localhost:3000/api/modelkit/studio</code></pre>
+      </div>
+
+      <h3 class="text-xs font-bold text-text uppercase tracking-wider mb-2">Express</h3>
+      <div class="code-wrap mb-6">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">import express from "express";
+import { createModelKit, createRedisAdapter } from "@benrobo/modelkit";
+import { createModelKitExpressRouter } from "@benrobo/modelkit/express";
+
+const app = express();
+app.use(express.json());
+const modelKit = createModelKit(
+  createRedisAdapter({ url: process.env.REDIS_URL })
+);
+app.use("/api/modelkit", createModelKitExpressRouter(modelKit));
+// Studio is now live at: http://localhost:3000/api/modelkit/studio</code></pre>
+      </div>
+
+      <p class="text-sm text-text-secondary mb-2">Studio is enabled by default. To disable it or change the path, use router options:</p>
+      <div class="code-wrap mb-4">
+        <span class="code-lang">typescript</span>
+        <pre><code class="language-typescript">// Disable Studio
+createModelKitHonoRouter(modelKit, { studio: false })
+
+// Custom path (default: /studio)
+createModelKitHonoRouter(modelKit, { studioPath: "/admin/ui" })
+// Studio will be at: /api/modelkit/admin/ui</code></pre>
+      </div>
+
+      <div class="relative border border-border bg-surface/30 p-4 mt-4">
         <span class="corner-tl"></span>
         <span class="corner-br"></span>
-        <button type="button" class="w-full block text-left img-clickable" aria-label="View full size" onclick="openImgModal(this)">
-          <img src="assets/prev-3.png" alt="ModelKit Studio" class="w-full block" data-modal-src="assets/prev-3.png" />
-        </button>
+        <p class="text-xs text-text-muted uppercase tracking-wider mb-1">How it works</p>
+        <p class="text-sm text-text-secondary">The Studio UI (React + all dependencies) is bundled into the SDK at build time as a self-contained HTML string. When a request hits <code class="bg-background/80 px-1 border border-border text-xs">/studio</code>, the router serves that HTML directly. No filesystem reads, no external CDN, no React install required in your app.</p>
       </div>
-      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-3">Install and use</h2>
-      <div class="code-wrap mb-3">
+    </section>
+
+    <!-- React component -->
+    <section class="mb-12" id="react-component">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-xs font-bold text-primary uppercase tracking-widest">React component</h2>
+        <span class="badge badge-muted">Optional</span>
+      </div>
+      <p class="text-sm text-text-secondary mb-4">If you want to embed Studio directly inside an existing React app (e.g. an internal dashboard), install the package and render the component.</p>
+
+      <div class="code-wrap mb-4">
         <span class="code-lang">bash</span>
         <pre><code class="language-bash">npm install @benrobo/modelkit-studio
 # or: bun add @benrobo/modelkit-studio</code></pre>
       </div>
-      <div class="code-wrap">
+      <div class="code-wrap mb-4">
         <span class="code-lang">tsx</span>
         <pre><code class="language-typescript">import { ModelKitStudio } from "@benrobo/modelkit-studio";
 import "@benrobo/modelkit-studio/styles";
 
-&lt;ModelKitStudio apiUrl="http://localhost:3000/api/modelkit" theme="dark" /&gt;</code></pre>
+function AdminPage() {
+  return (
+    &lt;ModelKitStudio
+      apiUrl="http://localhost:3000/api/modelkit"
+      theme="dark"
+    /&gt;
+  );
+}</code></pre>
       </div>
-      <p class="text-sm text-text-muted mt-3">Use your real backend URL (e.g. <code class="bg-background/80 px-1 border border-border text-xs">https://api.yourapp.com/api/modelkit</code>).</p>
+      <p class="text-sm text-text-muted">Use your production backend URL for <code class="bg-background/80 px-1 border border-border text-xs">apiUrl</code> — the same route where you mounted <code class="bg-background/80 px-1 border border-border text-xs">createModelKitHonoRouter</code> or <code class="bg-background/80 px-1 border border-border text-xs">createModelKitExpressRouter</code>. Make sure CORS is enabled on the backend if the frontend is on a different origin.</p>
     </section>
 
-    <section class="mb-10">
-      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-3">Props</h2>
+    <!-- Props -->
+    <section class="mb-12" id="props">
+      <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-4">Props</h2>
       <div class="code-wrap">
-        <span class="code-lang">ts</span>
+        <span class="code-lang">typescript</span>
         <pre><code class="language-typescript">interface ModelKitStudioProps {
+  /** URL of your ModelKit API endpoint (required) */
   apiUrl: string;
+  /** Preset theme name or custom theme object (default: "dark") */
   theme?: "light" | "dark" | StudioThemeOverride;
+  /** Base theme to merge custom overrides into */
   themeBase?: "light" | "dark";
+  /** Additional className for the root container */
   className?: string;
+  /** Per-element className overrides */
   classNames?: ClassNameOverrides;
+  /** Bring your own TanStack Query client */
   queryClient?: QueryClient;
 }</code></pre>
       </div>
     </section>
 
-    <section class="mb-10">
+    <!-- Themes -->
+    <section class="mb-12" id="themes">
       <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-3">Themes</h2>
-      <p class="text-sm text-text-secondary mb-3">Built-in: dark, light, choco, ocean, sunset, forest, purple, crimson, cyan, amber. Or pass a <code class="bg-background/80 px-1 border border-border text-xs">StudioThemeOverride</code> for custom colors, fonts, spacing.</p>
+      <p class="text-sm text-text-secondary mb-3">Built-in presets: <code class="bg-background/80 px-1 border border-border text-xs">dark</code>, <code class="bg-background/80 px-1 border border-border text-xs">light</code>, <code class="bg-background/80 px-1 border border-border text-xs">choco</code>, <code class="bg-background/80 px-1 border border-border text-xs">ocean</code>, <code class="bg-background/80 px-1 border border-border text-xs">sunset</code>, <code class="bg-background/80 px-1 border border-border text-xs">forest</code>, <code class="bg-background/80 px-1 border border-border text-xs">purple</code>, <code class="bg-background/80 px-1 border border-border text-xs">crimson</code>, <code class="bg-background/80 px-1 border border-border text-xs">cyan</code>, <code class="bg-background/80 px-1 border border-border text-xs">amber</code>. Or pass a <code class="bg-background/80 px-1 border border-border text-xs">StudioThemeOverride</code> object for full control.</p>
       <div class="code-wrap">
         <span class="code-lang">tsx</span>
         <pre><code class="language-typescript">import { ModelKitStudio, type StudioThemeOverride } from "@benrobo/modelkit-studio";
 
 const customTheme: StudioThemeOverride = {
-  colors: { primary: "#ff00ff", background: "#000", text: "#fff" },
-  fonts: { body: "Inter", mono: "Fira Code" },
+  colors: { primary: "#7c3aed", background: "#0c0c0d", text: "#fff" },
+  fonts: { body: "Inter", mono: "JetBrains Mono" },
 };
 &lt;ModelKitStudio apiUrl="..." theme={customTheme} /&gt;</code></pre>
       </div>
     </section>
 
-    <section class="mb-10">
+    <!-- Styling -->
+    <section class="mb-12" id="styling">
       <h2 class="text-xs font-bold text-primary uppercase tracking-widest mb-3">Styling</h2>
-      <p class="text-sm text-text-secondary mb-3">Import <code class="bg-background/80 px-1 border border-border text-xs">@benrobo/modelkit-studio/styles</code> once. Studio uses the <code class="bg-background/80 px-1 border border-border text-xs">mk:</code> Tailwind prefix so it won't clash with your app.</p>
+      <p class="text-sm text-text-secondary mb-3">Import <code class="bg-background/80 px-1 border border-border text-xs">@benrobo/modelkit-studio/styles</code> once in your app entry. Studio uses the <code class="bg-background/80 px-1 border border-border text-xs">mk:</code> Tailwind prefix so styles won't clash with your app's own Tailwind classes.</p>
       <div class="code-wrap">
         <span class="code-lang">tsx</span>
         <pre><code class="language-typescript">import "@benrobo/modelkit-studio/styles";
-&lt;ModelKitStudio classNames={{ container: "max-w-7xl", buttonPrimary: "bg-green-500" }} /&gt;</code></pre>
+
+// Override individual element class names
+&lt;ModelKitStudio
+  classNames={{
+    container: "max-w-7xl",
+    buttonPrimary: "bg-indigo-600 hover:bg-indigo-500",
+  }}
+/&gt;</code></pre>
       </div>
     </section>
 
@@ -185,6 +287,7 @@ const customTheme: StudioThemeOverride = {
       <a href="index.html" class="text-sm text-text-muted hover:text-primary">← Home</a>
     </footer>
   </main>
+
   <!-- Image modal -->
   <div id="img-modal" class="img-modal-overlay" role="dialog" aria-modal="true" aria-label="View image" onclick="closeImgModalOnBackdrop(event)">
     <button type="button" class="img-modal-close" aria-label="Close" onclick="closeImgModal()">&times;</button>

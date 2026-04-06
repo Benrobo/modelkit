@@ -3,39 +3,38 @@
 
 @import "./fonts.css";
 
-/* ModelKit Studio — tactical interface with sharp corners */
 .modelkit-studio {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
-  --mk-font-body: "JetBrains Mono", ui-monospace, monospace;
-  --mk-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mk-font-body: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mk-font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 
-  /* Tactical sci-fi palette with better visibility */
-  --mk-color-primary: #00f5ff;
-  --mk-color-primary-glow: rgba(0, 245, 255, 0.5);
-  --mk-color-secondary: #ff6b35;
-  --mk-color-background: #0a0e14;
-  --mk-color-surface: #151b24;
-  --mk-color-surface-hover: #1c2128;
-  --mk-color-surface-raised: #22272e;
+  /* Core palette — near-black base, violet accent */
+  --mk-color-primary: #7c3aed;
+  --mk-color-primary-glow: rgba(124, 58, 237, 0.25);
+  --mk-color-secondary: #a78bfa;
+  --mk-color-background: #0c0c0d;
+  --mk-color-surface: #111113;
+  --mk-color-surface-hover: #18181b;
+  --mk-color-surface-raised: #1c1c1f;
 
-  --mk-color-text: #e6edf3;
-  --mk-color-text-secondary: #8b949e;
-  --mk-color-text-muted: #6e7681;
+  --mk-color-text: #f4f4f5;
+  --mk-color-text-secondary: #a1a1aa;
+  --mk-color-text-muted: #71717a;
 
-  --mk-color-border: #30363d;
-  --mk-color-border-hover: rgba(0, 245, 255, 0.4);
-  --mk-color-border-accent: rgba(0, 245, 255, 0.6);
+  --mk-color-border: #27272a;
+  --mk-color-border-hover: rgba(124, 58, 237, 0.4);
+  --mk-color-border-accent: rgba(124, 58, 237, 0.6);
 
-  --mk-color-success: #3fb950;
-  --mk-color-warning: #d29922;
-  --mk-color-error: #f85149;
+  --mk-color-success: #22c55e;
+  --mk-color-warning: #f59e0b;
+  --mk-color-error: #ef4444;
 
-  --mk-color-primary-hover: rgba(0, 245, 255, 0.2);
-  --mk-color-primary-muted: rgba(0, 245, 255, 0.08);
+  --mk-color-primary-hover: rgba(124, 58, 237, 0.15);
+  --mk-color-primary-muted: rgba(124, 58, 237, 0.08);
 
-  --mk-border-radius-sm: 0;
-  --mk-border-radius-md: 0;
-  --mk-border-radius-lg: 0;
+  --mk-border-radius-sm: 4px;
+  --mk-border-radius-md: 6px;
+  --mk-border-radius-lg: 8px;
 
   --mk-spacing-xs: 4px;
   --mk-spacing-sm: 8px;
@@ -44,49 +43,26 @@
   --mk-spacing-xl: 32px;
 }
 
-/* Glassmorphism & Enterprise Effects */
-.mk-glass {
-  background: var(--mk-color-surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--mk-color-border);
-}
-
-.mk-glow-primary {
-  box-shadow: 0 0 20px var(--mk-color-primary-glow),
-    0 0 40px rgba(0, 245, 255, 0.2);
-}
-
-/* Subtle grid pattern */
-.modelkit-studio {
-  background-image: linear-gradient(
-      rgba(0, 245, 255, 0.015) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, rgba(0, 245, 255, 0.015) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-/* Custom scrollbar — thin track/thumb, theme colors */
+/* Scrollbar — minimal, theme-aware */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: var(--mk-color-primary) var(--mk-color-border);
+  scrollbar-color: var(--mk-color-border) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
-  height: 8px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--mk-color-border);
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--mk-color-primary);
-  border: 1px solid var(--mk-color-border);
+  background: var(--mk-color-border);
+  border-radius: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--mk-color-primary-hover);
+  background: var(--mk-color-text-muted);
 }

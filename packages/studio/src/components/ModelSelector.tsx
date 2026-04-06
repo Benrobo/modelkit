@@ -3,47 +3,7 @@ import { cn } from "../utils/cn";
 import { useAvailableModels } from "../hooks/useAvailableModels";
 import { getModelDisplayName } from "../utils/models";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
-function ChevronDownIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
+import { SearchIcon, ChevronDownIcon } from "./Icons";
 
 export interface ModelSelectorProps {
   value: string;
@@ -91,24 +51,22 @@ export function ModelSelector({
 
   const currentModel = allModels.find((m) => m.id === value);
   const displayLabel = value
-    ? (currentModel?.name || getModelDisplayName(value)) +
-      (currentModel?.context_length != null
-        ? ` (${Math.round(currentModel.context_length / 1000)}k ctx)`
-        : "")
-    : "Select model";
+    ? currentModel?.name || getModelDisplayName(value)
+    : null;
+
+  const contextLabel =
+    currentModel?.context_length != null
+      ? `${Math.round(currentModel.context_length / 1000)}k ctx`
+      : null;
 
   if (loading) {
     return (
-      <div className={cn("mk:space-y-1", className)}>
-        <label className="mk:text-sm mk:font-medium mk:text-mk-text-secondary mk:block">
+      <div className={cn("mk:space-y-1.5", className)}>
+        <label className="mk:text-xs mk:font-medium mk:text-mk-text-muted mk:block">
           Model
         </label>
-        <div
-          className={cn(
-            "mk:w-full mk:border mk:border-mk-border mk:bg-mk-surface mk:px-3 mk:py-2 mk:text-mk-text-secondary mk:text-sm mk:font-mk-mono",
-          )}
-        >
-          Loading models from OpenRouter…
+        <div className="mk:w-full mk:border mk:border-mk-border mk:rounded-md mk:bg-mk-surface mk:px-3 mk:py-2 mk:text-mk-text-muted mk:text-sm mk:font-mono">
+          Loading models…
         </div>
       </div>
     );
@@ -116,12 +74,12 @@ export function ModelSelector({
 
   if (error) {
     return (
-      <div className={cn("mk:space-y-1", className)}>
-        <label className="mk:text-sm mk:font-medium mk:text-mk-text-secondary mk:block">
+      <div className={cn("mk:space-y-1.5", className)}>
+        <label className="mk:text-xs mk:font-medium mk:text-mk-text-muted mk:block">
           Model
         </label>
-        <div className="mk:text-mk-color-error mk:text-sm">
-          Failed to load models: {error.message}
+        <div className="mk:text-xs mk:text-mk-color-error">
+          Failed to load models
         </div>
       </div>
     );
@@ -129,42 +87,61 @@ export function ModelSelector({
 
   return (
     <div className={cn("mk:space-y-1.5", className)}>
-      <label className="mk:text-[10px] mk:font-mk-mono mk:font-bold mk:text-mk-text-muted mk:uppercase mk:tracking-wider mk:block">
-        Model Engine
+      <label className="mk:text-xs mk:font-medium mk:text-mk-text-muted mk:block">
+        Model
       </label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
             className={cn(
-              "mk:w-full mk:flex mk:items-center mk:justify-between mk:gap-2 mk:border mk:border-mk-border mk:bg-mk-background/50 mk:px-3 mk:py-2.5 mk:text-xs mk:font-mk-mono mk:text-mk-text",
-              "mk:hover:border-mk-primary/30 mk:focus:outline-none mk:focus:border-mk-primary/50 mk:transition-all mk:group",
+              "mk:w-full mk:flex mk:items-center mk:justify-between mk:gap-2",
+              "mk:border mk:border-mk-border mk:rounded-md mk:bg-mk-surface",
+              "mk:px-3 mk:py-2 mk:text-sm mk:transition-colors",
+              "mk:hover:border-mk-border-hover mk:focus:outline-none mk:focus:ring-1 mk:focus:ring-mk-primary/40",
+              open && "mk:border-mk-border-hover mk:ring-1 mk:ring-mk-primary/40"
             )}
           >
-            <span className="mk:truncate mk:text-left mk:group-hover:text-mk-primary mk:transition-colors">
-              {displayLabel}
-            </span>
-            <ChevronDownIcon className="mk:shrink-0 mk:text-mk-text-muted mk:group-hover:text-mk-primary mk:transition-colors" />
+            {displayLabel ? (
+              <div className="mk:flex mk:items-center mk:gap-2 mk:min-w-0">
+                <span className="mk:text-mk-text mk:font-mono mk:text-sm mk:truncate">
+                  {displayLabel}
+                </span>
+                {contextLabel && (
+                  <span className="mk:shrink-0 mk:text-[11px] mk:text-mk-text-muted mk:font-mono mk:bg-mk-background mk:border mk:border-mk-border mk:px-1.5 mk:py-0.5 mk:rounded">
+                    {contextLabel}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="mk:text-mk-text-muted mk:text-sm">
+                Select a model
+              </span>
+            )}
+            <ChevronDownIcon size={14} className="mk:shrink-0 mk:text-mk-text-muted" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="mk:max-h-80 mk:flex mk:flex-col mk:p-0">
-          <div className="mk:sticky mk:top-0 mk:z-10 mk:border-b mk:border-mk-border mk:bg-mk-surface mk:p-2">
-            <div className="mk:flex mk:items-center mk:gap-2 mk:border mk:border-mk-border mk:bg-mk-background mk:px-2 mk:py-1.5">
-              <SearchIcon className="mk:shrink-0 mk:text-mk-text-secondary" />
+        <PopoverContent
+          align="start"
+          className="mk:max-h-72 mk:flex mk:flex-col mk:p-0 mk:rounded-md mk:border mk:border-mk-border mk:bg-mk-surface mk:shadow-lg"
+        >
+          {/* Search */}
+          <div className="mk:p-2 mk:border-b mk:border-mk-border mk:shrink-0">
+            <div className="mk:flex mk:items-center mk:gap-2 mk:bg-mk-background mk:border mk:border-mk-border mk:rounded-md mk:px-2.5 mk:py-1.5">
+              <SearchIcon size={13} className="mk:shrink-0 mk:text-mk-text-muted" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search models…"
-                className={cn(
-                  "mk:min-w-0 mk:flex-1 mk:bg-transparent mk:text-sm mk:font-mk-mono mk:text-mk-text",
-                  "mk:placeholder:text-mk-text-secondary mk:focus:outline-none",
-                )}
+                className="mk:flex-1 mk:min-w-0 mk:bg-transparent mk:text-sm mk:text-mk-text mk:placeholder:text-mk-text-muted mk:focus:outline-none mk:font-mono"
                 aria-label="Search models"
               />
             </div>
           </div>
-          <div className="mk:min-h-0 mk:overflow-y-auto">
+
+          {/* Model list */}
+          <div className="mk:flex-1 mk:overflow-y-auto custom-scrollbar">
             {!valueInList && value && (
               <button
                 type="button"
@@ -172,33 +149,30 @@ export function ModelSelector({
                   onChange(value);
                   setOpen(false);
                 }}
-                className={cn(
-                  "mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mk-mono mk:border-b mk:border-mk-border",
-                  "mk:bg-mk-primary/10 mk:text-mk-primary mk:hover:bg-mk-primary/20",
-                )}
+                className="mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mono mk:border-b mk:border-mk-border mk:bg-mk-primary/8 mk:text-mk-primary mk:hover:bg-mk-primary/15 mk:transition-colors"
               >
-                {getModelDisplayName(value)} (current)
+                {getModelDisplayName(value)}{" "}
+                <span className="mk:text-mk-primary/60">(current)</span>
               </button>
             )}
             {filtered.providers.length === 0 ? (
-              <div className="mk:px-3 mk:py-4 mk:text-center mk:text-sm mk:font-mk-mono mk:text-mk-text-secondary">
-                {query ? "No models match your search" : "No models available"}
+              <div className="mk:px-3 mk:py-6 mk:text-center mk:text-sm mk:text-mk-text-muted">
+                {query ? "No models found" : "No models available"}
               </div>
             ) : (
               filtered.providers.map((provider) => {
                 const models = filtered.modelsByProvider[provider] ?? [];
                 return (
                   <div key={provider}>
-                    <div className="mk:px-3 mk:py-1.5 mk:text-xs mk:font-mk-mono mk:font-medium mk:text-mk-text-secondary mk:border-b mk:border-mk-border mk:bg-mk-background">
+                    <div className="mk:px-3 mk:py-1.5 mk:text-[11px] mk:font-medium mk:text-mk-text-muted mk:uppercase mk:tracking-wider mk:bg-mk-background mk:border-b mk:border-mk-border mk:sticky mk:top-0">
                       {provider}
                     </div>
                     {models.map((model) => {
                       const isSelected = model.id === value;
-                      const label =
-                        (model.name || getModelDisplayName(model.id)) +
-                        (model.context_length != null
-                          ? ` (${Math.round(model.context_length / 1000)}k ctx)`
-                          : "");
+                      const ctx =
+                        model.context_length != null
+                          ? `${Math.round(model.context_length / 1000)}k`
+                          : null;
                       return (
                         <button
                           key={model.id}
@@ -208,13 +182,20 @@ export function ModelSelector({
                             setOpen(false);
                           }}
                           className={cn(
-                            "mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mk-mono mk:transition-colors mk:cursor-pointer",
+                            "mk:w-full mk:px-3 mk:py-2 mk:text-left mk:text-sm mk:font-mono mk:transition-colors mk:flex mk:items-center mk:justify-between mk:gap-2",
                             isSelected
                               ? "mk:bg-mk-primary/10 mk:text-mk-primary"
-                              : "mk:text-mk-text mk:hover:bg-mk-surface-hover mk:hover:text-mk-primary",
+                              : "mk:text-mk-text mk:hover:bg-mk-surface-hover"
                           )}
                         >
-                          {label}
+                          <span className="mk:truncate">
+                            {model.name || getModelDisplayName(model.id)}
+                          </span>
+                          {ctx && (
+                            <span className="mk:shrink-0 mk:text-[11px] mk:text-mk-text-muted">
+                              {ctx}
+                            </span>
+                          )}
                         </button>
                       );
                     })}

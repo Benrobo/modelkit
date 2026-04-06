@@ -1,7 +1,7 @@
 {
   "name": "@benrobo/modelkit-studio",
   "pricing": false,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "React UI components for ModelKit - manage AI model configurations with live updates and theme customization",
   "publishConfig": {
     "access": "public"
@@ -47,10 +47,11 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "vite build && echo '// Type declaration for CSS module\ndeclare const styles: string;\nexport default styles;' > dist/styles.d.ts",
+    "build": "vite build && vite build --config vite.standalone.config.ts && echo '// Type declaration for CSS module\ndeclare const styles: string;\nexport default styles;' > dist/styles.d.ts",
     "dev": "vite build --watch",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "npm:publish": "bun run build && npm publish --access public"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.5",

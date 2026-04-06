@@ -1,14 +1,23 @@
-/**
- * Express router for ModelKit
- * Provides ready-to-use REST API endpoints
- */
-
 import { Router, type Request, type Response } from "express";
 import type { ModelKit } from "../types.js";
+import { renderStudioHtml } from "../studio-bundle.js";
+
+export interface CreateExpressRouterOptions {
+  /**
+   * Serve the ModelKit Studio UI at /__studio.
+   * Default: true
+   */
+  studio?: boolean;
+  /**
+   * Override the path where the Studio UI is served.
+   * Default: "/__studio"
+   */
+  studioPath?: string;
+}
 
 /**
  * Create an Express router for ModelKit.
- * Mount this in your Express app to expose ModelKit via REST API.
+ * Mounts REST API endpoints and (by default) serves the Studio UI.
  *
  * @example
  * ```ts
@@ -18,77 +27,95 @@ import type { ModelKit } from "../types.js";
  *
  * const app = express();
  * app.use(express.json());
- *
- * const adapter = createRedisAdapter({ url: process.env.REDIS_URL });
- * const modelKit = createModelKit(adapter);
+ * const modelKit = createModelKit(createRedisAdapter({ url: process.env.REDIS_URL }));
  *
  * app.use("/api/modelkit", createModelKitExpressRouter(modelKit));
+ * // Studio UI → http://localhost:3000/__studio
  * ```
  */
-export function createModelKitExpressRouter(modelKit: ModelKit): Router {
+export function createModelKitExpressRouter(
+  modelKit: ModelKit,
+  options: CreateExpressRouterOptions = {}
+): Router {
   const router = Router();
+  const serveStudio = options.studio !== false;
+  const studioPath = (options.studioPath ?? "/__studio").replace(/\/$/, "");
 
-  // GET /overrides - List all overrides
+  if (serveStudio) {
+    router.get(studioPath, (req: Request, res: Response) => {
+      const protocol = req.protocol;
+      const host = req.get("host") ?? "localhost";
+      const mountPath = (req.baseUrl ?? "").replace(/\/$/, "");
+      const apiUrl = `${protocol}://${host}${mountPath}`;
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(renderStudioHtml(apiUrl));
+    });
+  }
+
   router.get("/overrides", async (_req: Request, res: Response) => {
     try {
-      const overrides = await modelKit.listOverrides();
-      res.json(overrides);
+      res.json(await modelKit.listOverrides());
     } catch (error) {
-      res.status(500).json({
-        error: error instanceof Error ? error.message : "Failed to list overrides",
-      });
+      res
+        .status(500)
+        .json({
+          error:
+            error instanceof Error ? error.message : "Failed to list overrides",
+        });
     }
   });
 
-  // GET /overrides/:featureId - Get specific override
   router.get("/overrides/:featureId", async (req: Request, res: Response) => {
     try {
-      const featureId = String(req.params.featureId);
-      const override = await modelKit.getConfig(featureId);
-
-      if (!override) {
+      const override = await modelKit.getConfig(String(req.params.featureId));
+      if (!override)
         return res.status(404).json({ error: "Override not found" });
-      }
-
       res.json(override);
     } catch (error) {
-      res.status(500).json({
-        error: error instanceof Error ? error.message : "Failed to get override",
-      });
+      res
+        .status(500)
+        .json({
+          error:
+            error instanceof Error ? error.message : "Failed to get override",
+        });
     }
   });
 
-  // POST /overrides/:featureId - Set override
   router.post("/overrides/:featureId", async (req: Request, res: Response) => {
     try {
-      const featureId = String(req.params.featureId);
       const override = req.body;
-
-      if (!override.modelId) {
+      if (!override.modelId)
         return res.status(400).json({ error: "modelId is required" });
+      await modelKit.setOverride(String(req.params.featureId), override);
+      res.json({ success: true });
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          error:
+            error instanceof Error ? error.message : "Failed to set override",
+        });
+    }
+  });
+
+  router.delete(
+    "/overrides/:featureId",
+    async (req: Request, res: Response) => {
+      try {
+        await modelKit.clearOverride(String(req.params.featureId));
+        res.json({ success: true });
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error:
+              error instanceof Error
+                ? error.message
+                : "Failed to clear override",
+          });
       }
-
-      await modelKit.setOverride(featureId, override);
-      res.json({ success: true });
-    } catch (error) {
-      res.status(500).json({
-        error: error instanceof Error ? error.message : "Failed to set override",
-      });
     }
-  });
-
-  // DELETE /overrides/:featureId - Clear override
-  router.delete("/overrides/:featureId", async (req: Request, res: Response) => {
-    try {
-      const featureId = String(req.params.featureId);
-      await modelKit.clearOverride(featureId);
-      res.json({ success: true });
-    } catch (error) {
-      res.status(500).json({
-        error: error instanceof Error ? error.message : "Failed to clear override",
-      });
-    }
-  });
+  );
 
   return router;
 }
